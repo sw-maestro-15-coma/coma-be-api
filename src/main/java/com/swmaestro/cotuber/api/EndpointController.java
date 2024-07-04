@@ -1,4 +1,4 @@
-package com.swmaestro.cotuber.api.endpoint;
+package com.swmaestro.cotuber.api;
 
 import com.swmaestro.cotuber.domain.shorts.dto.ShortsListResponseDto;
 import com.swmaestro.cotuber.domain.video.dto.VideoCreateRequestDto;
@@ -7,7 +7,6 @@ import com.swmaestro.cotuber.domain.video.dto.VideoListResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -21,24 +20,22 @@ import static com.swmaestro.cotuber.common.ProgressState.COMPLETE;
 public class EndpointController {
     @Operation(summary = "대시보드의 동영상 목록 조회")
     @GetMapping("/video")
-    public ResponseEntity<List<VideoListResponseDto>> getVideoList(HttpServletRequest request) {
-        return ResponseEntity.ok(mockVideoList());
+    public List<VideoListResponseDto> getVideoList(HttpServletRequest request) {
+        return mockVideoList();
     }
 
     @Operation(summary = "유튜브 링크로 동영상 추가(추출)")
     @PostMapping("/video")
-    public ResponseEntity<VideoCreateResponseDto> updateVideo(HttpServletRequest request, @RequestBody VideoCreateRequestDto requestDto) {
-        final VideoCreateResponseDto response = VideoCreateResponseDto.builder()
+    public VideoCreateResponseDto updateVideo(HttpServletRequest request, @RequestBody VideoCreateRequestDto requestDto) {
+        return VideoCreateResponseDto.builder()
                 .id(0L)
                 .build();
-
-        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "생성된 숏폼 데이터의 목록 조회")
     @GetMapping("/shorts")
-    public ResponseEntity<List<ShortsListResponseDto>> getShortsList(HttpServletRequest request) {
-        return ResponseEntity.ok(mockShortsList());
+    public List<ShortsListResponseDto> getShortsList(HttpServletRequest request) {
+        return mockShortsList();
     }
 
     private String getUser(final HttpServletRequest request) {

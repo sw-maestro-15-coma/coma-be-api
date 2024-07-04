@@ -1,4 +1,8 @@
 package com.swmaestro.cotuber.domain.video.dto;
 
-public record VideoListResponseDto(String youtubeUrl, String youtubeThumbnailUrl) {
+import com.swmaestro.cotuber.common.ProgressState;
+import lombok.Builder;
+
+@Builder
+public record VideoListResponseDto(long id, String title, String link, ProgressState state) {
 }
