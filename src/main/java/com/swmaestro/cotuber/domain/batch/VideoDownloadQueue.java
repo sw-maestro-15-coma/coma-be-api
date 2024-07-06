@@ -1,6 +1,6 @@
-package com.swmaestro.cotuber.domain.video;
+package com.swmaestro.cotuber.domain.batch;
 
-import com.swmaestro.cotuber.domain.video.dto.VideoDownloadTask;
+import com.swmaestro.cotuber.domain.batch.dto.VideoDownloadTask;
 import com.swmaestro.cotuber.exception.EmptyDownloadQueueException;
 import org.springframework.stereotype.Component;
 

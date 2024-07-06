@@ -1,4 +1,4 @@
-package com.swmaestro.cotuber.domain.video.dto;
+package com.swmaestro.cotuber.domain.batch.dto;
 
 import lombok.Builder;
 
