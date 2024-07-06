@@ -7,8 +7,6 @@ import com.swmaestro.cotuber.domain.batch.dto.VideoDownloadTask;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
-
 @Service
 public class VideoService {
     private final VideoRepository videoRepository;

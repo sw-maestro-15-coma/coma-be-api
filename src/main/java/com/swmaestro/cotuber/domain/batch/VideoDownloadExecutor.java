@@ -1,8 +1,6 @@
 package com.swmaestro.cotuber.domain.batch;
 
-import com.swmaestro.cotuber.domain.batch.dto.VideoDownloadTask;
 import com.swmaestro.cotuber.domain.video.VideoService;
-import com.swmaestro.cotuber.domain.video.YoutubeVideoDownloader;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
