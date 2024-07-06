@@ -2,7 +2,7 @@ package com.swmaestro.cotuber.domain.shorts;
 
 import com.swmaestro.cotuber.common.BaseEntity;
 import com.swmaestro.cotuber.domain.user.User;
-import com.swmaestro.cotuber.domain.video.Video;
+import com.swmaestro.cotuber.domain.video.VideoEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,7 +21,7 @@ public class Shorts extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "video_id", nullable = false)
-    private Video video;
+    private VideoEntity video;
 
     @Column(name = "top_title", length = 100)
     private String topTitle;

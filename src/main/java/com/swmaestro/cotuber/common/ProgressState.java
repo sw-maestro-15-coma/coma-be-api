@@ -1,7 +1,6 @@
 package com.swmaestro.cotuber.common;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Schema(description = "영상 다운로드, AI 처리 및 영상 처리 상태 Enum")
 public enum ProgressState {
