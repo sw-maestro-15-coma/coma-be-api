@@ -15,6 +15,10 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests(authorize -> {
 
                 })
+                .oauth2Login(oauth2 -> {
+
+                })
+                .logout(logout -> logout.logoutSuccessUrl("/"))
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> {
