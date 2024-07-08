@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class ShortsEditPoint extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shorts_id", nullable = false)
-    private Shorts shorts;
+    private ShortsEntity shortsEntity;
 
     @Column(name = "start_time", nullable = false)
     private int startTime;

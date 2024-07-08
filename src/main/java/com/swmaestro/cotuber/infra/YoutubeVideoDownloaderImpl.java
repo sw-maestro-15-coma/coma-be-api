@@ -29,6 +29,7 @@ public class YoutubeVideoDownloaderImpl implements YoutubeVideoDownloader {
 
         final ResponseBody body = response.getBody();
 
+        assert body != null;
         return body.s3Url;
     }
 
