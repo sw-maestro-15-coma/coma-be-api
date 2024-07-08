@@ -19,7 +19,7 @@ import static com.swmaestro.cotuber.common.ProgressState.COMPLETE;
 @RestController
 public class EndpointController {
     @Operation(summary = "대시보드의 동영상 목록 조회")
-    @GetMapping("/video")
+    @GetMapping(value = "/video")
     public List<VideoListResponseDto> getVideoList(HttpServletRequest request) {
         return mockVideoList();
     }

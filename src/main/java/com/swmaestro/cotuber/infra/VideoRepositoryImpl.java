@@ -31,16 +31,18 @@ public class VideoRepositoryImpl implements VideoRepository {
     }
 
     @Override
-    public void updateS3Path(final long id, final String s3Path) {
-        final VideoEntity videoEntity = repository.findById(id)
+    public void update(final Video video) {
+        final VideoEntity videoEntity = repository.findById(video.getId())
                 .orElseThrow(() -> new NoSuchElementException("해당 id의 엔티티가 없습니다."));
 
-        videoEntity.updateS3Path(s3Path);
+        videoEntity.setS3Path(video.getS3Path());
+        videoEntity.setYoutubeUrl(video.getYoutubeUrl());
+
         repository.save(videoEntity);
     }
 
     @Override
-    public Video findById(long id) {
+    public Video findById(final long id) {
         final VideoEntity videoEntity = repository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("해당 id의 엔티티가 없습니다."));
 

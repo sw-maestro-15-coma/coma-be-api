@@ -42,6 +42,9 @@ public class VideoService {
         final VideoDownloadTask task = queue.pop();
         final String s3Url = youtubeVideoDownloader.download(task.youtubeUrl());
 
-        videoRepository.updateS3Path(task.id(), s3Url);
+        final Video video = videoRepository.findById(task.id());
+        video.updateS3Path(s3Url);
+
+        videoRepository.update(video);
     }
 }

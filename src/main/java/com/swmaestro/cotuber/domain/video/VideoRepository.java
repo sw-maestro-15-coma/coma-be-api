@@ -4,6 +4,6 @@ import com.swmaestro.cotuber.domain.video.dto.VideoCreateRequestDto;
 
 public interface VideoRepository {
     long insert(VideoCreateRequestDto request);
-    void updateS3Path(long id, String s3Path);
+    void update(Video video);
     Video findById(long id);
 }

@@ -7,7 +7,9 @@ import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
 @NoArgsConstructor
 @Entity
@@ -34,9 +36,5 @@ public class VideoEntity extends BaseEntity {
                 .s3Path(s3Path)
                 .youtubeUrl(youtubeUrl)
                 .build();
-    }
-
-    public void updateS3Path(final String s3Path) {
-        this.s3Path = s3Path;
     }
 }
