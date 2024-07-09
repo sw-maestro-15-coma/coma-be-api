@@ -1,4 +1,4 @@
-package com.swmaestro.cotuber.infra;
+package com.swmaestro.cotuber.infra.video;
 
 import com.swmaestro.cotuber.domain.video.YoutubeVideoDownloader;
 import com.swmaestro.cotuber.exception.VideoDownloadFailException;

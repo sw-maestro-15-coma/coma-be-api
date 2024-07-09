@@ -1,8 +1,8 @@
-package com.swmaestro.cotuber.domain.shorts;
+package com.swmaestro.cotuber.infra.shorts;
 
 import com.swmaestro.cotuber.common.BaseEntity;
 import com.swmaestro.cotuber.domain.user.User;
-import com.swmaestro.cotuber.domain.video.VideoEntity;
+import com.swmaestro.cotuber.infra.video.VideoEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

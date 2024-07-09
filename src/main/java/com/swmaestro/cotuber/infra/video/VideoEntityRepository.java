@@ -1,6 +1,5 @@
-package com.swmaestro.cotuber.infra;
+package com.swmaestro.cotuber.infra.video;
 
-import com.swmaestro.cotuber.domain.video.VideoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface VideoEntityRepository extends JpaRepository<VideoEntity, Long> {

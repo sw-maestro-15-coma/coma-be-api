@@ -1,6 +1,6 @@
 package com.swmaestro.cotuber.domain.video.dto;
 
-import com.swmaestro.cotuber.common.ProgressState;
+import com.swmaestro.cotuber.domain.video.ProgressState;
 import lombok.Builder;
 
 @Builder

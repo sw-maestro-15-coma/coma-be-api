@@ -1,4 +1,4 @@
-package com.swmaestro.cotuber.common;
+package com.swmaestro.cotuber.domain.video;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

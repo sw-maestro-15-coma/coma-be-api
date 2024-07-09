@@ -7,6 +7,9 @@ import com.swmaestro.cotuber.domain.batch.dto.VideoDownloadTask;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.swmaestro.cotuber.domain.video.ProgressState.AI_PROCESSING;
+import static com.swmaestro.cotuber.domain.video.ProgressState.YOUTUBE_DOWNLOADING;
+
 @Service
 public class VideoService {
     private final VideoRepository videoRepository;
@@ -21,7 +24,7 @@ public class VideoService {
 
     @Transactional
     public VideoCreateResponseDto requestVideoDownload(final VideoCreateRequestDto request) {
-        final long id = videoRepository.insert(request);
+        final long id = videoRepository.insert(createInitVideo(request));
 
         queue.push(VideoDownloadTask.builder()
                 .id(id)
@@ -34,17 +37,22 @@ public class VideoService {
     }
 
     @Transactional
-    public void downloadYoutube() {
-        if (queue.isEmpty()) {
-            return;
-        }
-
-        final VideoDownloadTask task = queue.pop();
+    public void downloadYoutube(final VideoDownloadTask task) {
         final String s3Url = youtubeVideoDownloader.download(task.youtubeUrl());
 
         final Video video = videoRepository.findById(task.id());
-        video.updateS3Path(s3Url);
+        video.changeS3Path(s3Url);
+        video.changeState(AI_PROCESSING);
 
         videoRepository.update(video);
+    }
+
+    private Video createInitVideo(final VideoCreateRequestDto request) {
+        return Video.builder()
+                .id(0L)
+                .s3Path("")
+                .state(YOUTUBE_DOWNLOADING)
+                .youtubeUrl(request.url())
+                .build();
     }
 }

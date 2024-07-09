@@ -1,6 +1,5 @@
-package com.swmaestro.cotuber.infra;
+package com.swmaestro.cotuber.infra.shorts;
 
-import com.swmaestro.cotuber.domain.shorts.ShortsEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ShortsEntityRepository extends JpaRepository<ShortsEntity, Long> {

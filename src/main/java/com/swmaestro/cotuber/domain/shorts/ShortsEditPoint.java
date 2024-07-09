@@ -1,6 +1,7 @@
 package com.swmaestro.cotuber.domain.shorts;
 
 import com.swmaestro.cotuber.common.BaseEntity;
+import com.swmaestro.cotuber.infra.shorts.ShortsEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

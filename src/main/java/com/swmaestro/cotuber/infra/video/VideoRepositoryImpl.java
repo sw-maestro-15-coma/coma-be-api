@@ -1,17 +1,13 @@
-package com.swmaestro.cotuber.infra;
+package com.swmaestro.cotuber.infra.video;
 
 import com.swmaestro.cotuber.domain.video.Video;
-import com.swmaestro.cotuber.domain.video.VideoEntity;
 import com.swmaestro.cotuber.domain.video.VideoRepository;
-import com.swmaestro.cotuber.domain.video.dto.VideoCreateRequestDto;
 import org.springframework.stereotype.Repository;
 
 import java.util.NoSuchElementException;
 
 @Repository
 public class VideoRepositoryImpl implements VideoRepository {
-    private static final String EMPTY_URL = "";
-
     private final VideoEntityRepository repository;
 
     public VideoRepositoryImpl(VideoEntityRepository repository) {
@@ -19,10 +15,11 @@ public class VideoRepositoryImpl implements VideoRepository {
     }
 
     @Override
-    public long insert(final VideoCreateRequestDto request) {
+    public long insert(final Video video) {
         final VideoEntity videoEntity = VideoEntity.builder()
-                .s3Path(EMPTY_URL)
-                .youtubeUrl(request.url())
+                .s3Path(video.getS3Path())
+                .youtubeUrl(video.getYoutubeUrl())
+                .state(video.getState())
                 .build();
 
         final VideoEntity savedEntity = repository.save(videoEntity);
@@ -37,6 +34,7 @@ public class VideoRepositoryImpl implements VideoRepository {
 
         videoEntity.setS3Path(video.getS3Path());
         videoEntity.setYoutubeUrl(video.getYoutubeUrl());
+        videoEntity.setState(video.getState());
 
         repository.save(videoEntity);
     }

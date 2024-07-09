@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.swmaestro.cotuber.common.ProgressState.COMPLETE;
+import static com.swmaestro.cotuber.domain.video.ProgressState.COMPLETE;
 
 @Tag(name = "Endpoint", description = "API 서버 엔드포인트")
 @RequestMapping("/api/v1")

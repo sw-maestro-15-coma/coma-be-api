@@ -1,4 +1,4 @@
-package com.swmaestro.cotuber.infra;
+package com.swmaestro.cotuber.infra.shorts;
 
 import com.swmaestro.cotuber.domain.batch.dto.ShortsProcessTask;
 import com.swmaestro.cotuber.domain.shorts.ShortsProcessor;

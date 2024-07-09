@@ -1,7 +1,6 @@
-package com.swmaestro.cotuber.infra;
+package com.swmaestro.cotuber.infra.shorts;
 
 import com.swmaestro.cotuber.domain.shorts.Shorts;
-import com.swmaestro.cotuber.domain.shorts.ShortsEntity;
 import com.swmaestro.cotuber.domain.shorts.ShortsRepository;
 import org.springframework.stereotype.Repository;
 

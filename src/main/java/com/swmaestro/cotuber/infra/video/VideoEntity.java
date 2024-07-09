@@ -1,6 +1,8 @@
-package com.swmaestro.cotuber.domain.video;
+package com.swmaestro.cotuber.infra.video;
 
 import com.swmaestro.cotuber.common.BaseEntity;
+import com.swmaestro.cotuber.domain.video.ProgressState;
+import com.swmaestro.cotuber.domain.video.Video;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -21,13 +23,14 @@ public class VideoEntity extends BaseEntity {
     @Column(name = "youtube_url", length = 100, nullable = false, unique = true)
     private String youtubeUrl;
 
-    @Column(name = "youtube_thumbnail_url", length = 100, nullable = false)
-    private String youtubeThumbnailUrl;
+    @Column(name = "state")
+    private ProgressState state;
 
     @Builder
-    public VideoEntity(String s3Path, String youtubeUrl) {
+    public VideoEntity(String s3Path, String youtubeUrl, ProgressState state) {
         this.s3Path = s3Path;
         this.youtubeUrl = youtubeUrl;
+        this.state = state;
     }
 
     public Video toDomain() {
@@ -35,6 +38,7 @@ public class VideoEntity extends BaseEntity {
                 .id(getId())
                 .s3Path(s3Path)
                 .youtubeUrl(youtubeUrl)
+                .state(state)
                 .build();
     }
 }
