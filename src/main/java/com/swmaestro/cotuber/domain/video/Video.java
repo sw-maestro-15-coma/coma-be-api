@@ -1,21 +1,28 @@
 package com.swmaestro.cotuber.domain.video;
 
-import com.swmaestro.cotuber.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
-@Entity
-public class Video extends BaseEntity {
-    @Column(name = "s3_path", length = 100, nullable = false, unique = true)
-    private String s3Path;
-
-    @Column(name = "youtube_url", length = 100, nullable = false, unique = true)
+public class Video {
+    private long id;
     private String youtubeUrl;
+    private String s3Path;
+    private ProgressState state;
 
-    @Column(name = "youtube_thumbnail_url", length = 100, nullable = false)
-    private String youtubeThumbnailUrl;
+    @Builder
+    public Video(long id, String youtubeUrl, String s3Path, ProgressState state) {
+        this.id = id;
+        this.youtubeUrl = youtubeUrl;
+        this.s3Path = s3Path;
+        this.state = state;
+    }
+
+    public void changeS3Path(final String s3Path) {
+        this.s3Path = s3Path;
+    }
+
+    public void changeState(final ProgressState to) {
+        state = to;
+    }
 }

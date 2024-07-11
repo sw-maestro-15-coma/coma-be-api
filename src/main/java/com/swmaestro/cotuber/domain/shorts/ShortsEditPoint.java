@@ -1,6 +1,7 @@
 package com.swmaestro.cotuber.domain.shorts;
 
 import com.swmaestro.cotuber.common.BaseEntity;
+import com.swmaestro.cotuber.infra.shorts.ShortsEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 public class ShortsEditPoint extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shorts_id", nullable = false)
-    private Shorts shorts;
+    private ShortsEntity shortsEntity;
 
     @Column(name = "start_time", nullable = false)
     private int startTime;
