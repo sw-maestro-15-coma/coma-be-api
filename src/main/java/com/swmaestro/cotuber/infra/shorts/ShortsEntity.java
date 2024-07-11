@@ -1,9 +1,14 @@
 package com.swmaestro.cotuber.infra.shorts;
 
 import com.swmaestro.cotuber.common.BaseEntity;
-import com.swmaestro.cotuber.domain.user.User;
+import com.swmaestro.cotuber.infra.user.UserEntity;
 import com.swmaestro.cotuber.infra.video.VideoEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class ShortsEntity extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserEntity user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "video_id", nullable = false)
