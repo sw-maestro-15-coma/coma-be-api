@@ -8,14 +8,20 @@ spring:
           cognito:
             clientId: 7p98m1fjladn8vq6ksg49tkma3
             clientSecret: a58mj30trgbjqek6nvhc83n413ssbfne82dgtsfeuuvfc818qnt
-            scope: email
+            scope:
+              - email
+              - openid
             redirect-uri: http://localhost:8080/login/oauth2/code/cognito
             clientName: cotuber
-            authorization-grant-type: authorization_code
+        #            authorization-grant-type: authorization_code
         provider:
           cognito:
             issuer-uri: https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_0qh0dRI1c
             authorization-uri: https://cotuber.auth.ap-northeast-2.amazoncognito.com/oauth2/authorize
             token-uri: https://cotuber.auth.ap-northeast-2.amazoncognito.com/oauth2/token
             jwk-set-uri: https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_0qh0dRI1c/.well-known/jwks.json
-            user-name-attribute: cognito:username
+      #            user-name-attribute: cognito:username
+      resourceserver:
+        jwt:
+          issuer-uri: https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_0qh0dRI1c
+          jwk-set-uri: https://cognito-idp.ap-northeast-2.amazonaws.com/ap-northeast-2_0qh0dRI1c/.well-known/jwks.json

@@ -31,6 +31,7 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
     implementation("org.springframework.security:spring-security-oauth2-client")
     implementation("org.springframework.security:spring-security-oauth2-jose")
+    implementation("software.amazon.awssdk:cognitoidentityprovider:2.20.66")
 
     compileOnly("org.projectlombok:lombok")
     runtimeOnly("com.h2database:h2")
