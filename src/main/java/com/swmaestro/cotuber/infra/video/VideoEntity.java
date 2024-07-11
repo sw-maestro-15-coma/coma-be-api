@@ -17,10 +17,10 @@ import lombok.Setter;
 @Entity
 @Table(name = "video")
 public class VideoEntity extends BaseEntity {
-    @Column(name = "s3_path", length = 100, nullable = false, unique = true)
+    @Column(name = "s3_path", length = 100)
     private String s3Path;
 
-    @Column(name = "youtube_url", length = 100, nullable = false, unique = true)
+    @Column(name = "youtube_url", length = 100, unique = true)
     private String youtubeUrl;
 
     @Column(name = "state")

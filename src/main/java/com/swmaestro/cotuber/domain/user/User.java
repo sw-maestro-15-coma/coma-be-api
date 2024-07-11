@@ -3,12 +3,14 @@ package com.swmaestro.cotuber.domain.user;
 import com.swmaestro.cotuber.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
 @Entity
+@Table(name = "account ")
 public class User extends BaseEntity {
     @Column(name = "email", length = 30, nullable = false)
     private String email;
