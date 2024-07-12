@@ -1,6 +1,7 @@
 package com.swmaestro.cotuber.config;
 
 import com.swmaestro.cotuber.config.oauth.CustomOAuth2UserService;
+import com.swmaestro.cotuber.config.oauth.OAuth2FailureHandler;
 import com.swmaestro.cotuber.config.oauth.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SpringSecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final OAuth2FailureHandler oAuth2FailureHandler;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -44,6 +46,7 @@ public class SpringSecurityConfig {
                 .oauth2Login(oauth -> oauth
                         .userInfoEndpoint(c -> c.userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
+                        .failureHandler(oAuth2FailureHandler)
                 )
                 .build();
     }
