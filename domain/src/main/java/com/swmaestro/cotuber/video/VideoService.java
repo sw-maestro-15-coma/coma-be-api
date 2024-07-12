@@ -22,8 +22,8 @@ public class VideoService {
         this.youtubeVideoDownloader = youtubeVideoDownloader;
     }
 
-    public VideoCreateResponseDto requestVideoDownload(final VideoCreateRequestDto request) {
-        final Video video = videoRepository.save(Video.initialVideo(request));
+    public VideoCreateResponseDto requestVideoDownload(final long userId, final VideoCreateRequestDto request) {
+        final Video video = videoRepository.save(Video.initialVideo(userId, request));
 
         queue.push(VideoDownloadTask.builder()
                 .id(video.getId())

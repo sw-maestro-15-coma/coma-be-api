@@ -29,8 +29,9 @@ public class Video {
         this.state = state;
     }
 
-    public static Video initialVideo(final VideoCreateRequestDto request) {
+    public static Video initialVideo(final long userId, final VideoCreateRequestDto request) {
         return Video.builder()
+                .userId(userId)
                 .s3Path("")
                 .state(YOUTUBE_DOWNLOADING)
                 .youtubeUrl(request.url())
