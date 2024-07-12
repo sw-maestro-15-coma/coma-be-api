@@ -2,7 +2,17 @@ spring:
   application:
     name: cotuber-api
   profiles:
-    include: oauth
+    active: local
+  config:
+    import:
+      #      - logging.yml
+      - db.yml
+      #      - jwt.yml
+      - oauth.yml
 
+server:
+  port: 8080
+
+# TODO: JWT 모듈로 jwt.yml로 이동
 jwt:
   key: c3ByaW5nLWJvb3Qtc2VjdXJpdHktand0LXR1dG9yaWFsLWppd29vbi1zcHJpbmctYm9vdC1zZWN1cml0eS1qd3QtdHV0b3JpYWwK
