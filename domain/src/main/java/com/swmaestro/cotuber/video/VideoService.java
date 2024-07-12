@@ -22,7 +22,7 @@ public class VideoService {
     }
 
     public VideoCreateResponseDto requestVideoDownload(final VideoCreateRequestDto request) {
-        final long id = videoRepository.insert(createInitVideo(request));
+        final long id = videoRepository.save(createInitVideo(request));
 
         queue.push(VideoDownloadTask.builder()
                 .id(id)
@@ -41,7 +41,7 @@ public class VideoService {
         video.changeS3Path(s3Url);
         video.changeState(AI_PROCESSING);
 
-        videoRepository.update(video);
+        videoRepository.save(video);
     }
 
     private Video createInitVideo(final VideoCreateRequestDto request) {

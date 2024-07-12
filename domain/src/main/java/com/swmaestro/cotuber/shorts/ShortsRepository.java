@@ -3,7 +3,7 @@ package com.swmaestro.cotuber.shorts;
 import java.util.List;
 
 public interface ShortsRepository {
-    void insert(Shorts shorts);
+    void save(Shorts shorts);
 
     List<Shorts> findAll();
 

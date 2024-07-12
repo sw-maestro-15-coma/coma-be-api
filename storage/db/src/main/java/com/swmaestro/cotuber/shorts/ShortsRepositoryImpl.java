@@ -13,7 +13,7 @@ public class ShortsRepositoryImpl implements ShortsRepository {
     }
 
     @Override
-    public void insert(final Shorts shorts) {
+    public void save(final Shorts shorts) {
         // shorts entity에 대한 db 구조 설명 필요 -> shorts 자체에 대한 db와 shorts 처리를 위한 엔티티가 따로 필요해보임
     }
 

@@ -19,6 +19,6 @@ public class ShortsService {
         final Shorts shorts = Shorts.builder()
                 .link(link)
                 .build();
-        shortsRepository.insert(shorts);
+        shortsRepository.save(shorts);
     }
 }

@@ -13,7 +13,7 @@ public class VideoRepositoryImpl implements VideoRepository {
     }
 
     @Override
-    public long insert(final Video video) {
+    public long save(final Video video) {
         final VideoEntity videoEntity = VideoEntity.builder()
                 .s3Path(video.getS3Path())
                 .youtubeUrl(video.getYoutubeUrl())
@@ -23,18 +23,6 @@ public class VideoRepositoryImpl implements VideoRepository {
         final VideoEntity savedEntity = repository.save(videoEntity);
 
         return savedEntity.getId();
-    }
-
-    @Override
-    public void update(final Video video) {
-        final VideoEntity videoEntity = repository.findById(video.getId())
-                .orElseThrow(() -> new NoSuchElementException("해당 id의 엔티티가 없습니다."));
-
-        videoEntity.setS3Path(video.getS3Path());
-        videoEntity.setYoutubeUrl(video.getYoutubeUrl());
-        videoEntity.setState(video.getState());
-
-        repository.save(videoEntity);
     }
 
     @Override
