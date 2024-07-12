@@ -1,9 +1,12 @@
 package com.swmaestro.cotuber.shorts;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
+@Transactional
 @Repository
 public class ShortsRepositoryImpl implements ShortsRepository {
     private final ShortsEntityRepository repository;
@@ -13,17 +16,28 @@ public class ShortsRepositoryImpl implements ShortsRepository {
     }
 
     @Override
-    public void save(final Shorts shorts) {
-        // shorts entity에 대한 db 구조 설명 필요 -> shorts 자체에 대한 db와 shorts 처리를 위한 엔티티가 따로 필요해보임
+    public Shorts save(final Shorts shorts) {
+        final ShortsEntity savedShorts = repository.save(ShortsEntity.from(shorts));
+        return savedShorts.toDomain();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Shorts> findAll() {
-        return List.of();
+        final List<ShortsEntity> entities = repository.findAll();
+        final List<Shorts> results = new ArrayList<>();
+        entities.forEach(e -> results.add(e.toDomain()));
+
+        return results;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Shorts> findAllByVideoId(final long videoId) {
-        return List.of();
+        final List<ShortsEntity> entities = repository.findAllByVideoId(videoId);
+        final List<Shorts> results = new ArrayList<>();
+        entities.forEach(e -> results.add(e.toDomain()));
+
+        return results;
     }
 }

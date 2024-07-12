@@ -15,22 +15,23 @@ public class VideoService {
     private final VideoDownloadQueue queue;
     private final YoutubeVideoDownloader youtubeVideoDownloader;
 
-    public VideoService(VideoRepository videoRepository, VideoDownloadQueue queue, YoutubeVideoDownloader youtubeVideoDownloader) {
+    public VideoService(VideoRepository videoRepository, VideoDownloadQueue queue,
+                        YoutubeVideoDownloader youtubeVideoDownloader) {
         this.videoRepository = videoRepository;
         this.queue = queue;
         this.youtubeVideoDownloader = youtubeVideoDownloader;
     }
 
     public VideoCreateResponseDto requestVideoDownload(final VideoCreateRequestDto request) {
-        final long id = videoRepository.save(createInitVideo(request));
+        final Video video = videoRepository.save(Video.initialVideo(request));
 
         queue.push(VideoDownloadTask.builder()
-                .id(id)
+                .id(video.getId())
                 .youtubeUrl(request.url())
                 .build());
 
         return VideoCreateResponseDto.builder()
-                .id(id)
+                .id(video.getId())
                 .build();
     }
 
@@ -42,14 +43,5 @@ public class VideoService {
         video.changeState(AI_PROCESSING);
 
         videoRepository.save(video);
-    }
-
-    private Video createInitVideo(final VideoCreateRequestDto request) {
-        return Video.builder()
-                .id(0L)
-                .s3Path("")
-                .state(YOUTUBE_DOWNLOADING)
-                .youtubeUrl(request.url())
-                .build();
     }
 }

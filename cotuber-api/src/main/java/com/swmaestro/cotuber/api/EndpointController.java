@@ -47,32 +47,57 @@ public class EndpointController {
     }
 
     private List<VideoListResponseDto> mockVideoList() {
-        final List<VideoListResponseDto> results = new ArrayList<>();
+        final String mockLink = "https://www.youtube.com/watch?v=qgcoZpZvpfM";
+        final String mockTitle = "조미료를 잔뜩넣은 스테이크를 구워 보았습니다";
 
-        for (long id = 0; id <= 3; id++) {
-            results.add(
-                    VideoListResponseDto.builder()
-                            .id(id)
-                            .link("https://www.youtube.com/watch?v=qgcoZpZvpfM")
-                            .title("조미료를 잔뜩넣은 스테이크를 구워 보았습니다")
-                            .state(ProgressState.COMPLETE)
-                            .build()
-            );
-        }
-        return results;
+        return List.of(
+                VideoListResponseDto.builder()
+                        .id(0)
+                        .link(mockLink)
+                        .title(mockTitle)
+                        .state(ProgressState.COMPLETE)
+                        .build(),
+                VideoListResponseDto.builder()
+                        .id(1)
+                        .link(mockLink)
+                        .title(mockTitle)
+                        .state(ProgressState.COMPLETE)
+                        .build(),
+                VideoListResponseDto.builder()
+                        .id(2)
+                        .link(mockLink)
+                        .title(mockTitle)
+                        .state(ProgressState.COMPLETE)
+                        .build(),
+                VideoListResponseDto.builder()
+                        .id(3)
+                        .link(mockLink)
+                        .title(mockTitle)
+                        .state(ProgressState.COMPLETE)
+                        .build()
+        );
     }
 
     private List<ShortsListResponseDto> mockShortsList() {
-        final List<ShortsListResponseDto> results = new ArrayList<>();
+        final String mockLink = "http://www.test.com/shorts";
 
-        for (long id = 0; id <= 3; id++) {
-            results.add(
-                    ShortsListResponseDto.builder()
-                            .id(id)
-                            .link("http://www.test.com/shorts" + id)
-                            .build()
-            );
-        }
-        return results;
+        return List.of(
+                ShortsListResponseDto.builder()
+                        .id(0)
+                        .link(mockLink + 0)
+                        .build(),
+                ShortsListResponseDto.builder()
+                        .id(1)
+                        .link(mockLink + 1)
+                        .build(),
+                ShortsListResponseDto.builder()
+                        .id(2)
+                        .link(mockLink + 2)
+                        .build(),
+                ShortsListResponseDto.builder()
+                        .id(3)
+                        .link(mockLink + 3)
+                        .build()
+        );
     }
 }
