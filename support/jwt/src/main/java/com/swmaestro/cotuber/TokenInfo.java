@@ -1,4 +1,4 @@
-package com.swmaestro.cotuber.infra.jwt;
+package com.swmaestro.cotuber;
 
 import lombok.Builder;
 

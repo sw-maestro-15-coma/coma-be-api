@@ -31,6 +31,13 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "java-library")
 
+    dependencyManagement {
+        val springCloudDependenciesVersion: String by project
+        imports {
+            mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudDependenciesVersion")}")
+        }
+    }
+
     dependencies {
         compileOnly("org.projectlombok:lombok")
         implementation("org.springframework.boot:spring-boot-starter-validation")

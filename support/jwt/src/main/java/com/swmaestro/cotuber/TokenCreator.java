@@ -1,4 +1,4 @@
-package com.swmaestro.cotuber.infra.jwt;
+package com.swmaestro.cotuber;
 
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;

@@ -1,7 +1,7 @@
 package com.swmaestro.cotuber.config.oauth;
 
-import com.swmaestro.cotuber.infra.jwt.TokenCreator;
-import com.swmaestro.cotuber.infra.jwt.TokenInfo;
+import com.swmaestro.cotuber.TokenCreator;
+import com.swmaestro.cotuber.TokenInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
