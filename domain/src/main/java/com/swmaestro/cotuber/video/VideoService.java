@@ -1,6 +1,8 @@
 package com.swmaestro.cotuber.video;
 
+import com.swmaestro.cotuber.batch.AIProcessQueue;
 import com.swmaestro.cotuber.batch.VideoDownloadQueue;
+import com.swmaestro.cotuber.batch.dto.AIProcessTask;
 import com.swmaestro.cotuber.batch.dto.VideoDownloadTask;
 import com.swmaestro.cotuber.video.dto.VideoCreateRequestDto;
 import com.swmaestro.cotuber.video.dto.VideoCreateResponseDto;
@@ -12,20 +14,22 @@ import static com.swmaestro.cotuber.video.ProgressState.YOUTUBE_DOWNLOADING;
 @Service
 public class VideoService {
     private final VideoRepository videoRepository;
-    private final VideoDownloadQueue queue;
+    private final VideoDownloadQueue videoDownloadQueue;
+    private final AIProcessQueue aiProcessQueue;
     private final YoutubeVideoDownloader youtubeVideoDownloader;
 
-    public VideoService(VideoRepository videoRepository, VideoDownloadQueue queue,
-                        YoutubeVideoDownloader youtubeVideoDownloader) {
+    public VideoService(VideoRepository videoRepository, VideoDownloadQueue videoDownloadQueue,
+                        AIProcessQueue aiProcessQueue, YoutubeVideoDownloader youtubeVideoDownloader) {
         this.videoRepository = videoRepository;
-        this.queue = queue;
+        this.videoDownloadQueue = videoDownloadQueue;
+        this.aiProcessQueue = aiProcessQueue;
         this.youtubeVideoDownloader = youtubeVideoDownloader;
     }
 
     public VideoCreateResponseDto requestVideoDownload(final long userId, final VideoCreateRequestDto request) {
         final Video video = videoRepository.save(Video.initialVideo(userId, request));
 
-        queue.push(VideoDownloadTask.builder()
+        videoDownloadQueue.push(VideoDownloadTask.builder()
                 .id(video.getId())
                 .youtubeUrl(request.url())
                 .build());
@@ -43,5 +47,6 @@ public class VideoService {
         video.changeState(AI_PROCESSING);
 
         videoRepository.save(video);
+        aiProcessQueue.push(AIProcessTask.builder().build());
     }
 }
