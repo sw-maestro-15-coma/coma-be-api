@@ -1,25 +1,34 @@
 package com.swmaestro.cotuber.shorts;
 
 import com.swmaestro.cotuber.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Getter
 @NoArgsConstructor
 @Entity
+@Table(name = "shorts_edit_point")
 public class ShortsEditPoint extends BaseEntity {
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shorts_id", nullable = false)
-    private ShortsEntity shortsEntity;
+    @Column(name = "shorts_id")
+    private long shortsId;
+    @Column(name = "video_id")
+    private long videoId;
+    @Column(name = "start")
+    private int start;
+    @Column(name = "end")
+    private int end;
 
-    @Column(name = "start_time", nullable = false)
-    private int startTime;
-
-    @Column(name = "end_time", nullable = false)
-    private int endTime;
+    @Builder
+    public ShortsEditPoint(long id, LocalDateTime createdAt, LocalDateTime updatedAt,
+                           long shortsId, long videoId, int start, int end) {
+        super(id, createdAt, updatedAt);
+        this.shortsId = shortsId;
+        this.videoId = videoId;
+        this.start = start;
+        this.end = end;
+    }
 }

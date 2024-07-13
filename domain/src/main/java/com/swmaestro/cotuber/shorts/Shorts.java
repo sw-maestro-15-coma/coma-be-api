@@ -1,5 +1,6 @@
 package com.swmaestro.cotuber.shorts;
 
+import com.swmaestro.cotuber.video.ProgressState;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -13,17 +14,21 @@ public class Shorts {
     private LocalDateTime updatedAt;
     private long userId;
     private long videoId;
-    private String s3Path;
+    private String link;
     private String topTitle;
+    private ProgressState progressState;
 
     @Builder
-    public Shorts(long id, LocalDateTime createdAt, LocalDateTime updatedAt, long userId, long videoId, String s3Path, String topTitle) {
+    public Shorts(long id, LocalDateTime createdAt, LocalDateTime updatedAt,
+                  long userId, long videoId,
+                  String link, String topTitle, ProgressState progressState) {
         this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.userId = userId;
         this.videoId = videoId;
-        this.s3Path = s3Path;
+        this.link = link;
         this.topTitle = topTitle;
+        this.progressState = progressState;
     }
 }

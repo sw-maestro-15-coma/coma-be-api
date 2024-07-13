@@ -11,38 +11,31 @@ import static com.swmaestro.cotuber.video.ProgressState.YOUTUBE_DOWNLOADING;
 @Getter
 public class Video {
     private long id;
-    private long userId;
+    private String s3Url;
+    private String youtubeUrl;
+    private int length;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private String youtubeUrl;
-    private String s3Path;
-    private ProgressState state;
 
     @Builder
-    public Video(long id, long userId, LocalDateTime createdAt, LocalDateTime updatedAt, String youtubeUrl, String s3Path, ProgressState state) {
+    public Video(long id, String s3Url, String youtubeUrl, int length,
+                 LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
-        this.userId = userId;
+        this.s3Url = s3Url;
+        this.youtubeUrl = youtubeUrl;
+        this.length = length;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.youtubeUrl = youtubeUrl;
-        this.s3Path = s3Path;
-        this.state = state;
     }
 
-    public static Video initialVideo(final long userId, final VideoCreateRequestDto request) {
+    public static Video initialVideo(final VideoCreateRequestDto request) {
         return Video.builder()
-                .userId(userId)
-                .s3Path("")
-                .state(YOUTUBE_DOWNLOADING)
+                .s3Url("")
                 .youtubeUrl(request.url())
                 .build();
     }
 
-    public void changeS3Path(final String s3Path) {
-        this.s3Path = s3Path;
-    }
-
-    public void changeState(final ProgressState to) {
-        state = to;
+    public void changeS3Url(final String s3Url) {
+        this.s3Url = s3Url;
     }
 }
