@@ -6,8 +6,6 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-import static com.swmaestro.cotuber.video.ProgressState.YOUTUBE_DOWNLOADING;
-
 @Getter
 public class Video {
     private long id;

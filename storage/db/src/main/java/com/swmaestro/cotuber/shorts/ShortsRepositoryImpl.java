@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Transactional
 @Repository
@@ -19,6 +20,14 @@ public class ShortsRepositoryImpl implements ShortsRepository {
     public Shorts save(final Shorts shorts) {
         final ShortsEntity savedShorts = repository.save(ShortsEntity.from(shorts));
         return savedShorts.toDomain();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Shorts findById(long shortsId) {
+        final ShortsEntity shorts = repository.findById(shortsId)
+                .orElseThrow(() -> new NoSuchElementException("해당 id의 shorts가 존재하지 않습니다"));
+        return shorts.toDomain();
     }
 
     @Transactional(readOnly = true)

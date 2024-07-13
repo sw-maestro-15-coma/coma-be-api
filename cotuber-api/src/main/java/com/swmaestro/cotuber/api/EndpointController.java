@@ -2,21 +2,19 @@ package com.swmaestro.cotuber.api;
 
 import com.swmaestro.cotuber.shorts.ShortsService;
 import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
-import com.swmaestro.cotuber.video.ProgressState;
+import com.swmaestro.cotuber.shorts.ProgressState;
 import com.swmaestro.cotuber.video.VideoService;
 import com.swmaestro.cotuber.video.dto.VideoCreateRequestDto;
 import com.swmaestro.cotuber.video.dto.VideoCreateResponseDto;
 import com.swmaestro.cotuber.video.dto.VideoListResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 

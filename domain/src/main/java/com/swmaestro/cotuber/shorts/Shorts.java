@@ -1,11 +1,12 @@
 package com.swmaestro.cotuber.shorts;
 
-import com.swmaestro.cotuber.video.ProgressState;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import static com.swmaestro.cotuber.shorts.ProgressState.ERROR;
+import static com.swmaestro.cotuber.shorts.ProgressState.YOUTUBE_DOWNLOADING;
 
 @Getter
 public class Shorts {
@@ -30,5 +31,21 @@ public class Shorts {
         this.link = link;
         this.topTitle = topTitle;
         this.progressState = progressState;
+    }
+
+    public static Shorts initialShorts(final long userId, final long videoId) {
+        return Shorts.builder()
+                .userId(userId)
+                .videoId(videoId)
+                .progressState(YOUTUBE_DOWNLOADING)
+                .build();
+    }
+
+    public void changeProgressState(final ProgressState state) {
+        progressState = state;
+    }
+
+    public void errorState() {
+        progressState = ERROR;
     }
 }

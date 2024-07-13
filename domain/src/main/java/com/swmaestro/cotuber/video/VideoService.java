@@ -4,35 +4,37 @@ import com.swmaestro.cotuber.batch.AIProcessQueue;
 import com.swmaestro.cotuber.batch.VideoDownloadQueue;
 import com.swmaestro.cotuber.batch.dto.AIProcessTask;
 import com.swmaestro.cotuber.batch.dto.VideoDownloadTask;
+import com.swmaestro.cotuber.shorts.Shorts;
+import com.swmaestro.cotuber.shorts.ShortsRepository;
 import com.swmaestro.cotuber.video.dto.VideoCreateRequestDto;
 import com.swmaestro.cotuber.video.dto.VideoCreateResponseDto;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import static com.swmaestro.cotuber.video.ProgressState.AI_PROCESSING;
-import static com.swmaestro.cotuber.video.ProgressState.YOUTUBE_DOWNLOADING;
+import static com.swmaestro.cotuber.shorts.ProgressState.*;
 
+@Slf4j
+@RequiredArgsConstructor
 @Service
 public class VideoService {
     private final VideoRepository videoRepository;
+    private final ShortsRepository shortsRepository;
     private final VideoDownloadQueue videoDownloadQueue;
     private final AIProcessQueue aiProcessQueue;
     private final YoutubeVideoDownloader youtubeVideoDownloader;
 
-    public VideoService(VideoRepository videoRepository, VideoDownloadQueue videoDownloadQueue,
-                        AIProcessQueue aiProcessQueue, YoutubeVideoDownloader youtubeVideoDownloader) {
-        this.videoRepository = videoRepository;
-        this.videoDownloadQueue = videoDownloadQueue;
-        this.aiProcessQueue = aiProcessQueue;
-        this.youtubeVideoDownloader = youtubeVideoDownloader;
-    }
-
     public VideoCreateResponseDto requestVideoDownload(final long userId, final VideoCreateRequestDto request) {
-        final Video video = videoRepository.save(Video.initialVideo(userId, request));
+        final Video video = videoRepository.save(Video.initialVideo(request));
+        final Shorts shorts = shortsRepository.save(Shorts.initialShorts(userId, video.getId()));
 
-        videoDownloadQueue.push(VideoDownloadTask.builder()
-                .id(video.getId())
-                .youtubeUrl(request.url())
-                .build());
+        videoDownloadQueue.push(
+                VideoDownloadTask.builder()
+                        .videoId(video.getId())
+                        .shortsId(shorts.getId())
+                        .youtubeUrl(request.url())
+                        .build()
+        );
 
         return VideoCreateResponseDto.builder()
                 .id(video.getId())
@@ -40,13 +42,33 @@ public class VideoService {
     }
 
     public void downloadYoutube(final VideoDownloadTask task) {
-        final String s3Url = youtubeVideoDownloader.download(task.youtubeUrl());
+        String s3Url = "";
 
-        final Video video = videoRepository.findById(task.id());
-        video.changeS3Path(s3Url);
-        video.changeState(AI_PROCESSING);
+        try {
+            s3Url = youtubeVideoDownloader.download(task.youtubeUrl());
+        } catch (Exception e) {
+            log.error("youtube 원본 영상 다운로드에 실패했습니다");
+            log.error("shorts id : {}", task.shortsId());
+
+            final Shorts shorts = shortsRepository.findById(task.shortsId());
+            shorts.errorState();
+            shortsRepository.save(shorts);
+        }
+
+        final Video video = videoRepository.findById(task.videoId());
+        video.changeS3Url(s3Url);
+
+        final Shorts shorts = shortsRepository.findById(task.shortsId());
+        shorts.changeProgressState(AI_PROCESSING);
 
         videoRepository.save(video);
-        aiProcessQueue.push(AIProcessTask.builder().build());
+        shortsRepository.save(shorts);
+
+        aiProcessQueue.push(
+                AIProcessTask.builder()
+                        .shortsId(task.shortsId())
+                        .youtubeUrl(task.youtubeUrl())
+                        .build()
+        );
     }
 }

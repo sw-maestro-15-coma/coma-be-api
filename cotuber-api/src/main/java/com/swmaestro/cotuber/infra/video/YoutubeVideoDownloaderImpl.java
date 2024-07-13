@@ -7,9 +7,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.util.Objects;
+
 @Component
 public class YoutubeVideoDownloaderImpl implements YoutubeVideoDownloader {
     private static final String URI = "http://video.cotuber.com/video/v1/download-youtube";
+    private static final String ERROR_MESSAGE = "youtube 다운로드 중 오류가 발생했습니다";
 
     @Override
     public String download(String youtubeUrl) {
@@ -24,12 +27,15 @@ public class YoutubeVideoDownloaderImpl implements YoutubeVideoDownloader {
                 .toEntity(ResponseBody.class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new VideoDownloadFailException("youtube 다운로드 중 오류가 발생했습니다");
+            throw new VideoDownloadFailException(ERROR_MESSAGE);
         }
 
         final ResponseBody body = response.getBody();
 
-        assert body != null;
+        if (body == null) {
+            throw new VideoDownloadFailException(ERROR_MESSAGE);
+        }
+
         return body.s3Url;
     }
 

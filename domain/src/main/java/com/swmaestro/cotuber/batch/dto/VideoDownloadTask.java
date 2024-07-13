@@ -3,5 +3,5 @@ package com.swmaestro.cotuber.batch.dto;
 import lombok.Builder;
 
 @Builder
-public record VideoDownloadTask(long id, String youtubeUrl) {
+public record VideoDownloadTask(long videoId, long shortsId, String youtubeUrl) {
 }

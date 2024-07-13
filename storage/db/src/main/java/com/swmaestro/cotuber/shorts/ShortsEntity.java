@@ -1,10 +1,6 @@
 package com.swmaestro.cotuber.shorts;
 
 import com.swmaestro.cotuber.common.BaseEntity;
-import com.swmaestro.cotuber.user.UserEntity;
-import com.swmaestro.cotuber.video.ProgressState;
-import com.swmaestro.cotuber.video.Video;
-import com.swmaestro.cotuber.video.VideoEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
