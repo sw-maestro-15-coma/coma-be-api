@@ -8,6 +8,7 @@ import com.swmaestro.cotuber.shorts.Shorts;
 import com.swmaestro.cotuber.shorts.ShortsRepository;
 import com.swmaestro.cotuber.video.dto.VideoCreateRequestDto;
 import com.swmaestro.cotuber.video.dto.VideoCreateResponseDto;
+import com.swmaestro.cotuber.video.dto.VideoDownloadResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -42,10 +43,10 @@ public class VideoService {
     }
 
     public void downloadYoutube(final VideoDownloadTask task) {
-        String s3Url = "";
+        VideoDownloadResponse response = null;
 
         try {
-            s3Url = youtubeVideoDownloader.download(task.youtubeUrl());
+            response = youtubeVideoDownloader.download(task.youtubeUrl());
         } catch (Exception e) {
             log.error("youtube 원본 영상 다운로드에 실패했습니다");
             log.error("shorts id : {}", task.shortsId());
@@ -56,7 +57,8 @@ public class VideoService {
         }
 
         final Video video = videoRepository.findById(task.videoId());
-        video.changeS3Url(s3Url);
+        video.changeS3Url(response.s3Url());
+        video.changeLength(response.length());
 
         final Shorts shorts = shortsRepository.findById(task.shortsId());
         shorts.changeProgressState(AI_PROCESSING);

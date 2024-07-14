@@ -36,4 +36,8 @@ public class Video {
     public void changeS3Url(final String s3Url) {
         this.s3Url = s3Url;
     }
+
+    public void changeLength(final int length) {
+        this.length = length;
+    }
 }

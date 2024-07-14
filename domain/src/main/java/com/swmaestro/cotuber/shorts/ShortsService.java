@@ -15,10 +15,10 @@ public class ShortsService {
     
     public void makeShorts(final ShortsProcessTask task) {
         final String topTitle = task.title();
-        final String s3Path = shortsProcessor.execute(task);
+        final String link = shortsProcessor.execute(task);
 
         final Shorts shorts = Shorts.builder()
-                .s3Path(s3Path)
+                .link(link)
                 .topTitle(topTitle)
                 .build();
         shortsRepository.save(shorts);

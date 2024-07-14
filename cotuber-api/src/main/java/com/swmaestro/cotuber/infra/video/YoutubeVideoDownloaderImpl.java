@@ -2,6 +2,7 @@ package com.swmaestro.cotuber.infra.video;
 
 import com.swmaestro.cotuber.exception.VideoDownloadFailException;
 import com.swmaestro.cotuber.video.YoutubeVideoDownloader;
+import com.swmaestro.cotuber.video.dto.VideoDownloadResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,7 @@ public class YoutubeVideoDownloaderImpl implements YoutubeVideoDownloader {
     private static final String ERROR_MESSAGE = "youtube 다운로드 중 오류가 발생했습니다";
 
     @Override
-    public String download(String youtubeUrl) {
+    public VideoDownloadResponse download(String youtubeUrl) {
         final RestClient restClient = RestClient.create();
 
         final ResponseEntity<ResponseBody> response = restClient.post()
@@ -36,7 +37,11 @@ public class YoutubeVideoDownloaderImpl implements YoutubeVideoDownloader {
             throw new VideoDownloadFailException(ERROR_MESSAGE);
         }
 
-        return body.s3Url;
+        return VideoDownloadResponse.builder()
+                .s3Url(body.s3Url)
+                .length(body.length)
+                .originalTitle(body.originalTitle)
+                .build();
     }
 
     static class RequestBody {
@@ -49,12 +54,16 @@ public class YoutubeVideoDownloaderImpl implements YoutubeVideoDownloader {
 
     static class ResponseBody {
         String s3Url;
+        int length;
+        String originalTitle;
 
         ResponseBody() {
         }
 
-        ResponseBody(String s3Url) {
+        ResponseBody(String s3Url, int length, String originalTitle) {
             this.s3Url = s3Url;
+            this.length = length;
+            this.originalTitle = originalTitle;
         }
     }
 }

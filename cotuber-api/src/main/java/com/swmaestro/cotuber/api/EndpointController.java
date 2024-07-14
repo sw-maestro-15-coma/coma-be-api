@@ -31,7 +31,7 @@ public class EndpointController {
     }
 
     @Operation(summary = "대시보드의 동영상 목록 조회")
-    @GetMapping(value = "/video")
+    @GetMapping(value = "/dashboard")
     public List<VideoListResponseDto> getMockVideoList() {
         return mockVideoList();
     }
@@ -57,56 +57,61 @@ public class EndpointController {
         return List.of(
                 VideoListResponseDto.builder()
                         .id(0)
-                        .link(mockLink)
+                        .youtubeUrl(mockLink)
                         .title(mockTitle)
-                        .state(ProgressState.COMPLETE)
+                        .progress(ProgressState.COMPLETE)
                         .build(),
                 VideoListResponseDto.builder()
                         .id(1)
-                        .link(mockLink)
+                        .youtubeUrl(mockLink)
                         .title(mockTitle)
-                        .state(ProgressState.COMPLETE)
+                        .progress(ProgressState.COMPLETE)
                         .build(),
                 VideoListResponseDto.builder()
                         .id(2)
-                        .link(mockLink)
+                        .youtubeUrl(mockLink)
                         .title(mockTitle)
-                        .state(ProgressState.COMPLETE)
+                        .progress(ProgressState.COMPLETE)
                         .build(),
                 VideoListResponseDto.builder()
                         .id(3)
-                        .link(mockLink)
+                        .youtubeUrl(mockLink)
                         .title(mockTitle)
-                        .state(ProgressState.COMPLETE)
+                        .progress(ProgressState.COMPLETE)
                         .build()
         );
     }
 
     private List<ShortsListResponseDto> mockShortsList() {
         final String mockLink = "http://www.test.com/shorts";
+        final String mockThumbnail = "http://thumbnail.test.com";
 
         return List.of(
                 ShortsListResponseDto.builder()
                         .id(0)
-                        .link(mockLink + 0)
+                        .s3Url(mockLink + 0)
+                        .thumbnailUrl(mockThumbnail)
                         .build(),
                 ShortsListResponseDto.builder()
                         .id(1)
-                        .link(mockLink + 1)
+                        .s3Url(mockLink + 1)
+                        .thumbnailUrl(mockThumbnail)
                         .build(),
                 ShortsListResponseDto.builder()
                         .id(2)
-                        .link(mockLink + 2)
+                        .s3Url(mockLink + 2)
+                        .thumbnailUrl(mockThumbnail)
                         .build(),
                 ShortsListResponseDto.builder()
                         .id(3)
-                        .link(mockLink + 3)
+                        .s3Url(mockLink + 3)
+                        .thumbnailUrl(mockThumbnail)
                         .build()
         );
     }
 
     @Operation(summary = "대시보드의 동영상 목록 조회")
-    @GetMapping(value = "/video", headers = "X-API-VERSION=2")
+    @GetMapping(value = "/dashboard", headers = "X-API-VERSION=2")
     public List<VideoListResponseDto> getVideoList() {
         return List.of();
     }
