@@ -18,11 +18,12 @@ public class Shorts {
     private String link;
     private String topTitle;
     private ProgressState progressState;
+    private String thumbnailUrl;
 
     @Builder
     public Shorts(long id, LocalDateTime createdAt, LocalDateTime updatedAt,
-                  long userId, long videoId,
-                  String link, String topTitle, ProgressState progressState) {
+                  long userId, long videoId, String link,
+                  String topTitle, ProgressState progressState, String thumbnailUrl) {
         this.id = id;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -31,6 +32,7 @@ public class Shorts {
         this.link = link;
         this.topTitle = topTitle;
         this.progressState = progressState;
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     public static Shorts initialShorts(final long userId, final long videoId) {
@@ -45,7 +47,11 @@ public class Shorts {
         progressState = state;
     }
 
-    public void errorState() {
+    public void changeStateError() {
         progressState = ERROR;
+    }
+
+    public void changeLink(final String link) {
+        this.link = link;
     }
 }

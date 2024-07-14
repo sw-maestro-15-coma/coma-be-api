@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "video")
 public class VideoEntity extends BaseEntity {
+    @Column(name = "title")
+    private String title;
     @Column(name = "s3_url")
     private String s3Url;
     @Column(name = "youtube_url")
@@ -20,9 +22,9 @@ public class VideoEntity extends BaseEntity {
     private int length;
 
     @Builder
-    public VideoEntity(long id, LocalDateTime createdAt, LocalDateTime updatedAt,
-                       String s3Url, String youtubeUrl, int length) {
+    public VideoEntity(long id, LocalDateTime createdAt, LocalDateTime updatedAt, String title, String s3Url, String youtubeUrl, int length) {
         super(id, createdAt, updatedAt);
+        this.title = title;
         this.s3Url = s3Url;
         this.youtubeUrl = youtubeUrl;
         this.length = length;
@@ -31,6 +33,7 @@ public class VideoEntity extends BaseEntity {
     public Video toDomain() {
         return Video.builder()
                 .id(getId())
+                .title(title)
                 .s3Url(s3Url)
                 .youtubeUrl(youtubeUrl)
                 .length(length)
@@ -42,6 +45,7 @@ public class VideoEntity extends BaseEntity {
     public static VideoEntity from(Video video) {
         return VideoEntity.builder()
                 .id(video.getId())
+                .title(video.getTitle())
                 .s3Url(video.getS3Url())
                 .youtubeUrl(video.getYoutubeUrl())
                 .length(video.getLength())

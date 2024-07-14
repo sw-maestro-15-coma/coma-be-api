@@ -3,6 +3,8 @@ package com.swmaestro.cotuber.shorts;
 import com.swmaestro.cotuber.batch.dto.ShortsProcessTask;
 import org.springframework.stereotype.Service;
 
+import static com.swmaestro.cotuber.shorts.ProgressState.COMPLETE;
+
 @Service
 public class ShortsService {
     private final ShortsProcessor shortsProcessor;
@@ -14,13 +16,13 @@ public class ShortsService {
     }
     
     public void makeShorts(final ShortsProcessTask task) {
-        final String topTitle = task.title();
         final String link = shortsProcessor.execute(task);
 
-        final Shorts shorts = Shorts.builder()
-                .link(link)
-                .topTitle(topTitle)
-                .build();
+        final Shorts shorts = shortsRepository.findById(task.shortsId())
+                .orElseThrow();
+        shorts.changeProgressState(COMPLETE);
+        shorts.changeLink(link);
+
         shortsRepository.save(shorts);
     }
 }

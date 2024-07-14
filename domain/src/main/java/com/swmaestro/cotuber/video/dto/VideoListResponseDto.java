@@ -5,5 +5,6 @@ import com.swmaestro.cotuber.shorts.ProgressState;
 import lombok.Builder;
 
 @Builder
-public record VideoListResponseDto(long id, String title, @JsonProperty("youtube_url") String youtubeUrl, ProgressState progress) {
+public record VideoListResponseDto(long id, String title,
+                                   @JsonProperty("youtube_url") String youtubeUrl, ProgressState progress) {
 }

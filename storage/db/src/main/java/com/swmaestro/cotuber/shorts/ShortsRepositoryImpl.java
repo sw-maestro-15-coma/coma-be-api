@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Transactional
 @Repository
@@ -18,35 +19,26 @@ public class ShortsRepositoryImpl implements ShortsRepository {
 
     @Override
     public Shorts save(final Shorts shorts) {
-        final ShortsEntity savedShorts = repository.save(ShortsEntity.from(shorts));
-        return savedShorts.toDomain();
+        return repository.save(ShortsEntity.from(shorts)).toDomain();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Shorts findById(long shortsId) {
-        final ShortsEntity shorts = repository.findById(shortsId)
-                .orElseThrow(() -> new NoSuchElementException("해당 id의 shorts가 존재하지 않습니다"));
-        return shorts.toDomain();
+    public Optional<Shorts> findById(long shortsId) {
+        return repository.findById(shortsId).map(ShortsEntity::toDomain);
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<Shorts> findAll() {
-        final List<ShortsEntity> entities = repository.findAll();
-        final List<Shorts> results = new ArrayList<>();
-        entities.forEach(e -> results.add(e.toDomain()));
-
-        return results;
+        return repository.findAll()
+                .stream().map(ShortsEntity::toDomain).toList();
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<Shorts> findAllByVideoId(final long videoId) {
-        final List<ShortsEntity> entities = repository.findAllByVideoId(videoId);
-        final List<Shorts> results = new ArrayList<>();
-        entities.forEach(e -> results.add(e.toDomain()));
-
-        return results;
+        return repository.findAllByVideoId(videoId)
+                .stream().map(ShortsEntity::toDomain).toList();
     }
 }

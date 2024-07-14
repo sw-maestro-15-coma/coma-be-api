@@ -29,16 +29,20 @@ public class ShortsEntity extends BaseEntity {
     @Column(name = "top_title", length = 100)
     private String topTitle;
 
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
+
     @Builder
     public ShortsEntity(long id, LocalDateTime createdAt, LocalDateTime updatedAt,
                         long userId, long videoId, ProgressState progressState,
-                        String link, String topTitle) {
+                        String link, String topTitle, String thumbnailUrl) {
         super(id, createdAt, updatedAt);
         this.userId = userId;
         this.videoId = videoId;
         this.progressState = progressState;
         this.link = link;
         this.topTitle = topTitle;
+        this.thumbnailUrl = thumbnailUrl;
     }
 
     public Shorts toDomain() {
@@ -49,6 +53,7 @@ public class ShortsEntity extends BaseEntity {
                 .progressState(progressState)
                 .link(link)
                 .topTitle(topTitle)
+                .thumbnailUrl(thumbnailUrl)
                 .createdAt(getCreatedAt())
                 .updatedAt(getUpdatedAt())
                 .build();
@@ -62,6 +67,7 @@ public class ShortsEntity extends BaseEntity {
                 .progressState(shorts.getProgressState())
                 .link(shorts.getLink())
                 .topTitle(shorts.getTopTitle())
+                .thumbnailUrl(shorts.getThumbnailUrl())
                 .createdAt(shorts.getCreatedAt())
                 .updatedAt(shorts.getUpdatedAt())
                 .build();

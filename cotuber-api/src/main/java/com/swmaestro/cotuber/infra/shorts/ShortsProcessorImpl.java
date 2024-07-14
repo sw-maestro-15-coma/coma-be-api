@@ -16,12 +16,13 @@ public class ShortsProcessorImpl implements ShortsProcessor {
     @Override
     public String execute(final ShortsProcessTask task) {
         final RestClient restClient = RestClient.create();
+        final RequestBody requestBody = new RequestBody(task);
 
         final ResponseEntity<ResponseBody> response = restClient.post()
                 .uri(URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
-                .body(task)
+                .body(requestBody)
                 .retrieve()
                 .toEntity(ResponseBody.class);
 
@@ -29,10 +30,30 @@ public class ShortsProcessorImpl implements ShortsProcessor {
             throw new ShortsProcessFailException("shorts 처리 중 오류가 발생했습니다");
         }
 
-        final ResponseBody body = response.getBody();
+        final ResponseBody responseBody = response.getBody();
 
-        assert body != null;
-        return body.shortsUrl;
+        if (responseBody == null) {
+            throw new ShortsProcessFailException("shorts 처리 중 오류가 발생했습니다");
+        }
+
+        return responseBody.shortsUrl;
+    }
+
+    static class RequestBody {
+        String s3Url;
+        String title;
+        String start;
+        String end;
+
+        RequestBody() {
+        }
+
+        RequestBody(ShortsProcessTask task) {
+            this.s3Url = task.s3Url();
+            this.title = task.topTitle();
+            this.start = task.start();
+            this.end = task.end();
+        }
     }
 
     static class ResponseBody {

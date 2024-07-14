@@ -43,34 +43,37 @@ public class VideoService {
     }
 
     public void downloadYoutube(final VideoDownloadTask task) {
-        VideoDownloadResponse response = null;
-
         try {
-            response = youtubeVideoDownloader.download(task.youtubeUrl());
+            final VideoDownloadResponse response = youtubeVideoDownloader.download(task.youtubeUrl());
+
+            final Video video = videoRepository.findById(task.videoId())
+                    .orElseThrow();
+            video.changeS3Url(response.s3Url());
+            video.changeLength(response.length());
+            video.changeTitle(response.originalTitle());
+
+            final Shorts shorts = shortsRepository.findById(task.shortsId())
+                    .orElseThrow();
+            shorts.changeProgressState(AI_PROCESSING);
+
+            videoRepository.save(video);
+            shortsRepository.save(shorts);
+
+            aiProcessQueue.push(
+                    AIProcessTask.builder()
+                            .videoId(task.videoId())
+                            .shortsId(task.shortsId())
+                            .youtubeUrl(task.youtubeUrl())
+                            .build()
+            );
         } catch (Exception e) {
             log.error("youtube 원본 영상 다운로드에 실패했습니다");
             log.error("shorts id : {}", task.shortsId());
 
-            final Shorts shorts = shortsRepository.findById(task.shortsId());
-            shorts.errorState();
+            final Shorts shorts = shortsRepository.findById(task.shortsId())
+                    .orElseThrow();
+            shorts.changeStateError();
             shortsRepository.save(shorts);
         }
-
-        final Video video = videoRepository.findById(task.videoId());
-        video.changeS3Url(response.s3Url());
-        video.changeLength(response.length());
-
-        final Shorts shorts = shortsRepository.findById(task.shortsId());
-        shorts.changeProgressState(AI_PROCESSING);
-
-        videoRepository.save(video);
-        shortsRepository.save(shorts);
-
-        aiProcessQueue.push(
-                AIProcessTask.builder()
-                        .shortsId(task.shortsId())
-                        .youtubeUrl(task.youtubeUrl())
-                        .build()
-        );
     }
 }

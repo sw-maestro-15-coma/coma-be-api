@@ -4,6 +4,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Transactional
 @Repository
@@ -16,17 +17,12 @@ public class VideoRepositoryImpl implements VideoRepository {
 
     @Override
     public Video save(final Video video) {
-        final VideoEntity savedEntity = repository.save(VideoEntity.from(video));
-
-        return savedEntity.toDomain();
+        return repository.save(VideoEntity.from(video)).toDomain();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public Video findById(final long id) {
-        final VideoEntity videoEntity = repository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당 id의 엔티티가 없습니다."));
-
-        return videoEntity.toDomain();
+    public Optional<Video> findById(final long id) {
+        return repository.findById(id).map(VideoEntity::toDomain);
     }
 }
