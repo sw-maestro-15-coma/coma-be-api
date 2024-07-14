@@ -9,7 +9,7 @@ public class MockAIProcessor implements AIProcessor {
     @Override
     public AIProcessResponse process(String youtubeUrl) {
         return AIProcessResponse.builder()
-                .hotSeconds(10)
+                .popularPointSeconds(10)
                 .build();
     }
 }
