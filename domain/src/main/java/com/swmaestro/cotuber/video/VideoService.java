@@ -44,7 +44,13 @@ public class VideoService {
 
     public void downloadYoutube(final VideoDownloadTask task) {
         try {
+            log.info("video download start");
             final VideoDownloadResponse response = youtubeVideoDownloader.download(task.youtubeUrl());
+            log.info("-------video download response --------");
+            log.info(response.s3Url());
+            log.info(response.originalTitle());
+            log.info(response.length() + " seconds");
+            log.info("video download end");
 
             final Video video = videoRepository.findById(task.videoId())
                     .orElseThrow();
@@ -67,6 +73,7 @@ public class VideoService {
                             .build()
             );
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("youtube 원본 영상 다운로드에 실패했습니다");
             log.error("shorts id : {}", task.shortsId());
 
