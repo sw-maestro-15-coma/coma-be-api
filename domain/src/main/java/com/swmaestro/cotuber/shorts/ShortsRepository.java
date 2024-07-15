@@ -8,7 +8,5 @@ public interface ShortsRepository {
 
     Optional<Shorts> findById(long shortsId);
 
-    List<Shorts> findAll();
-
-    List<Shorts> findAllByVideoId(long videoId);
+    List<Shorts> findAllByUserId(long userId);
 }

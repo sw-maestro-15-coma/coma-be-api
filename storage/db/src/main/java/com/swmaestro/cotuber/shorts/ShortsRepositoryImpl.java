@@ -30,15 +30,8 @@ public class ShortsRepositoryImpl implements ShortsRepository {
 
     @Transactional(readOnly = true)
     @Override
-    public List<Shorts> findAll() {
-        return repository.findAll()
-                .stream().map(ShortsEntity::toDomain).toList();
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<Shorts> findAllByVideoId(final long videoId) {
-        return repository.findAllByVideoId(videoId)
-                .stream().map(ShortsEntity::toDomain).toList();
+    public List<Shorts> findAllByUserId(long userId) {
+        return repository.findAllByUserId(userId).stream()
+                .map(ShortsEntity::toDomain).toList();
     }
 }

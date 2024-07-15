@@ -1,8 +1,12 @@
 package com.swmaestro.cotuber.shorts;
 
 import com.swmaestro.cotuber.batch.dto.ShortsProcessTask;
+import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.swmaestro.cotuber.shorts.ProgressState.COMPLETE;
 
@@ -28,5 +32,17 @@ public class ShortsService {
         shorts.changeLink(link);
 
         shortsRepository.save(shorts);
+    }
+
+    public List<ShortsListResponseDto> getShorts(final long userId) {
+        final List<Shorts> shorts = shortsRepository.findAllByUserId(userId);
+        final List<ShortsListResponseDto> results = new ArrayList<>();
+        shorts.forEach(e -> results.add(
+                ShortsListResponseDto.builder()
+                        .id(e.getId())
+                        .s3Url(e.getLink())
+                        .thumbnailUrl(e.getThumbnailUrl()).build()
+        ));
+        return results;
     }
 }

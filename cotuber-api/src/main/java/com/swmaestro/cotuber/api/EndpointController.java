@@ -1,5 +1,7 @@
 package com.swmaestro.cotuber.api;
 
+import com.swmaestro.cotuber.dashboard.DashboardService;
+import com.swmaestro.cotuber.dashboard.dto.DashboardListResponseDto;
 import com.swmaestro.cotuber.shorts.ShortsService;
 import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
 import com.swmaestro.cotuber.shorts.ProgressState;
@@ -9,6 +11,7 @@ import com.swmaestro.cotuber.video.dto.VideoCreateResponseDto;
 import com.swmaestro.cotuber.video.dto.VideoListResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,16 +22,13 @@ import java.util.List;
 
 
 @Tag(name = "Endpoint", description = "API 서버 엔드포인트")
+@RequiredArgsConstructor
 @RequestMapping("/api/v1")
 @RestController
 public class EndpointController {
     private final VideoService videoService;
     private final ShortsService shortsService;
-
-    public EndpointController(VideoService videoService, ShortsService shortsService) {
-        this.videoService = videoService;
-        this.shortsService = shortsService;
-    }
+    private final DashboardService dashboardService;
 
     @Operation(summary = "대시보드의 동영상 목록 조회")
     @GetMapping(value = "/dashboard")
@@ -112,8 +112,10 @@ public class EndpointController {
 
     @Operation(summary = "대시보드의 동영상 목록 조회")
     @GetMapping(value = "/dashboard", headers = "X-API-VERSION=2")
-    public List<VideoListResponseDto> getVideoList() {
-        return List.of();
+    public List<DashboardListResponseDto> getVideoList() {
+        final long userId = extractUserId();
+
+        return dashboardService.getDashboard(userId);
     }
 
     @Operation(summary = "유튜브 링크로 동영상 추가(추출)")
@@ -127,7 +129,9 @@ public class EndpointController {
     @Operation(summary = "생성된 숏폼 데이터의 목록 조회")
     @GetMapping(value = "/shorts", headers = "X-API-VERSION=2")
     public List<ShortsListResponseDto> getShortsList() {
-        return List.of();
+        final long userId = extractUserId();
+
+        return shortsService.getShorts(userId);
     }
 
     private long extractUserId() {
