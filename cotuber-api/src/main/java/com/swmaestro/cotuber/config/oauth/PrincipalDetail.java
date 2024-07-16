@@ -32,7 +32,7 @@ public record PrincipalDetail(
 
     @Override
     public String getPassword() {
-        return null;
+        return user.getOAuthId();
     }
 
     @Override

@@ -6,6 +6,9 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository {
+    Optional<User> findById(long userId);
+    
+
     User save(User user);
 
     Optional<User> findByOAuthId(String oAuthId);

@@ -6,8 +6,8 @@ include(
     "storage:db",
     "support:logging",
     "support:jwt",
+    "support:util",
 )
-
 
 pluginManagement {
     val springBootVersion: String by settings

@@ -12,7 +12,7 @@ import java.io.IOException;
 @Component
 public class OAuth2FailureHandler implements AuthenticationFailureHandler {
     // TODO: redirect URL 변경
-    private static final String REDIRECT_URL = "http://localhost:3000/oauth2/redirect";
+    private static final String REDIRECT_URL = "http://cotuber.com";
 
     @Override
     public void onAuthenticationFailure(

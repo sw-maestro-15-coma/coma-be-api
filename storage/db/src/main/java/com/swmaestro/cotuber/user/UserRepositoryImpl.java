@@ -11,6 +11,13 @@ import java.util.Optional;
 public class UserRepositoryImpl implements UserRepository {
     private final UserEntityRepository userRepository;
 
+    @Transactional(readOnly = true)
+    @Override
+    public Optional<User> findById(long userId) {
+        return userRepository.findById(userId)
+                .map(UserEntity::toDomain);
+    }
+
     @Transactional
     @Override
     public User save(User user) {

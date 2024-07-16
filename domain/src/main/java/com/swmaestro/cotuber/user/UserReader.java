@@ -13,4 +13,8 @@ public class UserReader {
     public Optional<User> findByOAuthId(String oAuthId) {
         return userRepository.findByOAuthId(oAuthId);
     }
+
+    public User findById(long userId) {
+        return userRepository.findById(userId).orElseThrow();
+    }
 }
