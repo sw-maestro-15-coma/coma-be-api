@@ -96,21 +96,18 @@ public class TokenCreator {
         try {
             Jwts
                     .parserBuilder()
-                    .setSigningKey(key)
+                    .setSigningKey(secretKey)
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (SecurityException ignored) {
-            // JWT 서명이 올바르지 않거나, JWT 구조가 올바르지 않음
-        } catch (MalformedJwtException ignored) {
-        } catch (ExpiredJwtException ignored) {
-            // JWT 토큰이 만료됨
-        } catch (UnsupportedJwtException ignored) {
-            // 지원되지 않는 JWT 토큰
-        } catch (IllegalArgumentException ignored) {
-            // JWT 토큰이 잘못되었음
+        } catch (
+                SecurityException
+                | MalformedJwtException
+                | ExpiredJwtException
+                | UnsupportedJwtException
+                | IllegalArgumentException ignored
+        ) {
+            return false;
         }
-
-        return false;
     }
 }
