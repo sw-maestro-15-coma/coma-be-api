@@ -15,48 +15,46 @@ import org.springframework.web.client.RestClient;
 
 import java.util.Objects;
 
-@Slf4j
 @RequiredArgsConstructor
 @Component
 public class YoutubeVideoDownloaderImpl implements YoutubeVideoDownloader {
     private static final String URI = "http://video.cotuber.com/video/v1/download-youtube";
-    private static final String ERROR_MESSAGE = "youtube 다운로드 중 오류가 발생했습니다";
-
     private final ObjectMapper objectMapper;
 
     @Override
     public VideoDownloadResponse download(String youtubeUrl) {
         final RestClient restClient = RestClient.create();
+        String jsonBody;
 
         try {
-            final ResponseEntity<ResponseBody> response = restClient.post()
-                    .uri(URI)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .body(objectMapper.writeValueAsString(new RequestBody(youtubeUrl)))
-                    .retrieve()
-                    .toEntity(ResponseBody.class);
-
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                throw new VideoDownloadFailException(ERROR_MESSAGE);
-            }
-
-            final ResponseBody body = response.getBody();
-
-            if (body == null) {
-                throw new VideoDownloadFailException(ERROR_MESSAGE);
-            }
-
-            return VideoDownloadResponse.builder()
-                    .s3Url(body.s3Url)
-                    .length(body.length)
-                    .originalTitle(body.originalTitle)
-                    .build();
+            jsonBody = objectMapper.writeValueAsString(new RequestBody(youtubeUrl));
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            throw new VideoDownloadFailException(ERROR_MESSAGE);
+            throw new VideoDownloadFailException("request body json 파싱에 실패했습니다");
         }
 
+        final ResponseEntity<ResponseBody> response = restClient.post()
+                .uri(URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonBody)
+                .retrieve()
+                .toEntity(ResponseBody.class);
+
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new VideoDownloadFailException("영상 처리 서버에 문제가 발생했습니다");
+        }
+
+        final ResponseBody body = response.getBody();
+
+        if (body == null) {
+            throw new VideoDownloadFailException("response body가 null 입니다");
+        }
+
+        return VideoDownloadResponse.builder()
+                .s3Url(body.s3Url)
+                .length(body.length)
+                .originalTitle(body.originalTitle)
+                .build();
     }
 
     @Getter

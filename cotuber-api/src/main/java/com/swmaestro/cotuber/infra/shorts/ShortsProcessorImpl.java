@@ -24,32 +24,34 @@ public class ShortsProcessorImpl implements ShortsProcessor {
     public String execute(final ShortsProcessTask task) {
         final RestClient restClient = RestClient.create();
         final RequestBody requestBody = new RequestBody(task);
+        String jsonBody;
 
         try {
-            final ResponseEntity<ResponseBody> response = restClient.post()
-                    .uri(URI)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON)
-                    .body(objectMapper.writeValueAsString(requestBody))
-                    .retrieve()
-                    .toEntity(ResponseBody.class);
-
-
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                throw new ShortsProcessFailException("shorts 처리 중 오류가 발생했습니다");
-            }
-
-            final ResponseBody responseBody = response.getBody();
-
-            if (responseBody == null) {
-                throw new ShortsProcessFailException("shorts 처리 중 오류가 발생했습니다");
-            }
-
-            return responseBody.shortsUrl;
+            jsonBody = objectMapper.writeValueAsString(requestBody);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            throw new ShortsProcessFailException("shorts 처리 중 오류가 발생했습니다");
+            throw new ShortsProcessFailException("request body json 파싱에 실패했습니다");
         }
+
+        final ResponseEntity<ResponseBody> response = restClient.post()
+                .uri(URI)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(jsonBody)
+                .retrieve()
+                .toEntity(ResponseBody.class);
+
+
+        if (!response.getStatusCode().is2xxSuccessful()) {
+            throw new ShortsProcessFailException("영상 처리 서버에 문제가 발생했습니다");
+        }
+
+        final ResponseBody responseBody = response.getBody();
+
+        if (responseBody == null) {
+            throw new ShortsProcessFailException("response body가 null 입니다");
+        }
+
+        return responseBody.shortsUrl;
     }
 
     @Getter
