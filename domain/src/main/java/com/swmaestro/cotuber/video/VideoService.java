@@ -27,7 +27,7 @@ public class VideoService {
 
     public VideoCreateResponseDto requestVideoDownload(final long userId, final VideoCreateRequestDto request) {
         final Video video = videoRepository.save(Video.initialVideo(request));
-        final Shorts shorts = shortsRepository.save(Shorts.initialShorts(userId, video.getId()));
+        final Shorts shorts = shortsRepository.save(Shorts.initialShorts(userId, video.getId(), "테스트 제목"));
 
         videoDownloadQueue.push(
                 VideoDownloadTask.builder()

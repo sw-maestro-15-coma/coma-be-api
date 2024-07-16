@@ -40,6 +40,7 @@ public class ShortsService {
         shorts.forEach(e -> results.add(
                 ShortsListResponseDto.builder()
                         .id(e.getId())
+                        .topTitle(e.getTopTitle())
                         .s3Url(e.getLink())
                         .thumbnailUrl(e.getThumbnailUrl()).build()
         ));
