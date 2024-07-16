@@ -6,6 +6,10 @@ tasks.getByName("jar") {
     enabled = false
 }
 
+tasks.getByName("bootBuildImage") {
+    enabled = true
+}
+
 dependencies {
     implementation(project(":domain"))
     implementation(project(":support:logging"))

@@ -1,6 +1,6 @@
 plugins {
     java
-    id("org.springframework.boot") version "3.3.1"
+    id("org.springframework.boot") apply false
     id("io.spring.dependency-management") version "1.1.5"
 }
 
@@ -53,6 +53,10 @@ subprojects {
 
     tasks.getByName("jar") {
         enabled = true
+    }
+
+    tasks.getByName("bootBuildImage") {
+        enabled = false
     }
 }
 

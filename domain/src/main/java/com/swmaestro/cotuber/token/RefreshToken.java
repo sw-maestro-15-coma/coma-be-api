@@ -1,12 +1,10 @@
 package com.swmaestro.cotuber.token;
 
-import lombok.Getter;
-
 import java.time.LocalDateTime;
 
 import static com.swmaestro.cotuber.DateUtil.toLocalDateTime;
 
-@Getter
+
 public record RefreshToken(
         long userId,
         String token,
