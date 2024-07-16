@@ -1,5 +1,7 @@
 package com.swmaestro.cotuber.video;
 
+import com.swmaestro.cotuber.video.dto.VideoDownloadResponse;
+
 public interface YoutubeVideoDownloader {
-    String download(String youtubeUrl);
+    VideoDownloadResponse download(String youtubeUrl);
 }

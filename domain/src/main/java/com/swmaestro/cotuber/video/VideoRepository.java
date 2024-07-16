@@ -1,9 +1,9 @@
 package com.swmaestro.cotuber.video;
 
+import java.util.Optional;
+
 public interface VideoRepository {
-    long insert(Video video);
+    Video save(Video video);
 
-    void update(Video video);
-
-    Video findById(long id);
+    Optional<Video> findById(long id);
 }

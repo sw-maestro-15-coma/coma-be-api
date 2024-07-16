@@ -1,11 +1,12 @@
 package com.swmaestro.cotuber.shorts;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ShortsRepository {
-    void insert(Shorts shorts);
+    Shorts save(Shorts shorts);
 
-    List<Shorts> findAll();
+    Optional<Shorts> findById(long shortsId);
 
-    List<Shorts> findAllByVideoId(long videoId);
+    List<Shorts> findAllByUserId(long userId);
 }

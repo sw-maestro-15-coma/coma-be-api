@@ -1,9 +1,12 @@
 package com.swmaestro.cotuber.video;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
+@Transactional
 @Repository
 public class VideoRepositoryImpl implements VideoRepository {
     private final VideoEntityRepository repository;
@@ -13,35 +16,13 @@ public class VideoRepositoryImpl implements VideoRepository {
     }
 
     @Override
-    public long insert(final Video video) {
-        final VideoEntity videoEntity = VideoEntity.builder()
-                .s3Path(video.getS3Path())
-                .youtubeUrl(video.getYoutubeUrl())
-                .state(video.getState())
-                .build();
-
-        final VideoEntity savedEntity = repository.save(videoEntity);
-
-        return savedEntity.getId();
+    public Video save(final Video video) {
+        return repository.save(VideoEntity.from(video)).toDomain();
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public void update(final Video video) {
-        final VideoEntity videoEntity = repository.findById(video.getId())
-                .orElseThrow(() -> new NoSuchElementException("해당 id의 엔티티가 없습니다."));
-
-        videoEntity.setS3Path(video.getS3Path());
-        videoEntity.setYoutubeUrl(video.getYoutubeUrl());
-        videoEntity.setState(video.getState());
-
-        repository.save(videoEntity);
-    }
-
-    @Override
-    public Video findById(final long id) {
-        final VideoEntity videoEntity = repository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("해당 id의 엔티티가 없습니다."));
-
-        return videoEntity.toDomain();
+    public Optional<Video> findById(final long id) {
+        return repository.findById(id).map(VideoEntity::toDomain);
     }
 }

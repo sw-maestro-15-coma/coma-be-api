@@ -1,13 +1,10 @@
 package com.swmaestro.cotuber.video;
 
 import com.swmaestro.cotuber.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -15,28 +12,45 @@ import lombok.Setter;
 @Entity
 @Table(name = "video")
 public class VideoEntity extends BaseEntity {
-    @Column(name = "s3_path", length = 100)
-    private String s3Path;
-
-    @Column(name = "youtube_url", length = 100, unique = true)
+    @Column(name = "title")
+    private String title;
+    @Column(name = "s3_url")
+    private String s3Url;
+    @Column(name = "youtube_url")
     private String youtubeUrl;
-
-    @Column(name = "state")
-    private ProgressState state;
+    @Column(name = "length")
+    private int length;
 
     @Builder
-    public VideoEntity(String s3Path, String youtubeUrl, ProgressState state) {
-        this.s3Path = s3Path;
+    public VideoEntity(long id, LocalDateTime createdAt, LocalDateTime updatedAt, String title, String s3Url, String youtubeUrl, int length) {
+        super(id, createdAt, updatedAt);
+        this.title = title;
+        this.s3Url = s3Url;
         this.youtubeUrl = youtubeUrl;
-        this.state = state;
+        this.length = length;
     }
 
     public Video toDomain() {
         return Video.builder()
                 .id(getId())
-                .s3Path(s3Path)
+                .title(title)
+                .s3Url(s3Url)
                 .youtubeUrl(youtubeUrl)
-                .state(state)
+                .length(length)
+                .createdAt(getCreatedAt())
+                .updatedAt(getUpdatedAt())
+                .build();
+    }
+
+    public static VideoEntity from(Video video) {
+        return VideoEntity.builder()
+                .id(video.getId())
+                .title(video.getTitle())
+                .s3Url(video.getS3Url())
+                .youtubeUrl(video.getYoutubeUrl())
+                .length(video.getLength())
+                .createdAt(video.getCreatedAt())
+                .updatedAt(video.getUpdatedAt())
                 .build();
     }
 }
