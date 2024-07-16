@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: cotuber-api
+  profiles:
+    active: local
+  config:
+    import:
+      - db.yml
+      - jwt.yml
+      - oauth.yml
+      - logging.yml
+
+server:
+  port: 8080
