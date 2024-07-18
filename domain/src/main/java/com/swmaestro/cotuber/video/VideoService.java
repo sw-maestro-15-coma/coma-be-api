@@ -25,6 +25,7 @@ public class VideoService {
     private final VideoDownloadQueue videoDownloadQueue;
     private final AIProcessQueue aiProcessQueue;
     private final YoutubeVideoDownloader youtubeVideoDownloader;
+    private final TopTitleGenerator topTitleGenerator;
 
     public VideoCreateResponseDto requestVideoDownload(final long userId, final VideoCreateRequestDto request) {
         final Video video = videoRepository.save(Video.initialVideo(request));
@@ -45,9 +46,11 @@ public class VideoService {
 
     public void downloadYoutube(final VideoDownloadTask task) {
         VideoDownloadResponse response;
+        String generatedTopTitle;
         try {
             log.info("video download start");
             response = youtubeVideoDownloader.download(task.youtubeUrl());
+            generatedTopTitle = topTitleGenerator.makeTopTitle(response.originalTitle());
         } catch (Exception e) {
             log.error("youtube 원본 영상 다운로드에 실패했습니다 : {}", e.getMessage());
             log.error("shorts id : {}", task.shortsId());
@@ -71,6 +74,7 @@ public class VideoService {
         final Shorts shorts = shortsRepository.findById(task.shortsId())
                 .orElseThrow();
         shorts.changeProgressState(AI_PROCESSING);
+        shorts.changeTopTitle(generatedTopTitle);
 
         videoRepository.save(video);
         shortsRepository.save(shorts);

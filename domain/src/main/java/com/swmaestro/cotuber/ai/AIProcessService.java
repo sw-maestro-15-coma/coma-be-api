@@ -61,7 +61,7 @@ public class AIProcessService {
                 ShortsProcessTask.builder()
                         .shortsId(task.shortsId())
                         .editPointId(savedEditPoint.getId())
-                        .topTitle("테스트 제목")    // 논의 필요 : 언제 쇼츠 제목을 넣어주는지?
+                        .topTitle(shorts.getTopTitle())    // 논의 필요 : 언제 쇼츠 제목을 넣어주는지?
                         .s3Url(video.getS3Url())
                         .start(savedEditPoint.getFormattedStart())
                         .end(savedEditPoint.getFormattedEnd()).build()

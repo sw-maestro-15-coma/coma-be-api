@@ -55,4 +55,8 @@ public class Shorts {
     public void changeLink(final String link) {
         this.link = link;
     }
+
+    public void changeTopTitle(final String topTitle) {
+        this.topTitle = topTitle;
+    }
 }
