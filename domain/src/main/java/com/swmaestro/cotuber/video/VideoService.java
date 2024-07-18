@@ -51,6 +51,7 @@ public class VideoService {
             log.info("video download start");
             response = youtubeVideoDownloader.download(task.youtubeUrl());
             generatedTopTitle = topTitleGenerator.makeTopTitle(response.originalTitle());
+            log.info("generated top title : {}", generatedTopTitle);
         } catch (Exception e) {
             log.error("youtube 원본 영상 다운로드에 실패했습니다 : {}", e.getMessage());
             log.error("shorts id : {}", task.shortsId());
