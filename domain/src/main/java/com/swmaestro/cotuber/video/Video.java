@@ -6,6 +6,8 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+import static com.swmaestro.cotuber.StringUtil.convertToUTF8;
+
 @Getter
 public class Video {
     private long id;
@@ -36,7 +38,7 @@ public class Video {
     }
 
     public void changeTitle(final String title) {
-        this.title = title;
+        this.title = convertToUTF8(title);
     }
 
     public void changeS3Url(final String s3Url) {
