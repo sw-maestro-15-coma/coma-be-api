@@ -13,7 +13,7 @@ import org.springframework.web.client.RestClient;
 
 import java.util.List;
 
-@Primary
+
 @RequiredArgsConstructor
 @Component
 public class HeatmapAIProcessor implements AIProcessor {
@@ -72,6 +72,6 @@ public class HeatmapAIProcessor implements AIProcessor {
     record RequestBody(String youtubeUrl) {
     }
 
-    record ResponseBody(List<Integer> popularPoint) {
+    record ResponseBody(int videoId, List<Integer> popularPoint) {
     }
 }
