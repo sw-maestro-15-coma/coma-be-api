@@ -1,5 +1,7 @@
 package com.swmaestro.cotuber.api;
 
+import com.swmaestro.cotuber.batch.dto.HealthCheckResponseDto;
+import com.swmaestro.cotuber.config.AuthUtil;
 import com.swmaestro.cotuber.dashboard.DashboardService;
 import com.swmaestro.cotuber.dashboard.dto.DashboardListResponseDto;
 import com.swmaestro.cotuber.shorts.ShortsService;
@@ -139,7 +141,15 @@ public class EndpointController {
         return shortsService.getShorts(userId);
     }
 
+    @Operation(summary = "헬스 체크")
+    @GetMapping("/health-check")
+    public HealthCheckResponseDto healthCheck() {
+        return HealthCheckResponseDto.builder()
+                .message("ok")
+                .build();
+    }
+
     private long extractUserId() {
-        return 0L;
+        return AuthUtil.getCurrentUserId();
     }
 }
