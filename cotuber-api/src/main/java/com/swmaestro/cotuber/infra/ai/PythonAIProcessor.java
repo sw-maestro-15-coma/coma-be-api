@@ -70,7 +70,7 @@ public class PythonAIProcessor implements AIProcessor {
             throw new AIProcessFailException("가장 많이 다시 본 부분이 없습니다");
         }
 
-        return popularPoints.getFirst();
+        return popularPoints.get(0);
     }
 
     @Getter

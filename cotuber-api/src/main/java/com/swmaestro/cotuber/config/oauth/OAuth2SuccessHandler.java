@@ -29,14 +29,15 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         TokenInfo token = tokenCreator.generateToken(authentication);
 
         // 토큰 전달을 위한 redirect
-        response.sendRedirect(REDIRECT_URL);
         response.addHeader(HttpHeaders.SET_COOKIE, createAccessTokenCookie(token).toString());
         response.addHeader(HttpHeaders.SET_COOKIE, createRefreshTokenCookie(token).toString());
+        response.sendRedirect(REDIRECT_URL);
     }
 
     private ResponseCookie createAccessTokenCookie(TokenInfo tokenInfo) {
         return ResponseCookie.from("accessToken", tokenInfo.accessToken())
                 .httpOnly(true)
+                .domain("cotuber.com")
                 .path("/") // TODO: 토큰 주입으로 변경
                 .maxAge(tokenInfo.accessTokenExpiresIn())
                 .build();
@@ -45,6 +46,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private ResponseCookie createRefreshTokenCookie(TokenInfo token) {
         return ResponseCookie.from("refreshToken", token.refreshToken())
                 .httpOnly(true)
+                .domain("cotuber.com")
                 .path("/") // TODO: 토큰 주입으로 변경
                 .maxAge(token.refreshTokenExpiresIn())
                 .build();

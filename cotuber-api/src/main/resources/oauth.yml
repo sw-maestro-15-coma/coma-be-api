@@ -6,6 +6,7 @@ spring:
           google:
             client-id: 558068282449-n4hr4qc0j5t9oe2r73a8kasc4oltkl4m.apps.googleusercontent.com
             client-secret: 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
+            redirect-uri: https://api.cotuber.com/login/oauth2/code/google
             scope: # google API의 범위 값
               - profile
               - email
