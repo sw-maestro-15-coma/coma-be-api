@@ -3,6 +3,7 @@ package com.swmaestro.cotuber.config;
 import com.swmaestro.cotuber.TokenCreator;
 import com.swmaestro.cotuber.auth.AuthService;
 import com.swmaestro.cotuber.config.filter.JwtFilter;
+import com.swmaestro.cotuber.config.oauth.CustomAuthorizationRequestResolver;
 import com.swmaestro.cotuber.config.oauth.CustomOAuth2UserService;
 import com.swmaestro.cotuber.config.oauth.OAuth2FailureHandler;
 import com.swmaestro.cotuber.config.oauth.OAuth2SuccessHandler;
@@ -18,6 +19,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -32,6 +34,7 @@ public class SpringSecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
+    private final ClientRegistrationRepository clientRegistrationRepository;
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
@@ -62,6 +65,7 @@ public class SpringSecurityConfig {
                     });
                 })
                 .oauth2Login(oauth -> oauth
+                        .authorizationEndpoint(it -> it.authorizationRequestResolver(new CustomAuthorizationRequestResolver(clientRegistrationRepository)))
                         .userInfoEndpoint(c -> c.userService(customOAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                         .failureHandler(oAuth2FailureHandler)
