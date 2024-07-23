@@ -1,5 +1,7 @@
 package com.swmaestro.cotuber.api;
 
+import com.swmaestro.cotuber.batch.dto.HealthCheckResponseDto;
+import com.swmaestro.cotuber.config.AuthUtil;
 import com.swmaestro.cotuber.dashboard.DashboardService;
 import com.swmaestro.cotuber.dashboard.dto.DashboardListResponseDto;
 import com.swmaestro.cotuber.shorts.ShortsService;
@@ -85,25 +87,30 @@ public class EndpointController {
     private List<ShortsListResponseDto> mockShortsList() {
         final String mockLink = "http://www.test.com/shorts";
         final String mockThumbnail = "http://thumbnail.test.com";
+        final String mockTopTitle = "테스트 제목";
 
         return List.of(
                 ShortsListResponseDto.builder()
                         .id(0)
+                        .topTitle(mockTopTitle)
                         .s3Url(mockLink + 0)
                         .thumbnailUrl(mockThumbnail)
                         .build(),
                 ShortsListResponseDto.builder()
                         .id(1)
+                        .topTitle(mockTopTitle)
                         .s3Url(mockLink + 1)
                         .thumbnailUrl(mockThumbnail)
                         .build(),
                 ShortsListResponseDto.builder()
                         .id(2)
+                        .topTitle(mockTopTitle)
                         .s3Url(mockLink + 2)
                         .thumbnailUrl(mockThumbnail)
                         .build(),
                 ShortsListResponseDto.builder()
                         .id(3)
+                        .topTitle(mockTopTitle)
                         .s3Url(mockLink + 3)
                         .thumbnailUrl(mockThumbnail)
                         .build()
@@ -134,7 +141,15 @@ public class EndpointController {
         return shortsService.getShorts(userId);
     }
 
+    @Operation(summary = "헬스 체크")
+    @GetMapping("/health-check")
+    public HealthCheckResponseDto healthCheck() {
+        return HealthCheckResponseDto.builder()
+                .message("ok")
+                .build();
+    }
+
     private long extractUserId() {
-        return 0L;
+        return AuthUtil.getCurrentUserId();
     }
 }

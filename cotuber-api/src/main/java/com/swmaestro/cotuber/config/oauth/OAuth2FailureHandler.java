@@ -11,8 +11,7 @@ import java.io.IOException;
 
 @Component
 public class OAuth2FailureHandler implements AuthenticationFailureHandler {
-    // TODO: redirect URL 변경
-    private static final String REDIRECT_URL = "http://cotuber.com";
+    private static final String DEFAULT_REDIRECT_URL = "https://cotuber.com";
 
     @Override
     public void onAuthenticationFailure(
@@ -20,6 +19,16 @@ public class OAuth2FailureHandler implements AuthenticationFailureHandler {
             HttpServletResponse response,
             AuthenticationException exception
     ) throws IOException, ServletException {
-        response.sendRedirect(REDIRECT_URL);
+        response.sendRedirect(getRedirectUrl(request));
+    }
+
+    private String getRedirectUrl(HttpServletRequest request) {
+        String redirectUrl = request.getParameter("state");
+
+        if (redirectUrl == null) {
+            return DEFAULT_REDIRECT_URL;
+        }
+
+        return redirectUrl;
     }
 }

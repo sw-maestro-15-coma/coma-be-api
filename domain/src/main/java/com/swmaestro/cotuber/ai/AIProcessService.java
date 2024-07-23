@@ -4,6 +4,7 @@ import com.swmaestro.cotuber.ai.dto.AIProcessResponse;
 import com.swmaestro.cotuber.batch.ShortsProcessQueue;
 import com.swmaestro.cotuber.batch.dto.AIProcessTask;
 import com.swmaestro.cotuber.batch.dto.ShortsProcessTask;
+import com.swmaestro.cotuber.exception.AIProcessFailException;
 import com.swmaestro.cotuber.shorts.Shorts;
 import com.swmaestro.cotuber.shorts.ShortsRepository;
 import com.swmaestro.cotuber.shorts.edit.ShortsEditPoint;
@@ -27,8 +28,21 @@ public class AIProcessService {
     private final ShortsRepository shortsRepository;
 
     public void getPopularPoint(final AIProcessTask task) {
-        log.info("ai processing start");
-        final AIProcessResponse response = aiProcessor.process(task.youtubeUrl());
+        AIProcessResponse response;
+        try {
+            log.info("ai processing start");
+            response = aiProcessor.process(task.youtubeUrl());
+        } catch (Exception e) {
+            log.info("ai 처리 실패 : {}", e.getMessage());
+            log.info("shorts id : {}", task.shortsId());
+
+            final Shorts shorts = shortsRepository.findById(task.shortsId())
+                    .orElseThrow();
+            shorts.changeStateError();
+            shortsRepository.save(shorts);
+            throw new AIProcessFailException("AI 처리 중 오류가 발생했습니다");
+        }
+
         log.info("ai processing end");
 
         final ShortsEditPoint editPoint = ShortsEditPoint.initialEditPoint(task.shortsId(), task.videoId());
@@ -41,12 +55,13 @@ public class AIProcessService {
         final Shorts shorts = shortsRepository.findById(task.shortsId())
                         .orElseThrow();
         shorts.changeProgressState(SHORTS_GENERATING);
+        shortsRepository.save(shorts);
 
         shortsProcessQueue.push(
                 ShortsProcessTask.builder()
                         .shortsId(task.shortsId())
                         .editPointId(savedEditPoint.getId())
-                        .topTitle("테스트 제목")    // 논의 필요 : 언제 쇼츠 제목을 넣어주는지?
+                        .topTitle(shorts.getTopTitle())    // 논의 필요 : 언제 쇼츠 제목을 넣어주는지?
                         .s3Url(video.getS3Url())
                         .start(savedEditPoint.getFormattedStart())
                         .end(savedEditPoint.getFormattedEnd()).build()

@@ -1,5 +1,7 @@
 package com.swmaestro.cotuber.video.dto;
 
-public record VideoCreateRequestDto(String url) {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record VideoCreateRequestDto(@JsonProperty("youtube_url") String url) {
 
 }

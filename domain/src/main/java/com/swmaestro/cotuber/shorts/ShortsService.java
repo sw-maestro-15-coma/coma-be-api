@@ -1,6 +1,7 @@
 package com.swmaestro.cotuber.shorts;
 
 import com.swmaestro.cotuber.batch.dto.ShortsProcessTask;
+import com.swmaestro.cotuber.exception.ShortsMakingFailException;
 import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,8 +23,21 @@ public class ShortsService {
     }
     
     public void makeShorts(final ShortsProcessTask task) {
-        log.info("shorts processing start");
-        final String link = shortsProcessor.execute(task);
+        String link;
+
+        try {
+            log.info("shorts processing start");
+            link = shortsProcessor.execute(task);
+        } catch (Exception e) {
+            log.info("shorts 생성 중 오류 발생 : {}", e.getMessage());
+            log.info("shorts id : {}", task.shortsId());
+
+            final Shorts shorts = shortsRepository.findById(task.shortsId())
+                    .orElseThrow();
+            shorts.changeStateError();
+            shortsRepository.save(shorts);
+            throw new ShortsMakingFailException("shorts 생성에 실패했습니다");
+        }
         log.info("shorts processing end");
 
         final Shorts shorts = shortsRepository.findById(task.shortsId())
@@ -40,6 +54,7 @@ public class ShortsService {
         shorts.forEach(e -> results.add(
                 ShortsListResponseDto.builder()
                         .id(e.getId())
+                        .topTitle(e.getTopTitle())
                         .s3Url(e.getLink())
                         .thumbnailUrl(e.getThumbnailUrl()).build()
         ));

@@ -16,8 +16,7 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Component
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
-    // TODO: redirect URL 변경
-    private static final String REDIRECT_URL = "http://cotuber.com";
+    private static final String DEFAULT_REDIRECT_URL = "https://cotuber.com";
     private final TokenCreator tokenCreator;
 
     @Override
@@ -28,26 +27,28 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     ) throws IOException {
         TokenInfo token = tokenCreator.generateToken(authentication);
 
-        // 토큰 전달을 위한 redirect
-        response.sendRedirect(REDIRECT_URL);
-        response.addHeader(HttpHeaders.SET_COOKIE, createAccessTokenCookie(token).toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, createRefreshTokenCookie(token).toString());
+        response.addHeader(HttpHeaders.AUTHORIZATION, token.accessToken());
+        response.addHeader(HttpHeaders.AUTHORIZATION + "Refresh", token.refreshToken());
+
+        String redirectUrl = getRedirectUrl(request);
+
+        if (redirectUrl.equals("popup")) {
+            response.setContentType("text/html;charset=UTF-8");
+            response.getWriter().write("<script>window.onload = () => { window.opener?.location?.reload?.(); window.close(); }</script>");
+            response.getWriter().flush();
+        } else {
+            response.sendRedirect(getRedirectUrl(request));
+        }
     }
 
-    private ResponseCookie createAccessTokenCookie(TokenInfo tokenInfo) {
-        return ResponseCookie.from("accessToken", tokenInfo.accessToken())
-                .httpOnly(true)
-                .path("/") // TODO: 토큰 주입으로 변경
-                .maxAge(tokenInfo.accessTokenExpiresIn())
-                .build();
-    }
+    private String getRedirectUrl(HttpServletRequest request) {
+        String redirectUrl = request.getParameter("state");
 
-    private ResponseCookie createRefreshTokenCookie(TokenInfo token) {
-        return ResponseCookie.from("refreshToken", token.refreshToken())
-                .httpOnly(true)
-                .path("/") // TODO: 토큰 주입으로 변경
-                .maxAge(token.refreshTokenExpiresIn())
-                .build();
+        if (redirectUrl == null) {
+            return DEFAULT_REDIRECT_URL;
+        }
+
+        return redirectUrl;
     }
 }
 

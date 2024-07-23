@@ -35,10 +35,11 @@ public class Shorts {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public static Shorts initialShorts(final long userId, final long videoId) {
+    public static Shorts initialShorts(final long userId, final long videoId, final String topTitle) {
         return Shorts.builder()
                 .userId(userId)
                 .videoId(videoId)
+                .topTitle(topTitle)
                 .progressState(YOUTUBE_DOWNLOADING)
                 .build();
     }
@@ -53,5 +54,9 @@ public class Shorts {
 
     public void changeLink(final String link) {
         this.link = link;
+    }
+
+    public void changeTopTitle(final String topTitle) {
+        this.topTitle = topTitle;
     }
 }

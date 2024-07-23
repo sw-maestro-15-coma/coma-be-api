@@ -29,6 +29,10 @@ public class AuthUtil {
             throw new IllegalStateException("로그인이 필요합니다.");
         }
 
+        if (authentication.getName().equals("anonymousUser")) {
+            throw new IllegalStateException("로그인이 필요합니다.");
+        }
+
         return Long.parseLong(authentication.getName());
     }
 }

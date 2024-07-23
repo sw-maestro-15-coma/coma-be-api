@@ -26,7 +26,7 @@ public class ShortsEntity extends BaseEntity {
     @Column(name = "link")
     private String link;
 
-    @Column(name = "top_title", length = 100)
+    @Column(name = "top_title")
     private String topTitle;
 
     @Column(name = "thumbnail_url")
