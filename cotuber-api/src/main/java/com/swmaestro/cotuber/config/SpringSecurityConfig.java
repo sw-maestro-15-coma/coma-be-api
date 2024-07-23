@@ -19,9 +19,16 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
@@ -37,6 +44,11 @@ public class SpringSecurityConfig {
     private final ClientRegistrationRepository clientRegistrationRepository;
 
     @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new MockPasswordEncoder();
+    }
+
+    @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring()
                 .requestMatchers("/error", "/favicon.ico");
@@ -46,7 +58,6 @@ public class SpringSecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> {
 
                 })
@@ -72,5 +83,25 @@ public class SpringSecurityConfig {
                 )
                 .addFilterBefore(new JwtFilter(userReader, authService, tokenCreator), UsernamePasswordAuthenticationFilter.class)
                 .build();
+    }
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "http://localhost:8080",
+                "https://localhost:3000",
+                "https://localhost:8080",
+                "https://cotuber.com",
+                "https://develop.cotuber.com",
+                "https://api.cotuber.com"
+        ));
+        configuration.setAllowedMethods(List.of("HEAD", "GET", "POST", "PUT", "PATCH", "OPTION")); //요청 메소드
+        configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type")); //허용할 헤더
+        configuration.setAllowCredentials(true);
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

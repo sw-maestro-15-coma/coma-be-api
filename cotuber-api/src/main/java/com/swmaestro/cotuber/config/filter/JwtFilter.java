@@ -14,7 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
-import static com.swmaestro.cotuber.config.AuthUtil.getBearerToken;
+import static com.swmaestro.cotuber.config.AuthUtil.getAccessToken;
 
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
@@ -28,7 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-        String token = getBearerToken(request);
+        String token = getAccessToken(request);
 
         if (tokenCreator.isValidToken(token)) {
             long userId = tokenCreator.getSubject(token);
