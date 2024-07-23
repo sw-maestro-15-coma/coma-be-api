@@ -27,9 +27,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     ) throws IOException {
         TokenInfo token = tokenCreator.generateToken(authentication);
 
-        // 토큰 전달을 위한 redirect
-        response.addHeader(HttpHeaders.SET_COOKIE, createAccessTokenCookie(token).toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, createRefreshTokenCookie(token).toString());
+        response.addHeader(HttpHeaders.AUTHORIZATION, token.accessToken());
+        response.addHeader(HttpHeaders.AUTHORIZATION + "Refresh", token.refreshToken());
 
         String redirectUrl = getRedirectUrl(request);
 
@@ -40,24 +39,6 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         } else {
             response.sendRedirect(getRedirectUrl(request));
         }
-    }
-
-    private ResponseCookie createAccessTokenCookie(TokenInfo tokenInfo) {
-        return ResponseCookie.from("accessToken", tokenInfo.accessToken())
-                .httpOnly(true)
-                .domain("cotuber.com")
-                .path("/") // TODO: 토큰 주입으로 변경
-                .maxAge(tokenInfo.accessTokenExpiresIn())
-                .build();
-    }
-
-    private ResponseCookie createRefreshTokenCookie(TokenInfo token) {
-        return ResponseCookie.from("refreshToken", token.refreshToken())
-                .httpOnly(true)
-                .domain("cotuber.com")
-                .path("/") // TODO: 토큰 주입으로 변경
-                .maxAge(token.refreshTokenExpiresIn())
-                .build();
     }
 
     private String getRedirectUrl(HttpServletRequest request) {
