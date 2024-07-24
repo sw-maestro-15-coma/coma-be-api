@@ -45,14 +45,11 @@ public class VideoService {
     }
 
     public void downloadYoutube(final VideoDownloadTask task) {
-        log.info("video download start");
-
-        VideoDownloadResponse response = download(task);
+        VideoDownloadResponse response = downloadVideo(task);
         String generatedTopTitle = generateTopTitle(task, response);
 
-        log.info("video download end");
-        
-        updateVideoStatus(task, response, generatedTopTitle);
+        updateVideoStatus(task, response);
+        updateShortsStatus(task, generatedTopTitle);
 
         aiProcessQueue.push(
                 AIProcessTask.builder()
@@ -63,9 +60,13 @@ public class VideoService {
         );
     }
 
-    private VideoDownloadResponse download(VideoDownloadTask task) {
+    private VideoDownloadResponse downloadVideo(VideoDownloadTask task) {
         try {
-            return youtubeVideoDownloader.download(task.youtubeUrl());
+            log.info("video download start");
+            VideoDownloadResponse response = youtubeVideoDownloader.download(task.youtubeUrl());
+            log.info("video download end");
+            
+            return response;
         } catch (Exception e) {
             log.error("youtube 원본 영상 다운로드에 실패했습니다 : {}", e.getMessage());
             setShortsStatusToError(task.shortsId());
@@ -93,20 +94,25 @@ public class VideoService {
 
     private void updateVideoStatus(
             VideoDownloadTask task,
-            VideoDownloadResponse response,
-            String generatedTopTitle
+            VideoDownloadResponse response
     ) {
         final Video video = videoRepository.findById(task.videoId())
                 .orElseThrow();
 
         video.updateVideoInfo(response);
+        videoRepository.save(video);
+    }
 
+    private void updateShortsStatus(
+            VideoDownloadTask task,
+            String generatedTopTitle
+    ) {
         final Shorts shorts = shortsRepository.findById(task.shortsId())
                 .orElseThrow();
+
         shorts.changeProgressState(AI_PROCESSING);
         shorts.changeTopTitle(generatedTopTitle);
 
-        videoRepository.save(video);
         shortsRepository.save(shorts);
     }
 }
