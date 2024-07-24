@@ -5,6 +5,9 @@ import com.swmaestro.cotuber.batch.VideoDownloadQueue;
 import com.swmaestro.cotuber.batch.dto.AIProcessTask;
 import com.swmaestro.cotuber.batch.dto.VideoDownloadTask;
 import com.swmaestro.cotuber.exception.ShortsMakingFailException;
+import com.swmaestro.cotuber.log.Log;
+import com.swmaestro.cotuber.log.LogRepository;
+import com.swmaestro.cotuber.log.ProgressContext;
 import com.swmaestro.cotuber.shorts.Shorts;
 import com.swmaestro.cotuber.shorts.ShortsRepository;
 import com.swmaestro.cotuber.video.dto.VideoCreateRequestDto;
@@ -14,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import static com.swmaestro.cotuber.log.ProgressContext.YOUTUBE_DOWNLOADING;
 import static com.swmaestro.cotuber.shorts.ProgressState.AI_PROCESSING;
 
 @Slf4j
@@ -26,6 +30,7 @@ public class VideoService {
     private final AIProcessQueue aiProcessQueue;
     private final YoutubeVideoDownloader youtubeVideoDownloader;
     private final TopTitleGenerator topTitleGenerator;
+    private final LogRepository logRepository;
 
     public VideoCreateResponseDto requestVideoDownload(final long userId, final VideoCreateRequestDto request) {
         final Video video = videoRepository.save(Video.initialVideo(request));
@@ -33,6 +38,7 @@ public class VideoService {
 
         videoDownloadQueue.push(
                 VideoDownloadTask.builder()
+                        .userId(userId)
                         .videoId(video.getId())
                         .shortsId(shorts.getId())
                         .youtubeUrl(request.url())
@@ -50,9 +56,11 @@ public class VideoService {
 
         updateVideoStatus(task, response);
         updateShortsStatus(task, generatedTopTitle);
+        videoDownloadSuccessLog(task.userId(), task.shortsId());
 
         aiProcessQueue.push(
                 AIProcessTask.builder()
+                        .userId(task.userId())
                         .videoId(task.videoId())
                         .shortsId(task.shortsId())
                         .youtubeUrl(task.youtubeUrl())
@@ -70,6 +78,7 @@ public class VideoService {
         } catch (Exception e) {
             log.error("youtube 원본 영상 다운로드에 실패했습니다 : {}", e.getMessage());
             setShortsStatusToError(task.shortsId());
+            videoDownloadFailLog(task.userId(), task.shortsId(), e.getMessage());
             throw new ShortsMakingFailException("youtube 원본 영상 다운로드 실패");
         }
     }
@@ -80,6 +89,7 @@ public class VideoService {
         } catch (Exception e) {
             log.error("top title 생성에 실패했습니다 : {}", e.getMessage());
             setShortsStatusToError(task.shortsId());
+            videoDownloadFailLog(task.userId(), task.shortsId(), e.getMessage());
             throw new ShortsMakingFailException("top title 생성 실패");
         }
     }
@@ -114,5 +124,25 @@ public class VideoService {
         shorts.changeTopTitle(generatedTopTitle);
 
         shortsRepository.save(shorts);
+    }
+
+    private void videoDownloadSuccessLog(long userId, long shortsId) {
+        logRepository.save(Log.builder()
+                .message("SUCCESS")
+                .progressContext(YOUTUBE_DOWNLOADING)
+                .userId(userId)
+                .shortsId(shortsId)
+                .build()
+        );
+    }
+
+    private void videoDownloadFailLog(long userId, long shortsId, String message) {
+        logRepository.save(Log.builder()
+                .message(message)
+                .progressContext(YOUTUBE_DOWNLOADING)
+                .shortsId(shortsId)
+                .userId(userId)
+                .build()
+        );
     }
 }
