@@ -62,15 +62,18 @@ public class EndpointController {
     }
 
     @Operation(summary = "유저 정보 조회")
-    @GetMapping("/user/info")
+    @GetMapping(value = "/user/info")
     public UserInfoResponseDto getUserInfo() {
         try {
-            final long userId = AuthUtil.getCurrentUserId();
-            User user = userReader.findById(userId);
+            final Long userId = AuthUtil.getCurrentNullishUserId();
 
+            if (userId == null) {
+                return UserInfoResponseDto.notLoggedIn();
+            }
+
+            User user = userReader.findById(userId);
             return UserInfoResponseDto.loggedIn(user);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return UserInfoResponseDto.notLoggedIn();
         }
     }
