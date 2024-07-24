@@ -37,6 +37,6 @@ public record PrincipalDetail(
 
     @Override
     public String getUsername() {
-        return user.getOAuthId();
+        return String.valueOf(user.getId());
     }
 }

@@ -9,7 +9,23 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("*")
-                .allowedMethods("GET", "POST", "PUT", "DELETE");
+                .allowedOriginPatterns(
+                        "http://localhost:3000",
+                        "http://localhost:8080",
+                        "https://localhost:3000",
+                        "https://localhost:8080",
+                        "https://cotuber.com",
+                        "https://develop.cotuber.com",
+                        "https://api.cotuber.com"
+                )
+                .allowCredentials(true)
+                .allowedMethods(
+                        "GET",
+                        "POST",
+                        "PUT",
+                        "PATCH",
+                        "OPTION",
+                        "DELETE"
+                );
     }
 }

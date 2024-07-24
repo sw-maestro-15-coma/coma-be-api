@@ -5,6 +5,7 @@ import com.swmaestro.cotuber.TokenInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.web.server.Cookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
@@ -27,18 +28,33 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     ) throws IOException {
         TokenInfo token = tokenCreator.generateToken(authentication);
 
-        response.addHeader(HttpHeaders.AUTHORIZATION, token.accessToken());
-        response.addHeader(HttpHeaders.AUTHORIZATION + "Refresh", token.refreshToken());
+        // 토큰 전달을 위한 redirect
+        response.addHeader(HttpHeaders.SET_COOKIE, createAccessTokenCookie(token).toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, createRefreshTokenCookie(token).toString());
 
-        String redirectUrl = getRedirectUrl(request);
+        response.sendRedirect(getRedirectUrl(request));
+    }
 
-        if (redirectUrl.equals("popup")) {
-            response.setContentType("text/html;charset=UTF-8");
-            response.getWriter().write("<script>window.onload = () => { window.opener?.location?.reload?.(); window.close(); }</script>");
-            response.getWriter().flush();
-        } else {
-            response.sendRedirect(getRedirectUrl(request));
-        }
+    private ResponseCookie createAccessTokenCookie(TokenInfo tokenInfo) {
+        return ResponseCookie.from("accessToken", tokenInfo.accessToken())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite(Cookie.SameSite.NONE.attributeValue())
+                .domain("cotuber.com")  // TODO: 토큰 주입으로 변경
+                .path("/")
+                .maxAge(tokenInfo.accessTokenExpiresIn())
+                .build();
+    }
+
+    private ResponseCookie createRefreshTokenCookie(TokenInfo token) {
+        return ResponseCookie.from("refreshToken", token.refreshToken())
+                .httpOnly(true)
+                .secure(true)
+                .sameSite(Cookie.SameSite.NONE.attributeValue())
+                .domain("cotuber.com") // TODO: 토큰 주입으로 변경
+                .path("/")
+                .maxAge(token.refreshTokenExpiresIn())
+                .build();
     }
 
     private String getRedirectUrl(HttpServletRequest request) {
@@ -51,4 +67,3 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         return redirectUrl;
     }
 }
-
