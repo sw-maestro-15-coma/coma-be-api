@@ -40,4 +40,22 @@ public class AuthUtil {
 
         return Long.parseLong(authentication.getName());
     }
+
+    public static Long getCurrentNullishUserId() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (!authentication.isAuthenticated()) {
+            return null;
+        }
+
+        if (authentication.getName() == null) {
+            return null;
+        }
+
+        if (authentication instanceof AnonymousAuthenticationToken) {
+            return null;
+        }
+
+        return Long.parseLong(authentication.getName());
+    }
 }
