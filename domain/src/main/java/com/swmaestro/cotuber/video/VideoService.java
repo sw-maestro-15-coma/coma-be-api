@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import static com.swmaestro.cotuber.shorts.ProgressState.*;
+import static com.swmaestro.cotuber.shorts.ProgressState.AI_PROCESSING;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -45,40 +45,14 @@ public class VideoService {
     }
 
     public void downloadYoutube(final VideoDownloadTask task) {
-        VideoDownloadResponse response;
-        String generatedTopTitle;
-        try {
-            log.info("video download start");
-            response = youtubeVideoDownloader.download(task.youtubeUrl());
-            generatedTopTitle = topTitleGenerator.makeTopTitle(response.originalTitle());
-            log.info("generated top title : {}", generatedTopTitle);
-        } catch (Exception e) {
-            log.error("youtube 원본 영상 다운로드에 실패했습니다 : {}", e.getMessage());
-            log.error("shorts id : {}", task.shortsId());
+        log.info("video download start");
 
-            final Shorts shorts = shortsRepository.findById(task.shortsId())
-                    .orElseThrow();
-            shorts.changeStateError();
-            shortsRepository.save(shorts);
-
-            throw new ShortsMakingFailException("youtube 원본 영상 다운로드 실패");
-        }
+        VideoDownloadResponse response = download(task);
+        String generatedTopTitle = generateTopTitle(task, response);
 
         log.info("video download end");
-
-        final Video video = videoRepository.findById(task.videoId())
-                .orElseThrow();
-        video.changeS3Url(response.s3Url());
-        video.changeLength(response.length());
-        video.changeTitle(response.originalTitle());
-
-        final Shorts shorts = shortsRepository.findById(task.shortsId())
-                .orElseThrow();
-        shorts.changeProgressState(AI_PROCESSING);
-        shorts.changeTopTitle(generatedTopTitle);
-
-        videoRepository.save(video);
-        shortsRepository.save(shorts);
+        
+        updateVideoStatus(task, response, generatedTopTitle);
 
         aiProcessQueue.push(
                 AIProcessTask.builder()
@@ -87,5 +61,52 @@ public class VideoService {
                         .youtubeUrl(task.youtubeUrl())
                         .build()
         );
+    }
+
+    private VideoDownloadResponse download(VideoDownloadTask task) {
+        try {
+            return youtubeVideoDownloader.download(task.youtubeUrl());
+        } catch (Exception e) {
+            log.error("youtube 원본 영상 다운로드에 실패했습니다 : {}", e.getMessage());
+            setShortsStatusToError(task.shortsId());
+            throw new ShortsMakingFailException("youtube 원본 영상 다운로드 실패");
+        }
+    }
+
+    private String generateTopTitle(VideoDownloadTask task, VideoDownloadResponse response) {
+        try {
+            return topTitleGenerator.makeTopTitle(response.originalTitle());
+        } catch (Exception e) {
+            log.error("top title 생성에 실패했습니다 : {}", e.getMessage());
+            setShortsStatusToError(task.shortsId());
+            throw new ShortsMakingFailException("top title 생성 실패");
+        }
+    }
+
+    private void setShortsStatusToError(long shortsId) {
+        final Shorts shorts = shortsRepository.findById(shortsId)
+                .orElseThrow();
+
+        shorts.changeStateError();
+        shortsRepository.save(shorts);
+    }
+
+    private void updateVideoStatus(
+            VideoDownloadTask task,
+            VideoDownloadResponse response,
+            String generatedTopTitle
+    ) {
+        final Video video = videoRepository.findById(task.videoId())
+                .orElseThrow();
+
+        video.updateVideoInfo(response);
+
+        final Shorts shorts = shortsRepository.findById(task.shortsId())
+                .orElseThrow();
+        shorts.changeProgressState(AI_PROCESSING);
+        shorts.changeTopTitle(generatedTopTitle);
+
+        videoRepository.save(video);
+        shortsRepository.save(shorts);
     }
 }
