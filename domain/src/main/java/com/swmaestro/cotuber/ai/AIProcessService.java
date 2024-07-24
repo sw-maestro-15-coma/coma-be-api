@@ -48,12 +48,12 @@ public class AIProcessService {
         final ShortsEditPoint editPoint = ShortsEditPoint.initialEditPoint(task.shortsId(), task.videoId());
         final Video video = videoRepository.findById(task.videoId())
                 .orElseThrow();
-        editPoint.calculateDuration(video.getLength(), response.popularPointSeconds());
+        editPoint.calculateDuration(video.getVideoTotalSecond(), response.popularPointSeconds());
 
         final ShortsEditPoint savedEditPoint = editPointRepository.save(editPoint);
 
         final Shorts shorts = shortsRepository.findById(task.shortsId())
-                        .orElseThrow();
+                .orElseThrow();
         shorts.changeProgressState(SHORTS_GENERATING);
         shortsRepository.save(shorts);
 

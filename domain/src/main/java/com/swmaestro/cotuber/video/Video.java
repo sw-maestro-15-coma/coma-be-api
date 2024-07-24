@@ -15,17 +15,25 @@ public class Video {
     private String title;
     private String s3Url;
     private String youtubeUrl;
-    private int length;
+    private int videoTotalSecond;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder
-    public Video(long id, String title, String s3Url, String youtubeUrl, int length, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Video(
+            long id,
+            String title,
+            String s3Url,
+            String youtubeUrl,
+            int videoTotalSecond,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt
+    ) {
         this.id = id;
         this.title = title;
         this.s3Url = s3Url;
         this.youtubeUrl = youtubeUrl;
-        this.length = length;
+        this.videoTotalSecond = videoTotalSecond;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -40,7 +48,7 @@ public class Video {
 
     public void updateVideoInfo(final VideoDownloadResponse response) {
         this.s3Url = response.s3Url();
-        this.length = response.length();
+        this.videoTotalSecond = response.length();
         this.title = convertToUTF8(response.originalTitle());
     }
 }
