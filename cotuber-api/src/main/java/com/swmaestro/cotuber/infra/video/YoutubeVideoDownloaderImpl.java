@@ -12,6 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 @RequiredArgsConstructor
 @Component
 public class YoutubeVideoDownloaderImpl implements YoutubeVideoDownloader {
@@ -29,10 +32,13 @@ public class YoutubeVideoDownloaderImpl implements YoutubeVideoDownloader {
             throw new VideoDownloadFailException("request body json 파싱에 실패했습니다");
         }
 
+        Charset utf8 = StandardCharsets.UTF_8;
+        MediaType mediaType = new MediaType("application", "json", utf8);
+
         final ResponseEntity<ResponseBody> response = restClient.post()
                 .uri(URI)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+                .contentType(mediaType)
+                .accept(mediaType)
                 .body(jsonBody)
                 .retrieve()
                 .toEntity(ResponseBody.class);
