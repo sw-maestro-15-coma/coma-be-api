@@ -1,8 +1,13 @@
 package com.swmaestro.cotuber.video;
 
 import com.swmaestro.cotuber.common.BaseEntity;
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -36,7 +41,7 @@ public class VideoEntity extends BaseEntity {
                 .title(title)
                 .s3Url(s3Url)
                 .youtubeUrl(youtubeUrl)
-                .length(length)
+                .videoTotalSecond(length)
                 .createdAt(getCreatedAt())
                 .updatedAt(getUpdatedAt())
                 .build();
@@ -48,7 +53,7 @@ public class VideoEntity extends BaseEntity {
                 .title(video.getTitle())
                 .s3Url(video.getS3Url())
                 .youtubeUrl(video.getYoutubeUrl())
-                .length(video.getLength())
+                .length(video.getVideoTotalSecond())
                 .createdAt(video.getCreatedAt())
                 .updatedAt(video.getUpdatedAt())
                 .build();

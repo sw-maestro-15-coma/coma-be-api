@@ -5,6 +5,9 @@ import com.swmaestro.cotuber.batch.ShortsProcessQueue;
 import com.swmaestro.cotuber.batch.dto.AIProcessTask;
 import com.swmaestro.cotuber.batch.dto.ShortsProcessTask;
 import com.swmaestro.cotuber.exception.AIProcessFailException;
+import com.swmaestro.cotuber.log.Log;
+import com.swmaestro.cotuber.log.LogRepository;
+import com.swmaestro.cotuber.log.LogService;
 import com.swmaestro.cotuber.shorts.Shorts;
 import com.swmaestro.cotuber.shorts.ShortsRepository;
 import com.swmaestro.cotuber.shorts.edit.ShortsEditPoint;
@@ -15,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import static com.swmaestro.cotuber.log.ProgressContext.AI_PROCESSING;
+import static com.swmaestro.cotuber.log.ProgressContext.YOUTUBE_DOWNLOADING;
 import static com.swmaestro.cotuber.shorts.ProgressState.SHORTS_GENERATING;
 
 @Slf4j
@@ -26,6 +31,7 @@ public class AIProcessService {
     private final VideoRepository videoRepository;
     private final ShortsProcessQueue shortsProcessQueue;
     private final ShortsRepository shortsRepository;
+    private final LogService logService;
 
     public void getPopularPoint(final AIProcessTask task) {
         AIProcessResponse response;
@@ -40,25 +46,30 @@ public class AIProcessService {
                     .orElseThrow();
             shorts.changeStateError();
             shortsRepository.save(shorts);
+
+            logService.sendFailLog(task.userId(), task.shortsId(), AI_PROCESSING, e.getMessage());
+
             throw new AIProcessFailException("AI 처리 중 오류가 발생했습니다");
         }
 
         log.info("ai processing end");
+        logService.sendSuccessLog(task.userId(), task.shortsId(), AI_PROCESSING);
 
         final ShortsEditPoint editPoint = ShortsEditPoint.initialEditPoint(task.shortsId(), task.videoId());
         final Video video = videoRepository.findById(task.videoId())
                 .orElseThrow();
-        editPoint.calculateDuration(video.getLength(), response.popularPointSeconds());
+        editPoint.calculateDuration(video.getVideoTotalSecond(), response.popularPointSeconds());
 
         final ShortsEditPoint savedEditPoint = editPointRepository.save(editPoint);
 
         final Shorts shorts = shortsRepository.findById(task.shortsId())
-                        .orElseThrow();
+                .orElseThrow();
         shorts.changeProgressState(SHORTS_GENERATING);
         shortsRepository.save(shorts);
 
         shortsProcessQueue.push(
                 ShortsProcessTask.builder()
+                        .userId(task.userId())
                         .shortsId(task.shortsId())
                         .editPointId(savedEditPoint.getId())
                         .topTitle(shorts.getTopTitle())    // 논의 필요 : 언제 쇼츠 제목을 넣어주는지?

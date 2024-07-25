@@ -2,25 +2,28 @@ package com.swmaestro.cotuber.shorts;
 
 import com.swmaestro.cotuber.batch.dto.ShortsProcessTask;
 import com.swmaestro.cotuber.exception.ShortsMakingFailException;
+import com.swmaestro.cotuber.log.Log;
+import com.swmaestro.cotuber.log.LogRepository;
+import com.swmaestro.cotuber.log.LogService;
 import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.swmaestro.cotuber.log.ProgressContext.SHORTS_GENERATING;
+import static com.swmaestro.cotuber.log.ProgressContext.YOUTUBE_DOWNLOADING;
 import static com.swmaestro.cotuber.shorts.ProgressState.COMPLETE;
 
 @Slf4j
+@RequiredArgsConstructor
 @Service
 public class ShortsService {
     private final ShortsProcessor shortsProcessor;
     private final ShortsRepository shortsRepository;
-
-    public ShortsService(ShortsProcessor shortsProcessor, ShortsRepository shortsRepository) {
-        this.shortsProcessor = shortsProcessor;
-        this.shortsRepository = shortsRepository;
-    }
+    private final LogService logService;
     
     public void makeShorts(final ShortsProcessTask task) {
         String link;
@@ -36,9 +39,11 @@ public class ShortsService {
                     .orElseThrow();
             shorts.changeStateError();
             shortsRepository.save(shorts);
+            logService.sendFailLog(task.userId(), task.shortsId(), SHORTS_GENERATING, e.getMessage());
             throw new ShortsMakingFailException("shorts 생성에 실패했습니다");
         }
         log.info("shorts processing end");
+        logService.sendSuccessLog(task.userId(), task.shortsId(), SHORTS_GENERATING);
 
         final Shorts shorts = shortsRepository.findById(task.shortsId())
                 .orElseThrow();
