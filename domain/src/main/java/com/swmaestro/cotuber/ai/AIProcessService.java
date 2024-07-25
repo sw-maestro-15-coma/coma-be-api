@@ -7,6 +7,7 @@ import com.swmaestro.cotuber.batch.dto.ShortsProcessTask;
 import com.swmaestro.cotuber.exception.AIProcessFailException;
 import com.swmaestro.cotuber.log.Log;
 import com.swmaestro.cotuber.log.LogRepository;
+import com.swmaestro.cotuber.log.LogService;
 import com.swmaestro.cotuber.shorts.Shorts;
 import com.swmaestro.cotuber.shorts.ShortsRepository;
 import com.swmaestro.cotuber.shorts.edit.ShortsEditPoint;
@@ -30,7 +31,7 @@ public class AIProcessService {
     private final VideoRepository videoRepository;
     private final ShortsProcessQueue shortsProcessQueue;
     private final ShortsRepository shortsRepository;
-    private final LogRepository logRepository;
+    private final LogService logService;
 
     public void getPopularPoint(final AIProcessTask task) {
         AIProcessResponse response;
@@ -46,13 +47,13 @@ public class AIProcessService {
             shorts.changeStateError();
             shortsRepository.save(shorts);
 
-            aiProcessingFailLog(task.userId(), task.shortsId(), e.getMessage());
+            logService.sendFailLog(task.userId(), task.shortsId(), AI_PROCESSING, e.getMessage());
 
             throw new AIProcessFailException("AI 처리 중 오류가 발생했습니다");
         }
 
         log.info("ai processing end");
-        aiProcessingSuccessLog(task.userId(), task.shortsId());
+        logService.sendSuccessLog(task.userId(), task.shortsId(), AI_PROCESSING);
 
         final ShortsEditPoint editPoint = ShortsEditPoint.initialEditPoint(task.shortsId(), task.videoId());
         final Video video = videoRepository.findById(task.videoId())
@@ -75,26 +76,6 @@ public class AIProcessService {
                         .s3Url(video.getS3Url())
                         .start(savedEditPoint.getFormattedStart())
                         .end(savedEditPoint.getFormattedEnd()).build()
-        );
-    }
-
-    private void aiProcessingSuccessLog(long userId, long shortsId) {
-        logRepository.save(Log.builder()
-                .message("SUCCESS")
-                .progressContext(AI_PROCESSING)
-                .userId(userId)
-                .shortsId(shortsId)
-                .build()
-        );
-    }
-
-    private void aiProcessingFailLog(long userId, long shortsId, String message) {
-        logRepository.save(Log.builder()
-                .message(message)
-                .progressContext(AI_PROCESSING)
-                .shortsId(shortsId)
-                .userId(userId)
-                .build()
         );
     }
 }

@@ -7,6 +7,7 @@ import com.swmaestro.cotuber.batch.dto.VideoDownloadTask;
 import com.swmaestro.cotuber.exception.ShortsMakingFailException;
 import com.swmaestro.cotuber.log.Log;
 import com.swmaestro.cotuber.log.LogRepository;
+import com.swmaestro.cotuber.log.LogService;
 import com.swmaestro.cotuber.log.ProgressContext;
 import com.swmaestro.cotuber.shorts.Shorts;
 import com.swmaestro.cotuber.shorts.ShortsRepository;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import static com.swmaestro.cotuber.log.ProgressContext.GPT_TITLE_GENERATING;
 import static com.swmaestro.cotuber.log.ProgressContext.YOUTUBE_DOWNLOADING;
 import static com.swmaestro.cotuber.shorts.ProgressState.AI_PROCESSING;
 
@@ -30,7 +32,7 @@ public class VideoService {
     private final AIProcessQueue aiProcessQueue;
     private final YoutubeVideoDownloader youtubeVideoDownloader;
     private final TopTitleGenerator topTitleGenerator;
-    private final LogRepository logRepository;
+    private final LogService logService;
 
     public VideoCreateResponseDto requestVideoDownload(final long userId, final VideoCreateRequestDto request) {
         final Video video = videoRepository.save(Video.initialVideo(request));
@@ -56,7 +58,6 @@ public class VideoService {
 
         updateVideoStatus(task, response);
         updateShortsStatus(task, generatedTopTitle);
-        videoDownloadSuccessLog(task.userId(), task.shortsId());
 
         aiProcessQueue.push(
                 AIProcessTask.builder()
@@ -73,23 +74,27 @@ public class VideoService {
             log.info("video download start");
             VideoDownloadResponse response = youtubeVideoDownloader.download(task.youtubeUrl());
             log.info("video download end");
+            logService.sendSuccessLog(task.userId(), task.shortsId(), YOUTUBE_DOWNLOADING);
             
             return response;
         } catch (Exception e) {
             log.error("youtube 원본 영상 다운로드에 실패했습니다 : {}", e.getMessage());
             setShortsStatusToError(task.shortsId());
-            videoDownloadFailLog(task.userId(), task.shortsId(), e.getMessage());
+            logService.sendFailLog(task.userId(), task.shortsId(), YOUTUBE_DOWNLOADING, e.getMessage());
             throw new ShortsMakingFailException("youtube 원본 영상 다운로드 실패");
         }
     }
 
     private String generateTopTitle(VideoDownloadTask task, VideoDownloadResponse response) {
         try {
-            return topTitleGenerator.makeTopTitle(response.originalTitle());
+            String generatedTopTitle = topTitleGenerator.makeTopTitle(response.originalTitle());
+            logService.sendSuccessLog(task.userId(), task.shortsId(), GPT_TITLE_GENERATING);
+
+            return generatedTopTitle;
         } catch (Exception e) {
             log.error("top title 생성에 실패했습니다 : {}", e.getMessage());
             setShortsStatusToError(task.shortsId());
-            videoDownloadFailLog(task.userId(), task.shortsId(), e.getMessage());
+            logService.sendFailLog(task.userId(), task.shortsId(), GPT_TITLE_GENERATING, e.getMessage());
             throw new ShortsMakingFailException("top title 생성 실패");
         }
     }
@@ -124,25 +129,5 @@ public class VideoService {
         shorts.changeTopTitle(generatedTopTitle);
 
         shortsRepository.save(shorts);
-    }
-
-    private void videoDownloadSuccessLog(long userId, long shortsId) {
-        logRepository.save(Log.builder()
-                .message("SUCCESS")
-                .progressContext(YOUTUBE_DOWNLOADING)
-                .userId(userId)
-                .shortsId(shortsId)
-                .build()
-        );
-    }
-
-    private void videoDownloadFailLog(long userId, long shortsId, String message) {
-        logRepository.save(Log.builder()
-                .message(message)
-                .progressContext(YOUTUBE_DOWNLOADING)
-                .shortsId(shortsId)
-                .userId(userId)
-                .build()
-        );
     }
 }

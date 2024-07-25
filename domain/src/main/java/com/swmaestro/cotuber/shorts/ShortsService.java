@@ -4,6 +4,7 @@ import com.swmaestro.cotuber.batch.dto.ShortsProcessTask;
 import com.swmaestro.cotuber.exception.ShortsMakingFailException;
 import com.swmaestro.cotuber.log.Log;
 import com.swmaestro.cotuber.log.LogRepository;
+import com.swmaestro.cotuber.log.LogService;
 import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,7 @@ import static com.swmaestro.cotuber.shorts.ProgressState.COMPLETE;
 public class ShortsService {
     private final ShortsProcessor shortsProcessor;
     private final ShortsRepository shortsRepository;
-    private final LogRepository logRepository;
+    private final LogService logService;
     
     public void makeShorts(final ShortsProcessTask task) {
         String link;
@@ -38,11 +39,11 @@ public class ShortsService {
                     .orElseThrow();
             shorts.changeStateError();
             shortsRepository.save(shorts);
-            shortsGeneratingFailLog(task.userId(), task.shortsId(), e.getMessage());
+            logService.sendFailLog(task.userId(), task.shortsId(), SHORTS_GENERATING, e.getMessage());
             throw new ShortsMakingFailException("shorts 생성에 실패했습니다");
         }
         log.info("shorts processing end");
-        shortsGeneratingSuccessLog(task.userId(), task.shortsId());
+        logService.sendSuccessLog(task.userId(), task.shortsId(), SHORTS_GENERATING);
 
         final Shorts shorts = shortsRepository.findById(task.shortsId())
                 .orElseThrow();
@@ -63,25 +64,5 @@ public class ShortsService {
                         .thumbnailUrl(e.getThumbnailUrl()).build()
         ));
         return results;
-    }
-
-    private void shortsGeneratingSuccessLog(long userId, long shortsId) {
-        logRepository.save(Log.builder()
-                .message("SUCCESS")
-                .progressContext(SHORTS_GENERATING)
-                .userId(userId)
-                .shortsId(shortsId)
-                .build()
-        );
-    }
-
-    private void shortsGeneratingFailLog(long userId, long shortsId, String message) {
-        logRepository.save(Log.builder()
-                .message(message)
-                .progressContext(SHORTS_GENERATING)
-                .shortsId(shortsId)
-                .userId(userId)
-                .build()
-        );
     }
 }
