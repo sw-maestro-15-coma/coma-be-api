@@ -7,11 +7,15 @@ import com.swmaestro.cotuber.video.YoutubeVideoDownloader;
 import com.swmaestro.cotuber.video.dto.VideoDownloadResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.nio.charset.StandardCharsets;
+
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class YoutubeVideoDownloaderImpl implements YoutubeVideoDownloader {
@@ -28,11 +32,11 @@ public class YoutubeVideoDownloaderImpl implements YoutubeVideoDownloader {
         } catch (JsonProcessingException e) {
             throw new VideoDownloadFailException("request body json 파싱에 실패했습니다");
         }
-
         final ResponseEntity<ResponseBody> response = restClient.post()
                 .uri(URI)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
+                .acceptCharset(StandardCharsets.UTF_8)
                 .body(jsonBody)
                 .retrieve()
                 .toEntity(ResponseBody.class);
@@ -46,6 +50,8 @@ public class YoutubeVideoDownloaderImpl implements YoutubeVideoDownloader {
         if (body == null) {
             throw new VideoDownloadFailException("response body가 null 입니다");
         }
+
+        log.info("youtube video downloader : original youtube title - {}", body.originalTitle);
 
         return VideoDownloadResponse.builder()
                 .s3Url(body.s3Url)
