@@ -59,30 +59,10 @@ public class LambdaShortsThumbnailMaker implements ShortsThumbnailMaker {
         }
     }
 
-    @Getter
-    static class RequestBody {
-        Long shortsId;
-
-        RequestBody() {
-        }
-
-        RequestBody(Long shortsId) {
-            this.shortsId = shortsId;
-        }
+    record RequestBody(Long shortsId) {
     }
 
-    @Getter
-    static class ResponseBody {
-        String message;
-        String thumbnailUrl;
-
-        ResponseBody() {
-        }
-
-        ResponseBody(String message, String thumbnailUrl) {
-            this.message = message;
-            this.thumbnailUrl = thumbnailUrl;
-        }
+    record ResponseBody(String message, String thumbnailUrl) {
     }
 }
 
