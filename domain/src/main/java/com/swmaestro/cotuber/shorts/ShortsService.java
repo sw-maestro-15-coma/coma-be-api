@@ -2,19 +2,15 @@ package com.swmaestro.cotuber.shorts;
 
 import com.swmaestro.cotuber.batch.dto.ShortsProcessTask;
 import com.swmaestro.cotuber.exception.ShortsMakingFailException;
-import com.swmaestro.cotuber.log.Log;
-import com.swmaestro.cotuber.log.LogRepository;
 import com.swmaestro.cotuber.log.LogService;
 import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.swmaestro.cotuber.log.ProgressContext.SHORTS_GENERATING;
-import static com.swmaestro.cotuber.log.ProgressContext.YOUTUBE_DOWNLOADING;
 import static com.swmaestro.cotuber.shorts.ProgressState.COMPLETE;
 
 @Slf4j
@@ -24,7 +20,7 @@ public class ShortsService {
     private final ShortsProcessor shortsProcessor;
     private final ShortsRepository shortsRepository;
     private final LogService logService;
-    
+
     public void makeShorts(final ShortsProcessTask task) {
         String link;
 
@@ -55,14 +51,9 @@ public class ShortsService {
 
     public List<ShortsListResponseDto> getShorts(final long userId) {
         final List<Shorts> shorts = shortsRepository.findAllByUserId(userId);
-        final List<ShortsListResponseDto> results = new ArrayList<>();
-        shorts.forEach(e -> results.add(
-                ShortsListResponseDto.builder()
-                        .id(e.getId())
-                        .topTitle(e.getTopTitle())
-                        .s3Url(e.getLink())
-                        .thumbnailUrl(e.getThumbnailUrl()).build()
-        ));
-        return results;
+
+        return shorts.stream()
+                .map(ShortsListResponseDto::new)
+                .toList();
     }
 }

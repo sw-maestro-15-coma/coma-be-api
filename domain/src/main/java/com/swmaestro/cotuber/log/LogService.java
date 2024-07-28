@@ -8,9 +8,11 @@ import org.springframework.stereotype.Component;
 public class LogService {
     private final LogRepository logRepository;
 
-    public void sendSuccessLog(Long userId,
-                               Long shortsId,
-                               ProgressContext context) {
+    public void sendSuccessLog(
+            Long userId,
+            Long shortsId,
+            ProgressContext context
+    ) {
         logRepository.save(Log.builder()
                 .userId(userId)
                 .shortsId(shortsId)
@@ -19,10 +21,12 @@ public class LogService {
                 .build());
     }
 
-    public void sendFailLog(Long userId,
-                            Long shortsId,
-                            ProgressContext context,
-                            String message) {
+    public void sendFailLog(
+            Long userId,
+            Long shortsId,
+            ProgressContext context,
+            String message
+    ) {
         logRepository.save(Log.builder()
                 .userId(userId)
                 .shortsId(shortsId)
