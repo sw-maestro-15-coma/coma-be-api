@@ -5,8 +5,6 @@ import com.swmaestro.cotuber.batch.ShortsProcessQueue;
 import com.swmaestro.cotuber.batch.dto.AIProcessTask;
 import com.swmaestro.cotuber.batch.dto.ShortsProcessTask;
 import com.swmaestro.cotuber.exception.AIProcessFailException;
-import com.swmaestro.cotuber.log.Log;
-import com.swmaestro.cotuber.log.LogRepository;
 import com.swmaestro.cotuber.log.LogService;
 import com.swmaestro.cotuber.shorts.Shorts;
 import com.swmaestro.cotuber.shorts.ShortsRepository;
@@ -19,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import static com.swmaestro.cotuber.log.ProgressContext.AI_PROCESSING;
-import static com.swmaestro.cotuber.log.ProgressContext.YOUTUBE_DOWNLOADING;
 import static com.swmaestro.cotuber.shorts.ProgressState.SHORTS_GENERATING;
 
 @Slf4j
@@ -34,33 +31,23 @@ public class AIProcessService {
     private final LogService logService;
 
     public void getPopularPoint(final AIProcessTask task) {
-        AIProcessResponse response;
-        try {
-            log.info("ai processing start");
-            response = aiProcessor.process(task.youtubeUrl());
-        } catch (Exception e) {
-            log.info("ai 처리 실패 : {}", e.getMessage());
-            log.info("shorts id : {}", task.shortsId());
-
-            final Shorts shorts = shortsRepository.findById(task.shortsId())
-                    .orElseThrow();
-            shorts.changeStateError();
-            shortsRepository.save(shorts);
-
-            logService.sendFailLog(task.userId(), task.shortsId(), AI_PROCESSING, e.getMessage());
-
-            throw new AIProcessFailException("AI 처리 중 오류가 발생했습니다");
-        }
-
+        log.info("ai processing start");
+        AIProcessResponse response = getAiProcessResponse(task);
         log.info("ai processing end");
+
         logService.sendSuccessLog(task.userId(), task.shortsId(), AI_PROCESSING);
 
-        final ShortsEditPoint editPoint = ShortsEditPoint.initialEditPoint(task.shortsId(), task.videoId());
         final Video video = videoRepository.findById(task.videoId())
                 .orElseThrow();
-        editPoint.calculateDuration(video.getVideoTotalSecond(), response.popularPointSeconds());
 
-        final ShortsEditPoint savedEditPoint = editPointRepository.save(editPoint);
+        ShortsEditPoint editPoint = editPointRepository.save(
+                ShortsEditPoint.of(
+                        task.shortsId(),
+                        task.videoId(),
+                        video.getVideoTotalSecond(),
+                        response.popularPointSeconds()
+                )
+        );
 
         final Shorts shorts = shortsRepository.findById(task.shortsId())
                 .orElseThrow();
@@ -71,11 +58,33 @@ public class AIProcessService {
                 ShortsProcessTask.builder()
                         .userId(task.userId())
                         .shortsId(task.shortsId())
-                        .editPointId(savedEditPoint.getId())
-                        .topTitle(shorts.getTopTitle())    // 논의 필요 : 언제 쇼츠 제목을 넣어주는지?
+                        .editPointId(editPoint.getId())
+                        .topTitle(shorts.getTopTitle())
                         .s3Url(video.getS3Url())
-                        .start(savedEditPoint.getFormattedStart())
-                        .end(savedEditPoint.getFormattedEnd()).build()
+                        .start(editPoint.getFormattedStart())
+                        .end(editPoint.getFormattedEnd())
+                        .build()
         );
+    }
+
+    private AIProcessResponse getAiProcessResponse(AIProcessTask task) {
+        try {
+            return aiProcessor.process(task.youtubeUrl());
+        } catch (Exception e) {
+            log.info("ai 처리 실패 : {}", e.getMessage());
+            log.info("shorts id : {}", task.shortsId());
+
+            setShortsStatusToError(task.shortsId());
+            logService.sendFailLog(task.userId(), task.shortsId(), AI_PROCESSING, e.getMessage());
+
+            throw new AIProcessFailException("AI 처리 중 오류가 발생했습니다");
+        }
+    }
+
+    private void setShortsStatusToError(long shortsId) {
+        final Shorts shorts = shortsRepository.findById(shortsId)
+                .orElseThrow();
+        shorts.changeStateError();
+        shortsRepository.save(shorts);
     }
 }

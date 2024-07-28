@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import static com.swmaestro.cotuber.StringUtil.secondToFormat;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class ShortsEditPoint {
@@ -33,16 +35,18 @@ public class ShortsEditPoint {
         this.updatedAt = updatedAt;
     }
 
-    public static ShortsEditPoint initialEditPoint(long shortsId, long videoId) {
+    public static ShortsEditPoint of(
+            long shortsId,
+            long videoId,
+            int videoLength,
+            int popularPointSeconds
+    ) {
         return ShortsEditPoint.builder()
                 .shortsId(shortsId)
                 .videoId(videoId)
+                .start(calculateStart(popularPointSeconds))
+                .end(calculateEnd(videoLength, popularPointSeconds))
                 .build();
-    }
-
-    public void calculateDuration(final int videoLength, final int popularPointSeconds) {
-        start = calculateStart(popularPointSeconds);
-        end = calculateEnd(videoLength, popularPointSeconds);
     }
 
     public String getFormattedStart() {
@@ -53,50 +57,11 @@ public class ShortsEditPoint {
         return secondToFormat(end);
     }
 
-    private int calculateStart(final int popularPointSeconds) {
-        final int desiredStart = popularPointSeconds - UNIT;
-
-        if (isMinus(desiredStart)) {
-            return 0;
-        }
-        return desiredStart;
+    private static int calculateStart(final int popularPointSeconds) {
+        return Math.max(popularPointSeconds - UNIT, 0);
     }
 
-    private boolean isMinus(final int second) {
-        return (second < 0);
-    }
-
-    private int calculateEnd(final int videoLength, final int popularPointSeconds) {
-        final int desired = popularPointSeconds + UNIT;
-
-        if (isOver(videoLength, desired)) {
-            return videoLength;
-        }
-
-        return desired;
-    }
-
-    private boolean isOver(final int length, final int desired) {
-        return (length < desired);
-    }
-
-    private String secondToFormat(final int totalSecond) {
-        final int hour = totalSecond / 3600;
-        final int minute = (totalSecond % 3600) / 60;
-        final int second = totalSecond % 60;
-
-        return addZeroIfOneDigit(hour) +
-                ":" +
-                addZeroIfOneDigit(minute) +
-                ":" +
-                addZeroIfOneDigit(second);
-    }
-
-    private String addZeroIfOneDigit(int num) {
-        final String digit = String.valueOf(num);
-        if (digit.length() == 1) {
-            return "0" + digit;
-        }
-        return digit;
+    private static int calculateEnd(final int videoLength, final int popularPointSeconds) {
+        return Math.min(popularPointSeconds + UNIT, videoLength);
     }
 }
