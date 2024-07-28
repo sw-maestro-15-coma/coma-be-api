@@ -22,23 +22,10 @@ public class ShortsService {
     private final LogService logService;
 
     public void makeShorts(final ShortsProcessTask task) {
-        String link;
-
-        try {
-            log.info("shorts processing start");
-            link = shortsProcessor.execute(task);
-        } catch (Exception e) {
-            log.info("shorts 생성 중 오류 발생 : {}", e.getMessage());
-            log.info("shorts id : {}", task.shortsId());
-
-            final Shorts shorts = shortsRepository.findById(task.shortsId())
-                    .orElseThrow();
-            shorts.changeStateError();
-            shortsRepository.save(shorts);
-            logService.sendFailLog(task.userId(), task.shortsId(), SHORTS_GENERATING, e.getMessage());
-            throw new ShortsMakingFailException("shorts 생성에 실패했습니다");
-        }
+        log.info("shorts processing start");
+        String link = createShorts(task);
         log.info("shorts processing end");
+
         logService.sendSuccessLog(task.userId(), task.shortsId(), SHORTS_GENERATING);
 
         final Shorts shorts = shortsRepository.findById(task.shortsId())
@@ -46,6 +33,27 @@ public class ShortsService {
         shorts.changeProgressState(COMPLETE);
         shorts.changeLink(link);
 
+        shortsRepository.save(shorts);
+    }
+
+    private String createShorts(ShortsProcessTask task) {
+        try {
+            return shortsProcessor.execute(task);
+        } catch (Exception e) {
+            log.info("shorts 생성 중 오류 발생 : {}", e.getMessage());
+            log.info("shorts id : {}", task.shortsId());
+
+            setShortsStatusToError(task.shortsId());
+            logService.sendFailLog(task.userId(), task.shortsId(), SHORTS_GENERATING, e.getMessage());
+
+            throw new ShortsMakingFailException("shorts 생성에 실패했습니다");
+        }
+    }
+
+    private void setShortsStatusToError(long shortsId) {
+        Shorts shorts = shortsRepository.findById(shortsId)
+                .orElseThrow();
+        shorts.changeStateError();
         shortsRepository.save(shorts);
     }
 
