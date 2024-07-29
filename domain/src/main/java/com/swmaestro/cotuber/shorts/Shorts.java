@@ -59,4 +59,8 @@ public class Shorts {
     public void changeTopTitle(final String topTitle) {
         this.topTitle = topTitle;
     }
+
+    public void changeThumbnailUrl(final String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
 }
