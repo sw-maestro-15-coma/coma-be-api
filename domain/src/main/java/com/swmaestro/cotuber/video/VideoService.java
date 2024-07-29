@@ -5,10 +5,7 @@ import com.swmaestro.cotuber.batch.VideoDownloadQueue;
 import com.swmaestro.cotuber.batch.dto.AIProcessTask;
 import com.swmaestro.cotuber.batch.dto.VideoDownloadTask;
 import com.swmaestro.cotuber.exception.ShortsMakingFailException;
-import com.swmaestro.cotuber.log.Log;
-import com.swmaestro.cotuber.log.LogRepository;
 import com.swmaestro.cotuber.log.LogService;
-import com.swmaestro.cotuber.log.ProgressContext;
 import com.swmaestro.cotuber.shorts.Shorts;
 import com.swmaestro.cotuber.shorts.ShortsRepository;
 import com.swmaestro.cotuber.video.dto.VideoCreateRequestDto;
@@ -75,7 +72,7 @@ public class VideoService {
             VideoDownloadResponse response = youtubeVideoDownloader.download(task.youtubeUrl());
             log.info("video download end");
             logService.sendSuccessLog(task.userId(), task.shortsId(), YOUTUBE_DOWNLOADING);
-            
+
             return response;
         } catch (Exception e) {
             log.error("youtube 원본 영상 다운로드에 실패했습니다 : {}", e.getMessage());

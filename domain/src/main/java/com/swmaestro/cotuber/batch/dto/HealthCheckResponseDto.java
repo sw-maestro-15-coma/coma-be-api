@@ -1,7 +1,7 @@
 package com.swmaestro.cotuber.batch.dto;
 
-import lombok.Builder;
-
-@Builder
 public record HealthCheckResponseDto(String message) {
+    public static HealthCheckResponseDto ok() {
+        return new HealthCheckResponseDto("OK");
+    }
 }

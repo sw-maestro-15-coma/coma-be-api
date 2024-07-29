@@ -81,8 +81,6 @@ public class EndpointController {
     @Operation(summary = "헬스 체크")
     @GetMapping("/health-check")
     public HealthCheckResponseDto healthCheck() {
-        return HealthCheckResponseDto.builder()
-                .message("ok")
-                .build();
+        return HealthCheckResponseDto.ok();
     }
 }
