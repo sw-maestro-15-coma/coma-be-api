@@ -2,8 +2,6 @@ package com.swmaestro.cotuber.shorts;
 
 import com.swmaestro.cotuber.batch.dto.ShortsProcessTask;
 import com.swmaestro.cotuber.exception.ShortsMakingFailException;
-import com.swmaestro.cotuber.log.Log;
-import com.swmaestro.cotuber.log.LogRepository;
 import com.swmaestro.cotuber.log.LogService;
 import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -13,8 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.swmaestro.cotuber.log.ProgressContext.SHORTS_GENERATING;
-import static com.swmaestro.cotuber.log.ProgressContext.YOUTUBE_DOWNLOADING;
+import static com.swmaestro.cotuber.log.ProgressContext.*;
 import static com.swmaestro.cotuber.shorts.ProgressState.COMPLETE;
 
 @Slf4j
@@ -24,7 +21,8 @@ public class ShortsService {
     private final ShortsProcessor shortsProcessor;
     private final ShortsRepository shortsRepository;
     private final LogService logService;
-    
+    private final ShortsThumbnailMaker shortsThumbnailMaker;
+
     public void makeShorts(final ShortsProcessTask task) {
         String link;
 
@@ -51,6 +49,11 @@ public class ShortsService {
         shorts.changeLink(link);
 
         shortsRepository.save(shorts);
+
+        String thumbnailUrl = getShortsThumbnailUrl(task.userId(), task.shortsId());
+        shorts.changeThumbnailUrl(thumbnailUrl);
+
+        shortsRepository.save(shorts);
     }
 
     public List<ShortsListResponseDto> getShorts(final long userId) {
@@ -64,5 +67,19 @@ public class ShortsService {
                         .thumbnailUrl(e.getThumbnailUrl()).build()
         ));
         return results;
+    }
+
+    private String getShortsThumbnailUrl(final long userId, final long shortsId) {
+        try {
+            String thumbnailUrl = shortsThumbnailMaker.makeThumbnail(shortsId);
+            logService.sendSuccessLog(userId, shortsId, SHORTS_THUMBNAIL_GENERATING);
+            return thumbnailUrl;
+        } catch (Exception e) {
+            log.info("shorts thumbnail 생성 중 오류 발생 : {}", e.getMessage());
+            log.info("shorts id : {}", shortsId);
+
+            logService.sendFailLog(userId, shortsId, SHORTS_THUMBNAIL_GENERATING, e.getMessage());
+            throw new ShortsMakingFailException("shorts thumbnail 생성에 실패했습니다");
+        }
     }
 }
