@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.swmaestro.cotuber.log.ProgressContext.*;
+import static com.swmaestro.cotuber.log.ProgressContext.SHORTS_GENERATING;
+import static com.swmaestro.cotuber.log.ProgressContext.SHORTS_THUMBNAIL_GENERATING;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,8 +31,10 @@ public class ShortsService {
 
         final Shorts shorts = shortsRepository.findById(task.shortsId())
                 .orElseThrow();
-        shorts.changeProgressState(COMPLETE);
-        shorts.changeLink(link);
+
+        String thumbnailUrl = getShortsThumbnailUrl(task.userId(), task.shortsId());
+        shorts.changeThumbnailUrl(thumbnailUrl);
+        shorts.completeShorts(link);
 
         shortsRepository.save(shorts);
     }
@@ -54,11 +57,6 @@ public class ShortsService {
         Shorts shorts = shortsRepository.findById(shortsId)
                 .orElseThrow();
         shorts.changeStateError();
-        shortsRepository.save(shorts);
-
-        String thumbnailUrl = getShortsThumbnailUrl(task.userId(), task.shortsId());
-        shorts.changeThumbnailUrl(thumbnailUrl);
-
         shortsRepository.save(shorts);
     }
 

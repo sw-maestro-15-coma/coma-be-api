@@ -52,15 +52,16 @@ public class Shorts {
         progressState = ERROR;
     }
 
-    public void changeLink(final String link) {
-        this.link = link;
-    }
-
     public void changeTopTitle(final String topTitle) {
         this.topTitle = topTitle;
     }
 
     public void changeThumbnailUrl(final String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public void completeShorts(String link) {
+        this.link = link;
+        this.progressState = ProgressState.COMPLETE;
     }
 }
