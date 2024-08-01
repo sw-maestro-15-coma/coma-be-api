@@ -1,4 +1,4 @@
-package com.swmaestro.cotuber.shorts.shortsEditPoint;
+package com.swmaestro.cotuber.shorts.edit;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

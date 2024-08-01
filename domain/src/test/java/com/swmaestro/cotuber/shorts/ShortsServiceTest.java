@@ -35,8 +35,8 @@ class ShortsServiceTest {
                 .userId(1)
                 .s3Url("https://s3.url.com")
                 .topTitle("치킨을 먹는 방법")
-                .start("01:01")
-                .end("01:10")
+                .start(61)
+                .end(70)
                 .shortsId(1)
                 .editPointId(1)
                 .build();
@@ -68,8 +68,8 @@ class ShortsServiceTest {
                 .userId(1)
                 .s3Url("https://s3.url.com")
                 .topTitle("치킨을 먹는 방법")
-                .start("01:01")
-                .end("01:10")
+                .start(61)
+                .end(70)
                 .shortsId(1)
                 .editPointId(1)
                 .build();
@@ -100,8 +100,8 @@ class ShortsServiceTest {
                 .userId(1)
                 .s3Url("https://s3.url.com")
                 .topTitle("치킨을 먹는 방법")
-                .start("01:01")
-                .end("01:10")
+                .start(61)
+                .end(70)
                 .shortsId(1)
                 .editPointId(1)
                 .build();

@@ -1,36 +1,31 @@
 package com.swmaestro.cotuber.shorts.edit;
 
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-import static com.swmaestro.cotuber.StringUtil.secondToFormat;
-
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class ShortsEditPoint {
     private static final int UNIT = 30;
 
-    private long id;
-    private long shortsId;
-    private long videoId;
-    private int start;
-    private int end;
+    private final long id;
+    private final long shortsId;
+    private final long videoId;
+    private final int startSecond;
+    private final int endSecond;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder
     public ShortsEditPoint(long id, long shortsId, long videoId,
-                           int start, int end,
+                           int startSecond, int endSecond,
                            LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.shortsId = shortsId;
         this.videoId = videoId;
-        this.start = start;
-        this.end = end;
+        this.startSecond = startSecond;
+        this.endSecond = endSecond;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -44,17 +39,9 @@ public class ShortsEditPoint {
         return ShortsEditPoint.builder()
                 .shortsId(shortsId)
                 .videoId(videoId)
-                .start(calculateStart(popularPointSeconds))
-                .end(calculateEnd(videoLength, popularPointSeconds))
+                .startSecond(calculateStart(popularPointSeconds))
+                .endSecond(calculateEnd(videoLength, popularPointSeconds))
                 .build();
-    }
-
-    public String getFormattedStart() {
-        return secondToFormat(start);
-    }
-
-    public String getFormattedEnd() {
-        return secondToFormat(end);
     }
 
     private static int calculateStart(final int popularPointSeconds) {
