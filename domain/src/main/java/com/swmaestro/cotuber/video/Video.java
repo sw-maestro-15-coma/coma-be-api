@@ -52,8 +52,4 @@ public class Video {
         this.videoTotalSecond = response.length();
         this.title = convertToUTF8(response.originalTitle());
     }
-
-    public boolean isNew() {
-        return this.id == 0;
-    }
 }
