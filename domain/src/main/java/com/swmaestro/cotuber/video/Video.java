@@ -40,6 +40,7 @@ public class Video {
 
     public static Video initialVideo(final VideoCreateRequestDto request) {
         return Video.builder()
+                .id(0)
                 .s3Url(null)
                 .title("제목을 받아오는 중입니다...")
                 .youtubeUrl(request.url())
@@ -50,5 +51,9 @@ public class Video {
         this.s3Url = response.s3Url();
         this.videoTotalSecond = response.length();
         this.title = convertToUTF8(response.originalTitle());
+    }
+
+    public boolean isNew() {
+        return this.id == 0;
     }
 }

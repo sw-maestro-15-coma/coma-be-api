@@ -33,7 +33,7 @@ public class ShortsService {
                 .orElseThrow();
 
         String thumbnailUrl = getShortsThumbnailUrl(task.userId(), task.shortsId());
-        shorts.changeThumbnailUrl(thumbnailUrl);
+        shorts.assignThumbnailUrl(thumbnailUrl);
         shorts.completeShorts(link);
 
         shortsRepository.save(shorts);
@@ -77,6 +77,7 @@ public class ShortsService {
             log.info("shorts thumbnail 생성 중 오류 발생 : {}", e.getMessage());
             log.info("shorts id : {}", shortsId);
 
+            setShortsStatusToError(shortsId);
             logService.sendFailLog(userId, shortsId, SHORTS_THUMBNAIL_GENERATING, e.getMessage());
             throw new ShortsMakingFailException("shorts thumbnail 생성에 실패했습니다");
         }

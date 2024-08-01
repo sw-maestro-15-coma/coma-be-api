@@ -8,32 +8,18 @@ import java.time.LocalDateTime;
 import static com.swmaestro.cotuber.shorts.ProgressState.ERROR;
 import static com.swmaestro.cotuber.shorts.ProgressState.YOUTUBE_DOWNLOADING;
 
+@Builder
 @Getter
 public class Shorts {
-    private long id;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private long userId;
-    private long videoId;
+    private final long id;
+    private final long userId;
+    private final long videoId;
     private String link;
     private String topTitle;
     private ProgressState progressState;
     private String thumbnailUrl;
-
-    @Builder
-    public Shorts(long id, LocalDateTime createdAt, LocalDateTime updatedAt,
-                  long userId, long videoId, String link,
-                  String topTitle, ProgressState progressState, String thumbnailUrl) {
-        this.id = id;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.userId = userId;
-        this.videoId = videoId;
-        this.link = link;
-        this.topTitle = topTitle;
-        this.progressState = progressState;
-        this.thumbnailUrl = thumbnailUrl;
-    }
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public static Shorts initialShorts(final long userId, final long videoId, final String topTitle) {
         return Shorts.builder()
@@ -52,11 +38,11 @@ public class Shorts {
         progressState = ERROR;
     }
 
-    public void changeTopTitle(final String topTitle) {
+    public void assignTopTitle(final String topTitle) {
         this.topTitle = topTitle;
     }
 
-    public void changeThumbnailUrl(final String thumbnailUrl) {
+    public void assignThumbnailUrl(final String thumbnailUrl) {
         this.thumbnailUrl = thumbnailUrl;
     }
 
