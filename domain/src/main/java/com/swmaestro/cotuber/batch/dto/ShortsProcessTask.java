@@ -7,8 +7,8 @@ public record ShortsProcessTask(
         long userId,
         String s3Url,
         String topTitle,
-        String start,
-        String end,
+        int start,
+        int end,
         long shortsId,
         long editPointId
 ) {

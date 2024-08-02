@@ -123,7 +123,7 @@ public class VideoService {
                 .orElseThrow();
 
         shorts.changeProgressState(AI_PROCESSING);
-        shorts.changeTopTitle(generatedTopTitle);
+        shorts.assignTopTitle(generatedTopTitle);
 
         shortsRepository.save(shorts);
     }

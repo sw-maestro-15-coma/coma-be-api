@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.swmaestro.cotuber.log.ProgressContext.*;
+import static com.swmaestro.cotuber.log.ProgressContext.SHORTS_GENERATING;
+import static com.swmaestro.cotuber.log.ProgressContext.SHORTS_THUMBNAIL_GENERATING;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -30,8 +31,10 @@ public class ShortsService {
 
         final Shorts shorts = shortsRepository.findById(task.shortsId())
                 .orElseThrow();
-        shorts.changeProgressState(COMPLETE);
-        shorts.changeLink(link);
+
+        String thumbnailUrl = getShortsThumbnailUrl(task.userId(), task.shortsId());
+        shorts.assignThumbnailUrl(thumbnailUrl);
+        shorts.completeShorts(link);
 
         shortsRepository.save(shorts);
     }
@@ -55,11 +58,6 @@ public class ShortsService {
                 .orElseThrow();
         shorts.changeStateError();
         shortsRepository.save(shorts);
-
-        String thumbnailUrl = getShortsThumbnailUrl(task.userId(), task.shortsId());
-        shorts.changeThumbnailUrl(thumbnailUrl);
-
-        shortsRepository.save(shorts);
     }
 
     public List<ShortsListResponseDto> getShorts(final long userId) {
@@ -79,6 +77,7 @@ public class ShortsService {
             log.info("shorts thumbnail 생성 중 오류 발생 : {}", e.getMessage());
             log.info("shorts id : {}", shortsId);
 
+            setShortsStatusToError(shortsId);
             logService.sendFailLog(userId, shortsId, SHORTS_THUMBNAIL_GENERATING, e.getMessage());
             throw new ShortsMakingFailException("shorts thumbnail 생성에 실패했습니다");
         }

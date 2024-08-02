@@ -40,6 +40,7 @@ public class Video {
 
     public static Video initialVideo(final VideoCreateRequestDto request) {
         return Video.builder()
+                .id(0)
                 .s3Url(null)
                 .title("제목을 받아오는 중입니다...")
                 .youtubeUrl(request.url())

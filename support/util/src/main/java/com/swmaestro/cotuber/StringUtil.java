@@ -12,6 +12,10 @@ public class StringUtil {
     }
 
     public static String secondToFormat(int totalSecond) {
+        if (totalSecond < 0) {
+            throw new IllegalArgumentException("음수는 입력할 수 없습니다.");
+        }
+        
         int hour = totalSecond / 3600;
         int minute = (totalSecond % 3600) / 60;
         int second = totalSecond % 60;

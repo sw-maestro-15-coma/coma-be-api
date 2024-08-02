@@ -61,8 +61,8 @@ public class AIProcessService {
                         .editPointId(editPoint.getId())
                         .topTitle(shorts.getTopTitle())
                         .s3Url(video.getS3Url())
-                        .start(editPoint.getFormattedStart())
-                        .end(editPoint.getFormattedEnd())
+                        .start(editPoint.getStartSecond())
+                        .end(editPoint.getEndSecond())
                         .build()
         );
     }

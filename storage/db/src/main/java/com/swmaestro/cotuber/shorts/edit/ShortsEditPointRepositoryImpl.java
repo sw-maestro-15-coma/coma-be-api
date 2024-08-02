@@ -1,7 +1,5 @@
-package com.swmaestro.cotuber.shorts.shortsEditPoint;
+package com.swmaestro.cotuber.shorts.edit;
 
-import com.swmaestro.cotuber.shorts.edit.ShortsEditPoint;
-import com.swmaestro.cotuber.shorts.edit.ShortsEditPointRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

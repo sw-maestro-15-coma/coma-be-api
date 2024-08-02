@@ -6,12 +6,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swmaestro.cotuber.batch.dto.ShortsProcessTask;
 import com.swmaestro.cotuber.exception.ShortsProcessFailException;
 import com.swmaestro.cotuber.shorts.ShortsProcessor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+
+import static com.swmaestro.cotuber.StringUtil.secondToFormat;
 
 @RequiredArgsConstructor
 @Component
@@ -54,35 +55,26 @@ public class ShortsProcessorImpl implements ShortsProcessor {
         return responseBody.shortsUrl;
     }
 
-    @Getter
-    static class RequestBody {
-        String s3Url;
-        String title;
-        String start;
-        String end;
-
-        RequestBody() {
-        }
+    record RequestBody(
+            String s3Url,
+            String title,
+            String start,
+            String end
+    ) {
 
         RequestBody(ShortsProcessTask task) {
-            this.s3Url = task.s3Url();
-            this.title = task.topTitle();
-            this.start = task.start();
-            this.end = task.end();
+            this(
+                    task.s3Url(),
+                    task.topTitle(),
+                    secondToFormat(task.start()),
+                    secondToFormat(task.end())
+            );
         }
     }
 
-    @Getter
-    static class ResponseBody {
-        long id;
-        String shortsUrl;
-
-        ResponseBody() {
-        }
-
-        ResponseBody(long id, String shortsUrl) {
-            this.id = id;
-            this.shortsUrl = shortsUrl;
-        }
+    record ResponseBody(
+            long id,
+            String shortsUrl
+    ) {
     }
 }

@@ -1,8 +1,9 @@
-package com.swmaestro.cotuber.shorts.shortsEditPoint;
+package com.swmaestro.cotuber.shorts.edit;
 
 import com.swmaestro.cotuber.common.BaseEntity;
-import com.swmaestro.cotuber.shorts.edit.ShortsEditPoint;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,8 +39,8 @@ public class ShortsEditPointEntity extends BaseEntity {
                 .id(getId())
                 .shortsId(shortsId)
                 .videoId(videoId)
-                .start(start)
-                .end(end)
+                .startSecond(start)
+                .endSecond(end)
                 .createdAt(getCreatedAt())
                 .updatedAt(getUpdatedAt()).build();
     }
@@ -49,8 +50,8 @@ public class ShortsEditPointEntity extends BaseEntity {
                 .id(editPoint.getId())
                 .shortsId(editPoint.getShortsId())
                 .videoId(editPoint.getVideoId())
-                .start(editPoint.getStart())
-                .end(editPoint.getEnd())
+                .start(editPoint.getStartSecond())
+                .end(editPoint.getEndSecond())
                 .createdAt(editPoint.getCreatedAt())
                 .updatedAt(editPoint.getUpdatedAt()).build();
     }

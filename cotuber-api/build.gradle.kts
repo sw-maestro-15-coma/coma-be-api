@@ -14,6 +14,7 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":support:logging"))
     implementation(project(":support:jwt"))
+    implementation(project(":support:util"))
     implementation(project(":storage:db"))
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
     implementation("org.springframework.boot:spring-boot-starter-web")
