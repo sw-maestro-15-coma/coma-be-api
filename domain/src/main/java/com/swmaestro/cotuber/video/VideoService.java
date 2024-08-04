@@ -1,11 +1,11 @@
 package com.swmaestro.cotuber.video;
 
 import com.swmaestro.cotuber.batch.AIProcessQueue;
-import com.swmaestro.cotuber.batch.VideoDownloadQueue;
 import com.swmaestro.cotuber.batch.dto.AIProcessTask;
 import com.swmaestro.cotuber.batch.dto.VideoDownloadTask;
 import com.swmaestro.cotuber.exception.ShortsMakingFailException;
 import com.swmaestro.cotuber.log.LogService;
+import com.swmaestro.cotuber.video.dto.VideoDownloadMessageRequest;
 import com.swmaestro.cotuber.shorts.Shorts;
 import com.swmaestro.cotuber.shorts.ShortsRepository;
 import com.swmaestro.cotuber.video.dto.VideoCreateRequestDto;
@@ -25,17 +25,18 @@ import static com.swmaestro.cotuber.shorts.ProgressState.AI_PROCESSING;
 public class VideoService {
     private final VideoRepository videoRepository;
     private final ShortsRepository shortsRepository;
-    private final VideoDownloadQueue videoDownloadQueue;
     private final AIProcessQueue aiProcessQueue;
     private final YoutubeVideoDownloader youtubeVideoDownloader;
     private final TopTitleGenerator topTitleGenerator;
     private final LogService logService;
+    private final VideoDownloadProducer videoDownloadProducer;
 
     public VideoCreateResponseDto requestVideoDownload(final long userId, final VideoCreateRequestDto request) {
         final Video video = videoRepository.save(Video.initialVideo(request));
-        final Shorts shorts = shortsRepository.save(Shorts.initialShorts(userId, video.getId(), "테스트 제목"));
+        final Shorts shorts = shortsRepository.save(Shorts.initialShorts(userId, video.getId(), "제목 생성중..."));
 
-        videoDownloadQueue.push(
+        /*
+        videoDownloadProducer.send(
                 VideoDownloadTask.builder()
                         .userId(userId)
                         .videoId(video.getId())
@@ -43,13 +44,17 @@ public class VideoService {
                         .youtubeUrl(request.url())
                         .build()
         );
+         */
+        videoDownloadProducer.send(
+                VideoDownloadMessageRequest.builder().build()
+        );
 
         return VideoCreateResponseDto.builder()
                 .id(video.getId())
                 .build();
     }
 
-    public void downloadYoutube(final VideoDownloadTask task) {
+    public void processAfterVideoDownload(final VideoDownloadTask task) {
         VideoDownloadResponse response = downloadVideo(task);
         String generatedTopTitle = generateTopTitle(task, response);
 
