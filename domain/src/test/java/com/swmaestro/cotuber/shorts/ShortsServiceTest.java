@@ -1,6 +1,5 @@
 package com.swmaestro.cotuber.shorts;
 
-import com.swmaestro.cotuber.batch.dto.ShortsProcessTask;
 import com.swmaestro.cotuber.exception.ShortsMakingFailException;
 import com.swmaestro.cotuber.log.LogService;
 import org.junit.jupiter.api.BeforeEach;

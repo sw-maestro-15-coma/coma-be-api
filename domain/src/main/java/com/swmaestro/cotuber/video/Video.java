@@ -2,7 +2,6 @@ package com.swmaestro.cotuber.video;
 
 import com.swmaestro.cotuber.video.dto.VideoCreateRequestDto;
 import com.swmaestro.cotuber.video.dto.VideoDownloadMessageResponse;
-import com.swmaestro.cotuber.video.dto.VideoDownloadResponse;
 import lombok.Builder;
 import lombok.Getter;
 
