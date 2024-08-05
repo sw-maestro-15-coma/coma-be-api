@@ -2,7 +2,6 @@ package com.swmaestro.cotuber.video;
 
 import com.swmaestro.cotuber.ai.AIProcessProducer;
 import com.swmaestro.cotuber.ai.dto.AIProcessMessageRequest;
-import com.swmaestro.cotuber.shorts.ProgressState;
 import com.swmaestro.cotuber.shorts.Shorts;
 import com.swmaestro.cotuber.shorts.ShortsRepository;
 import com.swmaestro.cotuber.video.dto.VideoDownloadMessageResponse;
@@ -15,10 +14,19 @@ public class AfterVideoDownloadService {
     private final VideoRepository videoRepository;
     private final ShortsRepository shortsRepository;
     private final AIProcessProducer aiProcessProducer;
+    private final TopTitleGenerator topTitleGenerator;
 
     public void postProcess(VideoDownloadMessageResponse response) {
+        Shorts shorts = shortsRepository.findById(response.shortsId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 shorts가 없습니다"));
+
+        String topTitle = generateTopTitle(response.originalTitle());
+        shorts.assignTopTitle(topTitle);
+
+        shorts.changeStateToAIProcessing();
+        shortsRepository.save(shorts);
+
         changeVideoState(response);
-        changeShortsStateToAIProcessing(response.shortsId());
         publishToAIProducer();
     }
 
@@ -29,12 +37,12 @@ public class AfterVideoDownloadService {
         videoRepository.save(video);
     }
 
-    private void changeShortsStateToAIProcessing(long shortsId) {
-        Shorts shorts = shortsRepository.findById(shortsId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 shorts가 없습니다"));
-
-        shorts.changeStateToAIProcessing();
-        shortsRepository.save(shorts);
+    private String generateTopTitle(String originalTitle) {
+        try {
+            return topTitleGenerator.makeTopTitle(originalTitle);
+        } catch (Exception e) {
+            throw new IllegalStateException("쇼츠 top title 생성에 실패했습니다");
+        }
     }
 
     private void publishToAIProducer() {
