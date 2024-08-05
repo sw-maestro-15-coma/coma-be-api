@@ -33,7 +33,7 @@ public class AfterVideoDownloadService {
         Shorts shorts = shortsRepository.findById(shortsId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 shorts가 없습니다"));
 
-        shorts.changeProgressState(ProgressState.AI_PROCESSING);
+        shorts.changeStateToAIProcessing();
         shortsRepository.save(shorts);
     }
 

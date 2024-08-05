@@ -5,8 +5,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-import static com.swmaestro.cotuber.shorts.ProgressState.ERROR;
-import static com.swmaestro.cotuber.shorts.ProgressState.YOUTUBE_DOWNLOADING;
+import static com.swmaestro.cotuber.shorts.ProgressState.*;
 
 @Builder
 @Getter
@@ -30,11 +29,15 @@ public class Shorts {
                 .build();
     }
 
-    public void changeProgressState(final ProgressState state) {
-        progressState = state;
+    public void changeStateToAIProcessing() {
+        progressState = AI_PROCESSING;
     }
 
-    public void changeStateError() {
+    public void changeStateToShortsGenerating() {
+        progressState = SHORTS_GENERATING;
+    }
+
+    public void changeStateToError() {
         progressState = ERROR;
     }
 

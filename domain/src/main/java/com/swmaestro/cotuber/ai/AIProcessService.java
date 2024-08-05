@@ -1,35 +1,16 @@
 package com.swmaestro.cotuber.ai;
 
-import com.swmaestro.cotuber.ai.dto.AIProcessResponse;
-import com.swmaestro.cotuber.batch.ShortsProcessQueue;
-import com.swmaestro.cotuber.batch.dto.AIProcessTask;
-import com.swmaestro.cotuber.batch.dto.ShortsProcessTask;
-import com.swmaestro.cotuber.exception.AIProcessFailException;
-import com.swmaestro.cotuber.log.LogService;
-import com.swmaestro.cotuber.shorts.Shorts;
-import com.swmaestro.cotuber.shorts.ShortsRepository;
-import com.swmaestro.cotuber.shorts.edit.ShortsEditPoint;
-import com.swmaestro.cotuber.shorts.edit.ShortsEditPointRepository;
-import com.swmaestro.cotuber.video.Video;
-import com.swmaestro.cotuber.video.VideoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import static com.swmaestro.cotuber.log.ProgressContext.AI_PROCESSING;
-import static com.swmaestro.cotuber.shorts.ProgressState.SHORTS_GENERATING;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class AIProcessService {
-    private final AIProcessor aiProcessor;
-    private final ShortsEditPointRepository editPointRepository;
-    private final VideoRepository videoRepository;
-    private final ShortsProcessQueue shortsProcessQueue;
-    private final ShortsRepository shortsRepository;
-    private final LogService logService;
 
+    /*
     public void getPopularPoint(final AIProcessTask task) {
         log.info("ai processing start");
         AIProcessResponse response = getAiProcessResponse(task);
@@ -87,4 +68,6 @@ public class AIProcessService {
         shorts.changeStateError();
         shortsRepository.save(shorts);
     }
+
+     */
 }

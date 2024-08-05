@@ -17,6 +17,7 @@ import static com.swmaestro.cotuber.log.ProgressContext.SHORTS_THUMBNAIL_GENERAT
 @RequiredArgsConstructor
 @Service
 public class ShortsService {
+    /*
     private final ShortsProcessor shortsProcessor;
     private final ShortsRepository shortsRepository;
     private final LogService logService;
@@ -56,7 +57,7 @@ public class ShortsService {
     private void setShortsStatusToError(long shortsId) {
         Shorts shorts = shortsRepository.findById(shortsId)
                 .orElseThrow();
-        shorts.changeStateError();
+        shorts.changeStateToError();
         shortsRepository.save(shorts);
     }
 
@@ -82,4 +83,6 @@ public class ShortsService {
             throw new ShortsMakingFailException("shorts thumbnail 생성에 실패했습니다");
         }
     }
+
+     */
 }
