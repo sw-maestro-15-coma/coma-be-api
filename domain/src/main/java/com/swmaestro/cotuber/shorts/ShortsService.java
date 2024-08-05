@@ -1,8 +1,5 @@
 package com.swmaestro.cotuber.shorts;
 
-import com.swmaestro.cotuber.batch.dto.ShortsProcessTask;
-import com.swmaestro.cotuber.exception.ShortsMakingFailException;
-import com.swmaestro.cotuber.log.LogService;
 import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,19 +7,21 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.swmaestro.cotuber.log.ProgressContext.SHORTS_GENERATING;
-import static com.swmaestro.cotuber.log.ProgressContext.SHORTS_THUMBNAIL_GENERATING;
-
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class ShortsService {
-    /*
-    private final ShortsProcessor shortsProcessor;
     private final ShortsRepository shortsRepository;
-    private final LogService logService;
-    private final ShortsThumbnailMaker shortsThumbnailMaker;
 
+    public List<ShortsListResponseDto> getShorts(final long userId) {
+        final List<Shorts> shorts = shortsRepository.findAllByUserId(userId);
+
+        return shorts.stream()
+                .map(ShortsListResponseDto::new)
+                .toList();
+    }
+
+    /*
     public void makeShorts(final ShortsProcessTask task) {
         log.info("shorts processing start");
         String link = createShorts(task);
@@ -59,14 +58,6 @@ public class ShortsService {
                 .orElseThrow();
         shorts.changeStateToError();
         shortsRepository.save(shorts);
-    }
-
-    public List<ShortsListResponseDto> getShorts(final long userId) {
-        final List<Shorts> shorts = shortsRepository.findAllByUserId(userId);
-
-        return shorts.stream()
-                .map(ShortsListResponseDto::new)
-                .toList();
     }
 
     private String getShortsThumbnailUrl(final long userId, final long shortsId) {
