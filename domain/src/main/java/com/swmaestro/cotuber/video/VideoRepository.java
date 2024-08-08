@@ -6,4 +6,6 @@ public interface VideoRepository {
     Video save(Video video);
 
     Optional<Video> findById(long id);
+
+    Optional<Video> findByYoutubeUrl(String youtubeUrl);
 }

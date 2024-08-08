@@ -5,7 +5,10 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-import static com.swmaestro.cotuber.shorts.ProgressState.*;
+import static com.swmaestro.cotuber.shorts.ProgressState.AI_PROCESSING;
+import static com.swmaestro.cotuber.shorts.ProgressState.ERROR;
+import static com.swmaestro.cotuber.shorts.ProgressState.SHORTS_GENERATING;
+import static com.swmaestro.cotuber.shorts.ProgressState.YOUTUBE_DOWNLOADING;
 
 @Builder
 @Getter
@@ -20,11 +23,11 @@ public class Shorts {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static Shorts initialShorts(final long userId, final long videoId, final String topTitle) {
+    public static Shorts initialShorts(final long userId, final long videoId) {
         return Shorts.builder()
                 .userId(userId)
                 .videoId(videoId)
-                .topTitle(topTitle)
+                .topTitle("제목 생성중...")
                 .progressState(YOUTUBE_DOWNLOADING)
                 .build();
     }
