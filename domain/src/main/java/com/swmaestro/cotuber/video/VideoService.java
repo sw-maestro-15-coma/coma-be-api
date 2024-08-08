@@ -31,7 +31,7 @@ public class VideoService {
         }
     }
 
-    private VideoCreateResponseDto skipDownloadVideo(Video video, final long userId) {
+    private VideoCreateResponseDto skipDownloadVideo(Video video, long userId) {
         final Shorts shorts = shortsRepository.save(Shorts.initialShorts(userId, video.getId()));
 
         afterVideoDownloadService.postProcess(
