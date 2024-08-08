@@ -73,22 +73,21 @@ class VideoServiceTest {
             void skipDownloadVideoWhenAlreadyVideoExists() {
                 // given
                 long STUB_VIDEO_ID = 0;
+                Video stubVideo = Video.builder()
+                        .id(STUB_VIDEO_ID)
+                        .s3Url(null)
+                        .title("테스트 제목")
+                        .youtubeUrl(youtubeUrl)
+                        .build();
 
-                videoMockRepository.save(
-                        Video.builder()
-                                .id(STUB_VIDEO_ID)
-                                .s3Url(null)
-                                .title("테스트 제목")
-                                .youtubeUrl(youtubeUrl)
-                                .build()
-                );
+                videoMockRepository.save(stubVideo);
 
                 // when
                 videoService.requestVideoDownload(1L, new VideoCreateRequestDto(youtubeUrl));
 
                 // then
                 assertThat(videoMockRepository.findAll()).hasSize(1);
-                assertThat(videoMockRepository.findById(STUB_VIDEO_ID)).isPresent();
+                assertThat(videoMockRepository.findAll()).contains(stubVideo);
             }
 
             @DisplayName("바로 비디오 다운 이후 동작을 요청해야 한다")
