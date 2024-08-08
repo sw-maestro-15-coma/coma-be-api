@@ -51,7 +51,7 @@ public class EndpointController {
     public VideoCreateResponseDto updateVideo(@RequestBody VideoCreateRequestDto createRequestDto) {
         final long userId = AuthUtil.getCurrentUserId();
 
-        validator.checkYoutubeUrl(createRequestDto.url());
+        validator.checkYoutubeUrl(createRequestDto.youtubeUrl());
 
         return videoService.requestVideoDownload(userId, createRequestDto);
     }

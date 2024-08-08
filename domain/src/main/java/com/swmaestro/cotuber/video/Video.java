@@ -43,7 +43,7 @@ public class Video {
                 .id(0)
                 .s3Url(null)
                 .title("제목을 받아오는 중입니다...")
-                .youtubeUrl(request.url())
+                .youtubeUrl(request.youtubeUrl())
                 .build();
     }
 
