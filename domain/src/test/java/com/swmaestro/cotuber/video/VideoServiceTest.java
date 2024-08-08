@@ -21,13 +21,8 @@ class VideoServiceTest {
     ShortsMockRepository shortsMockRepository = new ShortsMockRepository();
     AfterVideoDownloadService afterVideoDownloadService = mock(AfterVideoDownloadService.class);
     VideoDownloadProducer videoDownloadProducer = mock(VideoDownloadProducer.class);
-    
-    VideoService videoService = new VideoService(
-            afterVideoDownloadService,
-            videoMockRepository,
-            shortsMockRepository,
-            videoDownloadProducer
-    );
+
+    VideoService videoService;
 
     String youtubeUrl = "https://www.youtube.com/watch?v=1234";
 
@@ -35,6 +30,13 @@ class VideoServiceTest {
     void setUp() {
         videoMockRepository.clear();
         shortsMockRepository.clear();
+
+        videoService = new VideoService(
+                afterVideoDownloadService,
+                videoMockRepository,
+                shortsMockRepository,
+                videoDownloadProducer
+        );
     }
 
     @DisplayName("쇼츠 생성을 요청할 경우")
