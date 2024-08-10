@@ -7,6 +7,6 @@ public record ShortsProcessMessageRequest(long videoId,
                                           long shortsId,
                                           String topTitle,
                                           String videoS3Url,
-                                          int startSecond,
-                                          int endSecond) {
+                                          String startTime,
+                                          String endTime) {
 }

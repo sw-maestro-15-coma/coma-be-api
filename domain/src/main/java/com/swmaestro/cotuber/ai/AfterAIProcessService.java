@@ -1,5 +1,6 @@
 package com.swmaestro.cotuber.ai;
 
+import com.swmaestro.cotuber.StringUtil;
 import com.swmaestro.cotuber.ai.dto.AIProcessMessageResponse;
 import com.swmaestro.cotuber.shorts.Shorts;
 import com.swmaestro.cotuber.shorts.ShortsProcessProducer;
@@ -49,8 +50,8 @@ public class AfterAIProcessService {
                 .videoId(video.getId())
                 .shortsId(shortsId)
                 .videoS3Url(video.getS3Url())
-                .startSecond(shortsEditPoint.getStartSecond())
-                .endSecond(shortsEditPoint.getEndSecond())
+                .startTime(StringUtil.secondToFormat(shortsEditPoint.getStartSecond()))
+                .endTime(StringUtil.secondToFormat(shortsEditPoint.getEndSecond()))
                 .build();
         shortsProcessProducer.send(request);
     }
