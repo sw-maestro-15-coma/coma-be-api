@@ -26,9 +26,8 @@ public class VideoService {
 
         if (video.isPresent()) {
             return skipDownloadVideo(video.get(), userId);
-        } else {
-            return downloadVideo(userId, request);
         }
+        return downloadVideo(userId, request);
     }
 
     private VideoCreateResponseDto skipDownloadVideo(Video video, long userId) {
