@@ -1,6 +1,7 @@
 package com.swmaestro.cotuber.video;
 
 import com.swmaestro.cotuber.ai.AIProcessProducer;
+import com.swmaestro.cotuber.ai.dto.AIProcessMessageRequest;
 import com.swmaestro.cotuber.shorts.Shorts;
 import com.swmaestro.cotuber.shorts.ShortsRepository;
 import com.swmaestro.cotuber.video.dto.VideoCreateRequestDto;
@@ -9,13 +10,15 @@ import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static com.swmaestro.cotuber.shorts.ProgressState.AI_PROCESSING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 class AfterVideoDownloadServiceTest {
     final String VIDEO_S3URL = "https//remote.com";
@@ -25,7 +28,9 @@ class AfterVideoDownloadServiceTest {
     final int FULL_SECOND = 30;
 
     VideoDownloadMessageResponse response = mockResponse();
+    List<AIProcessMessageRequest> mockMessageQueue = new ArrayList<>();
 
+    AIProcessProducer aiProcessProducer = mock(AIProcessProducer.class);
     ShortsRepository shortsRepository = mock(ShortsRepository.class);
     TopTitleGenerator topTitleGenerator = mock(TopTitleGenerator.class);
     VideoRepository videoRepository = mock(VideoRepository.class);
@@ -33,7 +38,7 @@ class AfterVideoDownloadServiceTest {
     AfterVideoDownloadService afterService = new AfterVideoDownloadService(
             videoRepository,
             shortsRepository,
-            mock(AIProcessProducer.class),
+            aiProcessProducer,
             topTitleGenerator
     );
 
@@ -47,6 +52,10 @@ class AfterVideoDownloadServiceTest {
         when(shortsRepository.findById(0L)).thenReturn(Optional.of(shorts));
         when(videoRepository.findById(0L)).thenReturn(Optional.of(video));
         when(topTitleGenerator.makeTopTitle(ORIGINAL_TITLE)).thenReturn(GENERATED_TITLE);
+        doAnswer(ans -> {
+            mockMessageQueue.add(ans.getArgument(0));
+            return null;
+        }).when(aiProcessProducer).send(any());
 
         // when
         afterService.postProcess(response);
@@ -56,6 +65,7 @@ class AfterVideoDownloadServiceTest {
         assertThat(shorts.getTopTitle()).isEqualTo(GENERATED_TITLE);
         assertThat(video.getVideoTotalSecond()).isEqualTo(FULL_SECOND);
         assertThat(video.getS3Url()).isEqualTo(VIDEO_S3URL);
+        assertThat(mockMessageQueue).hasSize(1);
     }
 
     @DisplayName("top title generate lambda 실패 시 IllegalStateException 발생")
