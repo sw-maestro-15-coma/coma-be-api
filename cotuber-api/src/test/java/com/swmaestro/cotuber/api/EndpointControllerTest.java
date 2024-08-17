@@ -51,16 +51,19 @@ class EndpointControllerTest {
     @MockBean
     UserReader userReader;
 
-    @DisplayName("")
+    @DisplayName("대시보드 가져오기 테스트")
     @Test
     void test() throws Exception {
+        // given
         when(dashboardService.getDashboard(0L)).thenReturn(List.of(
                         DashboardListResponseDto.builder().build()
                 )
         );
 
+        // when
         mockMvc.perform(get("/api/v1/dashboard"))
                 .andDo(print())
+                // then
                 .andExpect(status().isOk())
                 .andExpect(content().contentType("application/json"));
     }
@@ -74,6 +77,7 @@ class EndpointControllerTest {
         VideoCreateRequestDto requestDto = new VideoCreateRequestDto(invalidYoutubeUrl);
         String jsonMapped = objectMapper.writeValueAsString(requestDto);
 
+        // when
         ThrowableAssert.ThrowingCallable when = () -> mockMvc.perform(
                 post("/api/v1/video")
                         .content(jsonMapped)
@@ -81,10 +85,11 @@ class EndpointControllerTest {
                         .with(csrf())
         );
 
+        // then
         assertThatThrownBy(when).isInstanceOf(ServletException.class);
     }
 
-    @DisplayName("")
+    @DisplayName("updateVideo - 유효한 youtube url")
     @Test
     void test2() throws Exception {
         // given
@@ -98,12 +103,14 @@ class EndpointControllerTest {
 
         when(videoService.requestVideoDownload(0L, requestDto)).thenReturn(responseDto);
 
+        // when
         mockMvc.perform(
                 post("/api/v1/video")
                         .content(jsonMapped)
                         .contentType(MediaType.APPLICATION_JSON)
                         .with(csrf())
         ).andDo(print())
+                // then
                 .andExpect(status().isOk())
                 .andExpect(content().string(jsonMappedResponse));
     }
