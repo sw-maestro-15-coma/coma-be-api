@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import java.util.Locale;
 
 @EnableScheduling
-@EnableJpaAuditing
 @SpringBootApplication
 public class CotuberApiApplication {
 
