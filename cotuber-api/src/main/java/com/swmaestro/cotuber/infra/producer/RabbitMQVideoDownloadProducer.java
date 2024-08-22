@@ -8,8 +8,6 @@ import com.swmaestro.cotuber.video.dto.VideoDownloadMessageRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
-
 @RequiredArgsConstructor
 @Component
 public class RabbitMQVideoDownloadProducer implements VideoDownloadProducer {
@@ -23,9 +21,9 @@ public class RabbitMQVideoDownloadProducer implements VideoDownloadProducer {
         try (Channel channel = connection.createChannel()) {
             channel.queueDeclare(QUEUE_NAME, false, false, false, null);
 
-            String message = objectMapper.writeValueAsString(request);
+            byte[] message = objectMapper.writeValueAsBytes(request);
 
-            channel.basicPublish("", QUEUE_NAME, null, message.getBytes(StandardCharsets.UTF_8));
+            channel.basicPublish("", QUEUE_NAME, null, message);
         } catch (Exception e) {
             throw new IllegalStateException("video download producer에서 예외 발생 : " + e.getMessage());
         }

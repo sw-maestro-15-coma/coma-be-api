@@ -54,6 +54,7 @@ public class VideoService {
                 VideoDownloadMessageRequest.builder()
                         .videoId(newVideo.getId())
                         .shortsId(shorts.getId())
+                        .youtubeUrl(request.youtubeUrl())
                         .build()
         );
 

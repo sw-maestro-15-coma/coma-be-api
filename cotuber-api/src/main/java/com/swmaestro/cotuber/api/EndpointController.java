@@ -36,7 +36,6 @@ public class EndpointController {
     private final UserReader userReader;
     private final Validator validator;
 
-    @NeedLogin
     @Operation(summary = "대시보드의 동영상 목록 조회")
     @GetMapping(value = "/dashboard")
     public List<DashboardListResponseDto> getVideoList() {
