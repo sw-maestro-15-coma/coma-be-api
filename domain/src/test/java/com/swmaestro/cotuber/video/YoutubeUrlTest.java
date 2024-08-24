@@ -49,11 +49,12 @@ class YoutubeUrlTest {
     }
 
     @DisplayName("정상적인 youtube 영상 url을 넣으면 key를 받아올 수 있다")
-    @Test
-    void can_get_key_with_valid_youtube_url() {
-        // given
-        String url = "https://www.youtube.com/watch?v=fWNaR-rxAic";
-
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "https://www.youtube.com/watch?v=fWNaR-rxAic",
+            "https://m.youtube.com/watch?v=fWNaR-rxAic"
+    })
+    void can_get_key_with_valid_youtube_url(String url) {
         // when
         YoutubeUrl youtubeUrl = new YoutubeUrl(url);
         String key = youtubeUrl.getKey();
