@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Getter
 public class YoutubeUrl {
     private static final String YOUTUBE_WATCH_URL_HOST = "youtube.com/watch";
     private static final String YOUTUBE_SHORT_URL_HOST = "youtu.be";
@@ -19,15 +20,11 @@ public class YoutubeUrl {
     private static final IllegalArgumentException INVALID_YOUTUBE_URL_EXCEPTION = new IllegalArgumentException("유효하지 않은 URL입니다");
     private static final IllegalArgumentException NOT_YOUTUBE_URL_EXCEPTION = new IllegalArgumentException("Youtube의 URL이 아닙니다");
 
-    private final URI url;
-
-    @Getter
     private final String key;
 
     public YoutubeUrl(String url) {
         validateUrl(url);
-        this.url = URI.create(url);
-        this.key = extractKey(this.url);
+        this.key = extractKey(URI.create(url));
     }
 
     private void validateUrl(String url) {
@@ -98,6 +95,6 @@ public class YoutubeUrl {
     }
 
     public String getUrlString() {
-        return this.url.toString();
+        return "https://youtube.com/watch?v=" + key;
     }
 }
