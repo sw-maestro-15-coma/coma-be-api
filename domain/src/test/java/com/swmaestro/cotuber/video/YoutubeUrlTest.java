@@ -11,11 +11,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @DisplayName("YoutubeUrl은")
 class YoutubeUrlTest {
     @DisplayName("정상적인 youtube url을 넣으면 문제 없이 생성된다")
-    @Test
-    void create_with_valid_youtube_url() {
-        // given
-        String url = "https://www.youtube.com/watch?v=fWNaR-rxAic";
-
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "https://www.youtube.com/watch?v=fWNaR-rxAic",
+            "https://m.youtube.com/watch?v=fWNaR-rxAic",
+    })
+    void create_with_valid_youtube_url(String url) {
         // when
         YoutubeUrl youtubeUrl = new YoutubeUrl(url);
 
