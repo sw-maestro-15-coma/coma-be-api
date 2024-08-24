@@ -55,6 +55,6 @@ public class Video {
     }
 
     public String getYoutubeUrlString() {
-        return this.youtubeUrl.getUrlString();
+        return this.youtubeUrl.getUrl();
     }
 }

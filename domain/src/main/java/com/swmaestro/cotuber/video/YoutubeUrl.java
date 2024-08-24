@@ -94,7 +94,7 @@ public class YoutubeUrl {
                 ));
     }
 
-    public String getUrlString() {
+    public String getUrl() {
         return "https://youtube.com/watch?v=" + key;
     }
 }
