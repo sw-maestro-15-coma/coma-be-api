@@ -11,12 +11,13 @@ import static com.swmaestro.cotuber.StringUtil.convertToUTF8;
 
 @Getter
 public class Video {
-    private long id;
+    private static final String INITIAL_TITLE = "제목을 받아오는 중입니다...";
+    private final long id;
     private String title;
     private String s3Url;
-    private String youtubeUrl;
+    private final YoutubeUrl youtubeUrl;
     private int videoTotalSecond;
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder
@@ -32,7 +33,7 @@ public class Video {
         this.id = id;
         this.title = title;
         this.s3Url = s3Url;
-        this.youtubeUrl = youtubeUrl;
+        this.youtubeUrl = new YoutubeUrl(youtubeUrl);
         this.videoTotalSecond = videoTotalSecond;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -41,9 +42,9 @@ public class Video {
     public static Video initialVideo(final VideoCreateRequestDto request) {
         return Video.builder()
                 .id(0)
-                .s3Url(null)
-                .title("제목을 받아오는 중입니다...")
+                .title(INITIAL_TITLE)
                 .youtubeUrl(request.url())
+                .s3Url(null)
                 .build();
     }
 
@@ -51,5 +52,9 @@ public class Video {
         this.s3Url = response.s3Url();
         this.videoTotalSecond = response.length();
         this.title = convertToUTF8(response.originalTitle());
+    }
+
+    public String getYoutubeUrlString() {
+        return this.youtubeUrl.getUrlString();
     }
 }
