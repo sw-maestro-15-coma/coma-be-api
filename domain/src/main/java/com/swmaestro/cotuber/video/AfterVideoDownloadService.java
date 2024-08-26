@@ -19,22 +19,18 @@ public class AfterVideoDownloadService {
     public void postProcess(VideoDownloadMessageResponse response) {
         Shorts shorts = shortsRepository.findById(response.shortsId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 shorts가 없습니다"));
+        Video video = videoRepository.findById(response.videoId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 video가 없습니다"));
 
         String topTitle = generateTopTitle(response.originalTitle());
         shorts.assignTopTitle(topTitle);
-
         shorts.changeStateToAIProcessing();
         shortsRepository.save(shorts);
 
-        changeVideoState(response);
-        publishToAIProducer();
-    }
-
-    private void changeVideoState(VideoDownloadMessageResponse response) {
-        Video video = videoRepository.findById(response.videoId())
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 video가 없습니다"));
         video.updateVideoInfo(response);
         videoRepository.save(video);
+
+        publishToAIProducer();
     }
 
     private String generateTopTitle(String originalTitle) {

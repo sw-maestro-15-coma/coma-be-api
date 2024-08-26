@@ -4,5 +4,6 @@ import lombok.Builder;
 
 @Builder
 public record AIProcessMessageResponse(long videoId,
-                                       long shortsId) {
+                                       long shortsId,
+                                       int popularPointSecond) {
 }

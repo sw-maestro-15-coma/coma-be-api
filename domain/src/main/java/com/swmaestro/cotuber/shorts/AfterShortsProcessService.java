@@ -16,8 +16,9 @@ public class AfterShortsProcessService {
 
         String thumbnailUrl = generateThumbnail(response.shortsId());
         shorts.assignThumbnailUrl(thumbnailUrl);
+        shorts.completeShorts(response.link());
 
-        changeShortsStateToComplete(shorts, response.link());
+        shortsRepository.save(shorts);
     }
 
     private String generateThumbnail(long shortsId) {
@@ -26,10 +27,5 @@ public class AfterShortsProcessService {
         } catch (Exception e) {
             throw new IllegalStateException("shorts 썸네일 생성에 실패했습니다");
         }
-    }
-
-    private void changeShortsStateToComplete(Shorts shorts, String link) {
-        shorts.completeShorts(link);
-        shortsRepository.save(shorts);
     }
 }

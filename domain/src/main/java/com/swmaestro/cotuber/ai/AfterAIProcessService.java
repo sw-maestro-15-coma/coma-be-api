@@ -22,8 +22,10 @@ public class AfterAIProcessService {
     private final ShortsProcessProducer shortsProcessProducer;
 
     public void postProcess(AIProcessMessageResponse response) {
-        changeShortsStateToShortsGenerating(response.shortsId());
-        int popularPointSecond = 0;
+        Shorts shorts = shortsRepository.findById(response.shortsId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 shorts가 없습니다"));
+        shorts.changeStateToShortsGenerating();
+        shortsRepository.save(shorts);
 
         Video video = videoRepository.findById(response.videoId())
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 video가 없습니다"));
@@ -32,23 +34,12 @@ public class AfterAIProcessService {
                 ShortsEditPoint.of(response.shortsId(),
                         response.videoId(),
                         video.getVideoTotalSecond(),
-                        popularPointSecond)
+                        response.popularPointSecond())
         );
 
-        publishRequestToShortsProducer(video, response.shortsId(), shortsEditPoint);
-    }
-
-    private void changeShortsStateToShortsGenerating(long shortsId) {
-        Shorts shorts = shortsRepository.findById(shortsId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 shorts가 없습니다"));
-        shorts.changeStateToShortsGenerating();
-        shortsRepository.save(shorts);
-    }
-
-    private void publishRequestToShortsProducer(Video video, long shortsId, ShortsEditPoint shortsEditPoint) {
         ShortsProcessMessageRequest request = ShortsProcessMessageRequest.builder()
                 .videoId(video.getId())
-                .shortsId(shortsId)
+                .shortsId(response.shortsId())
                 .videoS3Url(video.getS3Url())
                 .startTime(StringUtil.secondToFormat(shortsEditPoint.getStartSecond()))
                 .endTime(StringUtil.secondToFormat(shortsEditPoint.getEndSecond()))
