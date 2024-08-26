@@ -2,6 +2,8 @@ package com.swmaestro.cotuber.api.message;
 
 import com.swmaestro.cotuber.ai.AfterAIProcessService;
 import com.swmaestro.cotuber.ai.dto.AIProcessMessageResponse;
+import com.swmaestro.cotuber.log.LogService;
+import com.swmaestro.cotuber.log.dto.FailLogMessage;
 import com.swmaestro.cotuber.shorts.AfterShortsProcessService;
 import com.swmaestro.cotuber.shorts.dto.ShortsProcessMessageResponse;
 import com.swmaestro.cotuber.video.dto.VideoDownloadMessageResponse;
@@ -22,6 +24,7 @@ public class MessageController {
     private final AfterVideoDownloadService afterVideoDownloadService;
     private final AfterAIProcessService afterAIProcessService;
     private final AfterShortsProcessService afterShortsProcessService;
+    private final LogService logService;
 
     @Operation(summary = "원본 비디오 다운로드 성공")
     @PostMapping("/video")
@@ -39,5 +42,11 @@ public class MessageController {
     @PostMapping("/shorts")
     public void receiveShortsProcessing(@RequestBody ShortsProcessMessageResponse response) {
         afterShortsProcessService.postProcessing(response);
+    }
+
+    @Operation(summary = "처리 중 오류 발생")
+    @PostMapping("/fail")
+    public void afterFail(@RequestBody FailLogMessage logMessage) {
+        logService.sendFailLog(logMessage.shortsId(), logMessage.message());
     }
 }
