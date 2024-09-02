@@ -43,6 +43,7 @@ public class AfterAIProcessService {
                 .videoS3Url(video.getS3Url())
                 .startTime(StringUtil.secondToFormat(shortsEditPoint.getStartSecond()))
                 .endTime(StringUtil.secondToFormat(shortsEditPoint.getEndSecond()))
+                .topTitle(shorts.getTopTitle())
                 .build();
         shortsProcessProducer.send(request);
     }

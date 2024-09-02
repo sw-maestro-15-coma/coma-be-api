@@ -1,21 +1,21 @@
 package com.swmaestro.cotuber.shorts;
 
 import com.swmaestro.cotuber.shorts.dto.ShortsProcessMessageResponse;
-import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.util.Optional;
 
 import static com.swmaestro.cotuber.shorts.ProgressState.COMPLETE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.ThrowableAssert.*;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
 
 class AfterShortsProcessServiceTest {
-    ShortsRepository mockShortsRepository = Mockito.mock(ShortsRepository.class);
-    ShortsThumbnailMaker mockShortsThumbnailMaker = Mockito.mock(ShortsThumbnailMaker.class);
+    ShortsRepository mockShortsRepository = mock(ShortsRepository.class);
+    ShortsThumbnailMaker mockShortsThumbnailMaker = mock(ShortsThumbnailMaker.class);
     AfterShortsProcessService service = new AfterShortsProcessService(
             mockShortsRepository,
             mockShortsThumbnailMaker
@@ -25,11 +25,11 @@ class AfterShortsProcessServiceTest {
     @Test
     void thumbnail_오류_테스트() {
         // given
-        Mockito.when(mockShortsThumbnailMaker.makeThumbnail(anyLong())).thenThrow(RuntimeException.class);
-        Mockito.when(mockShortsRepository.findById(anyLong())).thenReturn(Optional.of(Shorts.initialShorts(0L, 0L)));
+        when(mockShortsThumbnailMaker.makeThumbnail(anyLong())).thenThrow(RuntimeException.class);
+        when(mockShortsRepository.findById(anyLong())).thenReturn(Optional.of(Shorts.initialShorts(0L, 0L)));
 
         // when
-        ThrowableAssert.ThrowingCallable when = () -> {
+        ThrowingCallable when = () -> {
             service.postProcessing(ShortsProcessMessageResponse.builder().build());
         };
 
@@ -42,8 +42,8 @@ class AfterShortsProcessServiceTest {
         // given
         String thumbnailUrl = "thumbnail_url";
         Shorts shorts = Shorts.initialShorts(0L, 0L);
-        Mockito.when(mockShortsRepository.findById(anyLong())).thenReturn(Optional.of(shorts));
-        Mockito.when(mockShortsThumbnailMaker.makeThumbnail(anyLong())).thenReturn(thumbnailUrl);
+        when(mockShortsRepository.findById(anyLong())).thenReturn(Optional.of(shorts));
+        when(mockShortsThumbnailMaker.makeThumbnail(anyLong())).thenReturn(thumbnailUrl);
 
         // when
         service.postProcessing(ShortsProcessMessageResponse.builder()
