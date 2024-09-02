@@ -30,7 +30,7 @@ public class AfterVideoDownloadService {
         video.updateVideoInfo(response);
         videoRepository.save(video);
 
-        publishToAIProducer();
+        publishToAIProducer(video.getYoutubeUrlString());
     }
 
     private String generateTopTitle(String originalTitle) {
@@ -41,8 +41,10 @@ public class AfterVideoDownloadService {
         }
     }
 
-    private void publishToAIProducer() {
-        AIProcessMessageRequest request = AIProcessMessageRequest.builder().build();
+    private void publishToAIProducer(String youtubeUrl) {
+        AIProcessMessageRequest request = AIProcessMessageRequest.builder()
+                .youtubeUrl(youtubeUrl)
+                .build();
 
         aiProcessProducer.send(request);
     }

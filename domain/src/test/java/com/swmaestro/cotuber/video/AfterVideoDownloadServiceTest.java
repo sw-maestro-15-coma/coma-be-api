@@ -6,7 +6,6 @@ import com.swmaestro.cotuber.shorts.Shorts;
 import com.swmaestro.cotuber.shorts.ShortsRepository;
 import com.swmaestro.cotuber.video.dto.VideoCreateRequestDto;
 import com.swmaestro.cotuber.video.dto.VideoDownloadMessageResponse;
-import org.assertj.core.api.ThrowableAssert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -17,12 +16,13 @@ import java.util.Optional;
 import static com.swmaestro.cotuber.shorts.ProgressState.AI_PROCESSING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.ThrowableAssert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class AfterVideoDownloadServiceTest {
     final String VIDEO_S3URL = "https//remote.com";
-    final String YOUTUBE_URL = "https://youtube.com";
+    final String YOUTUBE_URL = "https://www.youtube.com/watch?v=fWNaR-rxAic";
     final String ORIGINAL_TITLE = "original title";
     final String GENERATED_TITLE = "gen title";
     final int FULL_SECOND = 30;
@@ -73,11 +73,13 @@ class AfterVideoDownloadServiceTest {
     void throwIllegalStateExceptionIfTitleLambdaFail() {
         // given
         Shorts shorts = Shorts.initialShorts(0L, 0L);
+        Video video = Video.initialVideo(new VideoCreateRequestDto(YOUTUBE_URL));
         when(shortsRepository.findById(0L)).thenReturn(Optional.of(shorts));
         when(topTitleGenerator.makeTopTitle(ORIGINAL_TITLE)).thenThrow(RuntimeException.class);
+        when(videoRepository.findById(0L)).thenReturn(Optional.of(video));
 
         // when
-        ThrowableAssert.ThrowingCallable when = () -> {
+        ThrowingCallable when = () -> {
             afterService.postProcess(response);
         };
 
