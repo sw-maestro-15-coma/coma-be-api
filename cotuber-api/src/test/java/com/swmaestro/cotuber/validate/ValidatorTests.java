@@ -7,9 +7,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class ValidatorTests {
-    YoutubeUrlPattern youtubeUrlPattern = new YoutubeUrlPattern();
-    Validator validator = new Validator(youtubeUrlPattern);
+class ValidatorTests {
+    Validator validator = new Validator();
 
     @DisplayName("youtube url 유효성 검사 로직 검증 - 성공하는 경우")
     @Test

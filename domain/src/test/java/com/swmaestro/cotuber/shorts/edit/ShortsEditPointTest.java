@@ -32,7 +32,7 @@ class ShortsEditPointTest {
         assertThat(end).isEqualTo(30);
     }
 
-    @DisplayName("최대 길이, 편집점 모두 0일 때 - 특이 케이스")
+    @DisplayName("최대 길이, 편집점 모두 0일 때에는 start와 end가 0이어야 한다")
     @Test
     void startAndEndAllZero() {
         // given
