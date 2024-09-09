@@ -1,7 +1,7 @@
 package com.swmaestro.cotuber.video;
 
 import com.swmaestro.cotuber.video.dto.VideoCreateRequestDto;
-import com.swmaestro.cotuber.video.dto.VideoDownloadResponse;
+import com.swmaestro.cotuber.video.dto.VideoDownloadMessageResponse;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -43,14 +43,14 @@ public class Video {
         return Video.builder()
                 .id(0)
                 .title(INITIAL_TITLE)
-                .youtubeUrl(request.url())
+                .youtubeUrl(request.youtubeUrl())
                 .s3Url(null)
                 .build();
     }
 
-    public void updateVideoInfo(final VideoDownloadResponse response) {
+    public void updateVideoInfo(final VideoDownloadMessageResponse response) {
         this.s3Url = response.s3Url();
-        this.videoTotalSecond = response.length();
+        this.videoTotalSecond = response.videoFullSecond();
         this.title = convertToUTF8(response.originalTitle());
     }
 

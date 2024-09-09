@@ -22,4 +22,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
     testImplementation("org.springframework.security:spring-security-test")
+    implementation ("com.rabbitmq:amqp-client:5.21.0")
+
 }

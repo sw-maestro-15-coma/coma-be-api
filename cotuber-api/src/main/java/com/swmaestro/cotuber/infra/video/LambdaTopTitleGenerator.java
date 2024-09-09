@@ -2,9 +2,7 @@ package com.swmaestro.cotuber.infra.video;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.swmaestro.cotuber.exception.ShortsTopTitleGenerateFailException;
 import com.swmaestro.cotuber.video.TopTitleGenerator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +31,7 @@ public class LambdaTopTitleGenerator implements TopTitleGenerator {
         try {
             jsonBody = objectMapper.writeValueAsString(requestBody);
         } catch (JsonProcessingException e) {
-            throw new ShortsTopTitleGenerateFailException("json 파싱에 실패했습니다 : " + e.getMessage());
+            throw new IllegalStateException("json 파싱에 실패했습니다 : " + e.getMessage());
         }
 
         final ResponseEntity<byte[]> response = restClient.post()
@@ -44,13 +42,13 @@ public class LambdaTopTitleGenerator implements TopTitleGenerator {
                 .toEntity(byte[].class);
 
         if (!response.getStatusCode().is2xxSuccessful()) {
-            throw new ShortsTopTitleGenerateFailException("람다 내부 문제가 발생했습니다");
+            throw new IllegalStateException("람다 내부 문제가 발생했습니다");
         }
 
         final byte[] body = response.getBody();
 
         if (body == null) {
-            throw new ShortsTopTitleGenerateFailException("response body가 null입니다");
+            throw new IllegalStateException("response body가 null입니다");
         }
 
         String decoded = new String(response.getBody(), StandardCharsets.UTF_8);
@@ -60,7 +58,7 @@ public class LambdaTopTitleGenerator implements TopTitleGenerator {
 
             return responseBody.generatedTitle;
         } catch (JsonProcessingException e) {
-            throw new ShortsTopTitleGenerateFailException("response body json 파싱에 실패했습니다");
+            throw new IllegalStateException("response body json 파싱에 실패했습니다");
         }
     }
 

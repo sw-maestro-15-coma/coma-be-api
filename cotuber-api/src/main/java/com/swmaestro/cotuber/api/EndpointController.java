@@ -9,6 +9,7 @@ import com.swmaestro.cotuber.shorts.ShortsService;
 import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
 import com.swmaestro.cotuber.user.User;
 import com.swmaestro.cotuber.user.UserReader;
+import com.swmaestro.cotuber.validate.Validator;
 import com.swmaestro.cotuber.video.VideoService;
 import com.swmaestro.cotuber.video.dto.VideoCreateRequestDto;
 import com.swmaestro.cotuber.video.dto.VideoCreateResponseDto;
@@ -33,8 +34,8 @@ public class EndpointController {
     private final ShortsService shortsService;
     private final DashboardService dashboardService;
     private final UserReader userReader;
+    private final Validator validator;
 
-    @NeedLogin
     @Operation(summary = "대시보드의 동영상 목록 조회")
     @GetMapping(value = "/dashboard")
     public List<DashboardListResponseDto> getVideoList() {
@@ -48,6 +49,8 @@ public class EndpointController {
     @PostMapping(value = "/video")
     public VideoCreateResponseDto updateVideo(@RequestBody VideoCreateRequestDto createRequestDto) {
         final long userId = AuthUtil.getCurrentUserId();
+
+        validator.checkYoutubeUrl(createRequestDto.youtubeUrl());
 
         return videoService.requestVideoDownload(userId, createRequestDto);
     }
