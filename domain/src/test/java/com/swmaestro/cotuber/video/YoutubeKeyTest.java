@@ -8,8 +8,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@DisplayName("YoutubeUrl은")
-class YoutubeUrlTest {
+@DisplayName("YoutubeKey는")
+class YoutubeKeyTest {
     @DisplayName("정상적인 youtube url을 넣으면 문제 없이 생성된다")
     @ParameterizedTest
     @ValueSource(strings = {
@@ -18,10 +18,10 @@ class YoutubeUrlTest {
     })
     void create_with_valid_youtube_url(String url) {
         // when
-        YoutubeUrl youtubeUrl = new YoutubeUrl(url);
+        YoutubeKey youtubeKey = new YoutubeKey(url);
 
         // then
-        assertThat(youtubeUrl).isNotNull();
+        assertThat(youtubeKey).isNotNull();
     }
 
     @DisplayName("정상적인 youtube 공유 url을 넣으면 문제 없이 생성된다")
@@ -31,10 +31,10 @@ class YoutubeUrlTest {
         String url = "https://youtu.be/fWNaR-rxAic?si=qi1YsYPKwLpNHElR";
 
         // when
-        YoutubeUrl youtubeUrl = new YoutubeUrl(url);
+        YoutubeKey youtubeKey = new YoutubeKey(url);
 
         // then
-        assertThat(youtubeUrl).isNotNull();
+        assertThat(youtubeKey).isNotNull();
     }
 
     @DisplayName("정상적인 youtube embed url을 넣으면 문제 없이 생성된다")
@@ -43,10 +43,10 @@ class YoutubeUrlTest {
         String url = "https://www.youtube.com/embed/BqgCJzSOT2k?si=h6qJYrUTgGFlCv6U";
 
         // when
-        YoutubeUrl youtubeUrl = new YoutubeUrl(url);
+        YoutubeKey youtubeKey = new YoutubeKey(url);
 
         // then
-        assertThat(youtubeUrl).isNotNull();
+        assertThat(youtubeKey).isNotNull();
     }
 
     @DisplayName("정상적인 youtube 영상 url을 넣으면 key를 받아올 수 있다")
@@ -57,8 +57,8 @@ class YoutubeUrlTest {
     })
     void can_get_key_with_valid_youtube_url(String url) {
         // when
-        YoutubeUrl youtubeUrl = new YoutubeUrl(url);
-        String key = youtubeUrl.getKey();
+        YoutubeKey youtubeKey = new YoutubeKey(url);
+        String key = youtubeKey.getKey();
 
         // then
         assertThat(key).isEqualTo("fWNaR-rxAic");
@@ -71,8 +71,8 @@ class YoutubeUrlTest {
         String url = "https://youtu.be/fWNaR-rxAic?si=qi1YsYPKwLpNHElR";
 
         // when
-        YoutubeUrl youtubeUrl = new YoutubeUrl(url);
-        String key = youtubeUrl.getKey();
+        YoutubeKey youtubeKey = new YoutubeKey(url);
+        String key = youtubeKey.getKey();
 
         // then
         assertThat(key).isEqualTo("fWNaR-rxAic");
@@ -85,8 +85,8 @@ class YoutubeUrlTest {
         String url = "https://www.youtube.com/embed/fWNaR-rxAic";
 
         // when
-        YoutubeUrl youtubeUrl = new YoutubeUrl(url);
-        String key = youtubeUrl.getKey();
+        YoutubeKey youtubeKey = new YoutubeKey(url);
+        String key = youtubeKey.getKey();
 
         // then
         assertThat(key).isEqualTo("fWNaR-rxAic");
@@ -102,7 +102,7 @@ class YoutubeUrlTest {
     })
     void throw_exception_with_non_youtube_url(String url) {
         // when & then
-        assertThatThrownBy(() -> new YoutubeUrl(url))
+        assertThatThrownBy(() -> new YoutubeKey(url))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -110,7 +110,7 @@ class YoutubeUrlTest {
     @Test
     void throw_exception_with_null() {
         // when & then
-        assertThatThrownBy(() -> new YoutubeUrl(null))
+        assertThatThrownBy(() -> new YoutubeKey(null))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -124,7 +124,7 @@ class YoutubeUrlTest {
     })
     void throw_exception_with_no_key_youtube_url(String url) {
         // when & then
-        assertThatThrownBy(() -> new YoutubeUrl(url))
+        assertThatThrownBy(() -> new YoutubeKey(url))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -135,7 +135,7 @@ class YoutubeUrlTest {
     })
     void throw_exception_with_no_key_youtube_share_url(String url) {
         // when & then
-        assertThatThrownBy(() -> new YoutubeUrl(url))
+        assertThatThrownBy(() -> new YoutubeKey(url))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -147,7 +147,7 @@ class YoutubeUrlTest {
     })
     void throw_exception_with_no_key_youtube_embed_url(String url) {
         // when & then
-        assertThatThrownBy(() -> new YoutubeUrl(url))
+        assertThatThrownBy(() -> new YoutubeKey(url))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
