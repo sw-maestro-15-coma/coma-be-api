@@ -3,8 +3,6 @@ package com.swmaestro.cotuber.api;
 import com.swmaestro.cotuber.auth.NeedLogin;
 import com.swmaestro.cotuber.batch.dto.HealthCheckResponseDto;
 import com.swmaestro.cotuber.config.AuthUtil;
-import com.swmaestro.cotuber.dashboard.DashboardService;
-import com.swmaestro.cotuber.dashboard.dto.DashboardListResponseDto;
 import com.swmaestro.cotuber.shorts.ShortsService;
 import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
 import com.swmaestro.cotuber.user.User;
@@ -32,17 +30,8 @@ import java.util.List;
 public class EndpointController {
     private final VideoService videoService;
     private final ShortsService shortsService;
-    private final DashboardService dashboardService;
     private final UserReader userReader;
     private final Validator validator;
-
-    @Operation(summary = "대시보드의 동영상 목록 조회")
-    @GetMapping(value = "/dashboard")
-    public List<DashboardListResponseDto> getVideoList() {
-        final long userId = AuthUtil.getCurrentUserId();
-
-        return dashboardService.getDashboard(userId);
-    }
 
     @NeedLogin
     @Operation(summary = "유튜브 링크로 동영상 추가(추출)")
