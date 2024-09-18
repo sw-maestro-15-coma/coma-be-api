@@ -52,7 +52,7 @@ public class VideoEntity extends BaseEntity {
                 .id(video.getId())
                 .title(video.getTitle())
                 .s3Url(video.getS3Url())
-                .youtubeUrl(video.getYoutubeUrlString())
+                .youtubeUrl(video.getYoutubeUrl())
                 .length(video.getVideoTotalSecond())
                 .createdAt(video.getCreatedAt())
                 .updatedAt(video.getUpdatedAt())
