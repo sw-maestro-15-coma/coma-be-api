@@ -5,20 +5,17 @@ import com.swmaestro.cotuber.batch.dto.HealthCheckResponseDto;
 import com.swmaestro.cotuber.config.AuthUtil;
 import com.swmaestro.cotuber.shorts.ShortsService;
 import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
+import com.swmaestro.cotuber.shorts.dto.ShortsResponseDto;
 import com.swmaestro.cotuber.user.User;
 import com.swmaestro.cotuber.user.UserReader;
 import com.swmaestro.cotuber.validate.Validator;
 import com.swmaestro.cotuber.video.VideoService;
 import com.swmaestro.cotuber.video.dto.VideoCreateRequestDto;
-import com.swmaestro.cotuber.video.dto.VideoCreateResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -34,23 +31,71 @@ public class EndpointController {
     private final Validator validator;
 
     @NeedLogin
-    @Operation(summary = "유튜브 링크로 동영상 추가(추출)")
+    @Operation(summary = "등록된 비디오 데이터 목록 조회")
+    @GetMapping(value = "/video-list")
+    public List<UserVideoRelationListResponseDto> getVideoList() {
+        final long userId = AuthUtil.getCurrentUserId();
+
+        return userVideoRelationService.getVideoList(userId);
+    }
+
+    @NeedLogin
+    @Operation(summary = "등록된 비디오 데이터 단건 조회")
+    @GetMapping(value = "/video/{videoId}")
+    public UserVideoRelationResponseDto getVideo(@PathParam("videoId") final Long videoId) {
+        final long userId = AuthUtil.getCurrentUserId();
+
+        return userVideoRelationService.getVideo(userId, videoId);
+    }
+
+    @NeedLogin
+    @Operation(summary = "비디오 등록")
     @PostMapping(value = "/video")
-    public VideoCreateResponseDto updateVideo(@RequestBody VideoCreateRequestDto createRequestDto) {
+    public UserVideoRelationResponseDto createVideo(@RequestBody VideoCreateRequestDto createRequestDto) {
         final long userId = AuthUtil.getCurrentUserId();
 
         validator.checkYoutubeUrl(createRequestDto.youtubeUrl());
 
-        return videoService.requestVideoDownload(userId, createRequestDto);
+        return userVideoRelationService.createRelation(userId, createRequestDto);
     }
 
     @NeedLogin
-    @Operation(summary = "생성된 숏폼 데이터의 목록 조회")
-    @GetMapping(value = "/shorts")
+    @Operation(summary = "등록된 비디오 편집 정보 수정")
+    @PutMapping(value = "/video/{videoId}/edit")
+    public UserVideoRelationResponseDto updateVideoEdit(
+            @PathParam("videoId") final Long videoId,
+            @RequestBody VideoCreateRequestDto createRequestDto
+    ) {
+        final long userId = AuthUtil.getCurrentUserId();
+
+        videoEditService.updateVideoEdit(userId, createRequestDto);
+
+        return userVideoRelationService.getVideo(userId, videoId);
+    }
+
+    @NeedLogin
+    @Operation(summary = "등록된 비디오로 숏폼 생성")
+    @PostMapping(value = "/video/{videoId}/shorts")
+    public void createVideoToShorts(@PathParam("videoId") final Long videoId) {
+        final long userId = AuthUtil.getCurrentUserId();
+
+        return userVideoRelationService.generateShorts(userId, videoId);
+    }
+
+    @NeedLogin
+    @Operation(summary = "생성된 숏폼 데이터 목록 조회")
+    @GetMapping(value = "/shorts-list")
     public List<ShortsListResponseDto> getShortsList() {
         final long userId = AuthUtil.getCurrentUserId();
 
-        return shortsService.getShorts(userId);
+        return shortsService.getShortsList(userId);
+    }
+
+    @NeedLogin
+    @Operation(summary = "생성된 숏폼 데이터 단건 조회")
+    @GetMapping(value = "/shorts/{shortsId}")
+    public ShortsResponseDto getShorts(@PathVariable("shortsId") final long shortsId) {
+        return shortsService.getShorts(shortsId);
     }
 
     @Operation(summary = "유저 정보 조회")
