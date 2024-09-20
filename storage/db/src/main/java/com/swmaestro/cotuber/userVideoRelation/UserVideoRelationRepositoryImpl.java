@@ -25,6 +25,13 @@ public class UserVideoRelationRepositoryImpl implements UserVideoRelationReposit
 
     @Transactional(readOnly = true)
     @Override
+    public Optional<UserVideoRelation> findById(final Long id) {
+        return repository.findById(id)
+                .map(UserVideoRelationEntity::toDomain);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
     public Optional<UserVideoRelation> findByUserIdAndVideoId(long userId, long videoId) {
         return repository.findByUserIdAndVideoId(userId, videoId)
                 .map(UserVideoRelationEntity::toDomain);

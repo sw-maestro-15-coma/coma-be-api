@@ -6,6 +6,8 @@ import java.util.Optional;
 public interface UserVideoRelationRepository {
     UserVideoRelation save(UserVideoRelation userVideoRelation);
 
+    Optional<UserVideoRelation> findById(Long id);
+
     Optional<UserVideoRelation> findByUserIdAndVideoId(long userId, long videoId);
 
     List<UserVideoRelation> findAllByUserId(long userId);

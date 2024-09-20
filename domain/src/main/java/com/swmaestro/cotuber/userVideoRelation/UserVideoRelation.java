@@ -1,5 +1,6 @@
 package com.swmaestro.cotuber.userVideoRelation;
 
+import com.swmaestro.cotuber.shorts.ShortsStatus;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,4 +18,10 @@ public class UserVideoRelation {
     private UserVideoRelationStatus userVideoRelationStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public void completeVideoDownloading() {}
+
+    public void completeAiProcessing() {
+        this.userVideoRelationStatus = UserVideoRelationStatus.COMPLETE;
+    }
 }
