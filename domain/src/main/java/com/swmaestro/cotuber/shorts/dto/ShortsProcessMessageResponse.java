@@ -5,5 +5,6 @@ import lombok.Builder;
 @Builder
 public record ShortsProcessMessageResponse(long videoId,
                                            long shortsId,
-                                           String link) {
+                                           String s3Url,
+                                           String thumbnailUrl) {
 }
