@@ -36,7 +36,6 @@ public class VideoService {
         afterVideoDownloadService.postProcess(
                 VideoDownloadMessageResponse.builder()
                         .videoId(video.getId())
-                        .shortsId(shorts.getId())
                         .originalTitle(video.getTitle())
                         .build()
         );
