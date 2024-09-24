@@ -8,8 +8,10 @@ import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
 import com.swmaestro.cotuber.shorts.dto.ShortsResponseDto;
 import com.swmaestro.cotuber.user.User;
 import com.swmaestro.cotuber.user.UserReader;
+import com.swmaestro.cotuber.userVideoRelation.UserVideoRelationService;
+import com.swmaestro.cotuber.userVideoRelation.dto.UserVideoRelationListResponseDto;
+import com.swmaestro.cotuber.userVideoRelation.dto.UserVideoRelationResponseDto;
 import com.swmaestro.cotuber.validate.Validator;
-import com.swmaestro.cotuber.video.VideoService;
 import com.swmaestro.cotuber.video.dto.VideoCreateRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,7 +27,7 @@ import java.util.List;
 @RequestMapping("/api/v1")
 @RestController
 public class EndpointController {
-    private final VideoService videoService;
+    private final UserVideoRelationService userVideoRelationService;
     private final ShortsService shortsService;
     private final UserReader userReader;
     private final Validator validator;
@@ -68,7 +70,7 @@ public class EndpointController {
     ) {
         final long userId = AuthUtil.getCurrentUserId();
 
-        videoEditService.updateVideoEdit(userId, createRequestDto);
+        // editService.updateVideoEdit(userId, createRequestDto);
 
         return userVideoRelationService.getVideo(userId, videoId);
     }
@@ -79,7 +81,7 @@ public class EndpointController {
     public void createVideoToShorts(@PathParam("videoId") final Long videoId) {
         final long userId = AuthUtil.getCurrentUserId();
 
-        return userVideoRelationService.generateShorts(userId, videoId);
+        userVideoRelationService.generateShorts(userId, videoId);
     }
 
     @NeedLogin
