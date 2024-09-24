@@ -22,7 +22,9 @@ spring:
             redirect-uri: https://api.cotuber.com/login/oauth2/code/google
 
 ---
-spring.config.activate.on-profile: local
+spring.config.activate.on-profile:
+  - local
+  - local-real
 
 spring:
   security:
