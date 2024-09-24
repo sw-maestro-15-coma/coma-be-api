@@ -15,7 +15,7 @@ public class Video {
     private final long id;
     private String title;
     private String s3Url;
-    private final YoutubeUrl youtubeUrl;
+    private final YoutubeKey youtubeKey;
     private int videoTotalSecond;
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -33,7 +33,7 @@ public class Video {
         this.id = id;
         this.title = title;
         this.s3Url = s3Url;
-        this.youtubeUrl = new YoutubeUrl(youtubeUrl);
+        this.youtubeKey = new YoutubeKey(youtubeUrl);
         this.videoTotalSecond = videoTotalSecond;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -54,7 +54,7 @@ public class Video {
         this.title = convertToUTF8(response.originalTitle());
     }
 
-    public String getYoutubeUrlString() {
-        return this.youtubeUrl.getUrl();
+    public String getYoutubeUrl() {
+        return this.youtubeKey.getUrl();
     }
 }

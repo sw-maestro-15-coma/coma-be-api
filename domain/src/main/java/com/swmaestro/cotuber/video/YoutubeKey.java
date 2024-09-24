@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Getter
-public class YoutubeUrl {
+public class YoutubeKey {
     private static final String YOUTUBE_WATCH_URL_HOST = "youtube.com/watch";
     private static final String YOUTUBE_SHORT_URL_HOST = "youtu.be";
     private static final String YOUTUBE_EMBED_URL_HOST = "youtube.com/embed";
@@ -22,7 +22,7 @@ public class YoutubeUrl {
 
     private final String key;
 
-    public YoutubeUrl(String url) {
+    public YoutubeKey(String url) {
         validateUrl(url);
         this.key = extractKey(URI.create(url));
     }

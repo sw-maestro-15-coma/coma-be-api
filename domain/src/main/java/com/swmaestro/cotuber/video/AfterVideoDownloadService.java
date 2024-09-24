@@ -21,7 +21,7 @@ public class AfterVideoDownloadService {
         video.updateVideoInfo(response);
         videoRepository.save(video);
 
-        publishToAIProducer(video.getYoutubeUrlString());
+        publishToAIProducer(video.getYoutubeUrl());
     }
     
     private void publishToAIProducer(String youtubeUrl) {
