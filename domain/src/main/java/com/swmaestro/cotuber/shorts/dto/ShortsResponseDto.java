@@ -3,7 +3,6 @@ package com.swmaestro.cotuber.shorts.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.swmaestro.cotuber.shorts.Shorts;
 import com.swmaestro.cotuber.shorts.ShortsStatus;
-import com.swmaestro.cotuber.shorts.edit.ShortsEdit;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
