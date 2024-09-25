@@ -12,7 +12,7 @@ import com.swmaestro.cotuber.userVideoRelation.UserVideoRelationService;
 import com.swmaestro.cotuber.userVideoRelation.dto.UserVideoRelationListResponseDto;
 import com.swmaestro.cotuber.userVideoRelation.dto.UserVideoRelationResponseDto;
 import com.swmaestro.cotuber.validate.Validator;
-import com.swmaestro.cotuber.video.dto.VideoCreateRequestDto;
+import com.swmaestro.cotuber.userVideoRelation.dto.UserVideoRelationCreateRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.websocket.server.PathParam;
@@ -53,7 +53,7 @@ public class EndpointController {
     @NeedLogin
     @Operation(summary = "비디오 등록")
     @PostMapping(value = "/video")
-    public UserVideoRelationResponseDto createVideo(@RequestBody VideoCreateRequestDto createRequestDto) {
+    public UserVideoRelationResponseDto createVideo(@RequestBody UserVideoRelationCreateRequestDto createRequestDto) {
         final long userId = AuthUtil.getCurrentUserId();
 
         validator.checkYoutubeUrl(createRequestDto.youtubeUrl());
@@ -65,8 +65,8 @@ public class EndpointController {
     @Operation(summary = "등록된 비디오 편집 정보 수정")
     @PutMapping(value = "/video/{videoId}/edit")
     public UserVideoRelationResponseDto updateVideoEdit(
-            @PathParam("videoId") final Long videoId,
-            @RequestBody VideoCreateRequestDto createRequestDto
+            @PathVariable("videoId") final Long videoId,
+            @RequestBody UserVideoRelationCreateRequestDto createRequestDto
     ) {
         final long userId = AuthUtil.getCurrentUserId();
 
@@ -78,7 +78,7 @@ public class EndpointController {
     @NeedLogin
     @Operation(summary = "등록된 비디오로 숏폼 생성")
     @PostMapping(value = "/video/{videoId}/shorts")
-    public void createVideoToShorts(@PathParam("videoId") final Long videoId) {
+    public void createVideoToShorts(@PathVariable("videoId") final Long videoId) {
         final long userId = AuthUtil.getCurrentUserId();
 
         userVideoRelationService.generateShorts(userId, videoId);
