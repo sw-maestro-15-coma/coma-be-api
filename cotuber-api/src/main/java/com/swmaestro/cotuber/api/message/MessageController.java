@@ -1,7 +1,9 @@
 package com.swmaestro.cotuber.api.message;
 
 import com.swmaestro.cotuber.ai.AfterAIProcessService;
-import com.swmaestro.cotuber.ai.dto.AIProcessMessageResponse;
+import com.swmaestro.cotuber.ai.dto.AIProcessMessageEditResponse;
+import com.swmaestro.cotuber.ai.dto.AIProcessMessageSubtitleResponse;
+import com.swmaestro.cotuber.ai.dto.AIProcessMessageTitleResponse;
 import com.swmaestro.cotuber.log.LogService;
 import com.swmaestro.cotuber.log.dto.FailLogMessage;
 import com.swmaestro.cotuber.shorts.AfterShortsProcessService;
@@ -32,13 +34,25 @@ public class MessageController {
         afterVideoDownloadService.postProcess(response);
     }
 
-    @Operation(summary = "AI 처리 성공")
-    @PostMapping("/ai")
-    public void receiveAIProcessing(@RequestBody AIProcessMessageResponse response) {
-        afterAIProcessService.postProcess(response);
+    @Operation(summary = "AI 처리 - 제목 생성 성공")
+    @PostMapping("/ai/title")
+    public void receiveAITitleProcessing(@RequestBody AIProcessMessageTitleResponse response) {
+        afterAIProcessService.postTitleProcess(response);
     }
 
-    @Operation(summary = "shorts 처리 성공")
+    @Operation(summary = "AI 처리 - 자막 생성 성공")
+    @PostMapping("/ai/subtitle")
+    public void receiveAISubtitleProcessing(@RequestBody AIProcessMessageSubtitleResponse response) {
+        afterAIProcessService.postSubtitleProcess(response);
+    }
+
+    @Operation(summary = "AI 처리 - 편집점 생성 성공")
+    @PostMapping("/ai/edit")
+    public void receiveAIEditProcessing(@RequestBody AIProcessMessageEditResponse response) {
+        afterAIProcessService.postEditProcess(response);
+    }
+
+    @Operation(summary = "shorts 생성 성공")
     @PostMapping("/shorts")
     public void receiveShortsProcessing(@RequestBody ShortsProcessMessageResponse response) {
         afterShortsProcessService.postProcessing(response);
