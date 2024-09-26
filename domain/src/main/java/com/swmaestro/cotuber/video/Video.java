@@ -41,7 +41,7 @@ public class Video {
         this.updatedAt = updatedAt;
     }
 
-    public void updateVideoInfo(final VideoDownloadMessageResponse response) {
+    public void completeVideoDownloading(final VideoDownloadMessageResponse response) {
         this.s3Url = response.s3Url();
         this.videoTotalSecond = response.videoFullSecond();
         this.title = convertToUTF8(response.originalTitle());
