@@ -19,7 +19,9 @@ public class UserVideoRelation {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public void completeVideoDownloading() {}
+    public void completeVideoDownloading() {
+        this.userVideoRelationStatus = UserVideoRelationStatus.AI_PROCESSING;
+    }
 
     public void completeAiProcessing() {
         this.userVideoRelationStatus = UserVideoRelationStatus.COMPLETE;
