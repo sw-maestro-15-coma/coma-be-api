@@ -32,15 +32,16 @@ public class UserVideoRelationRepositoryImpl implements UserVideoRelationReposit
 
     @Transactional(readOnly = true)
     @Override
-    public Optional<UserVideoRelation> findByUserIdAndVideoId(long userId, long videoId) {
-        return repository.findByUserIdAndVideoId(userId, videoId)
-                .map(UserVideoRelationEntity::toDomain);
+    public List<UserVideoRelation> findAllByUserId(long userId) {
+        return repository.findAllByUserId(userId).stream()
+                .map(UserVideoRelationEntity::toDomain).toList();
     }
+
 
     @Transactional(readOnly = true)
     @Override
-    public List<UserVideoRelation> findAllByUserId(long userId) {
-        return repository.findAllByUserId(userId).stream()
+    public List<UserVideoRelation> findAllByVideoId(long videoId) {
+        return repository.findAllByVideoId(videoId).stream()
                 .map(UserVideoRelationEntity::toDomain).toList();
     }
 }

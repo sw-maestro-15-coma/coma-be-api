@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "shorts")
+@Table(name = "user_video_relation")
 public class UserVideoRelationEntity extends BaseEntity {
     @Column(name = "user_id")
     private long userId;

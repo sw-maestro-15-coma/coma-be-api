@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface UserVideoRelationEntityRepository extends JpaRepository<UserVideoRelationEntity, Long> {
     List<UserVideoRelationEntity> findAllByUserId(long userId);
-    Optional<UserVideoRelationEntity> findByUserIdAndVideoId(long userId, long videoId);
+    List<UserVideoRelationEntity> findAllByVideoId(long videoId);
 }
