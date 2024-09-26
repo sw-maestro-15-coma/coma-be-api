@@ -38,7 +38,7 @@ public class AfterVideoDownloadService {
         }
     }
 
-    private void publishToAIProducer(final long userVideoRelationId, final String s3Url) {
+    public void publishToAIProducer(final long userVideoRelationId, final String s3Url) {
         AIProcessMessageRequest request = AIProcessMessageRequest.builder()
                 .userVideoRelationId(userVideoRelationId)
                 .s3Url(s3Url)
