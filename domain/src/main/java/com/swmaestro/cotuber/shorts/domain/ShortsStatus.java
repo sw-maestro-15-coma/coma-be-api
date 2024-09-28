@@ -1,4 +1,4 @@
-package com.swmaestro.cotuber.shorts;
+package com.swmaestro.cotuber.shorts.domain;
 
 public enum ShortsStatus {
     GENERATING("shorts_generating"),

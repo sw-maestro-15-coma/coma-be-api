@@ -1,4 +1,4 @@
-package com.swmaestro.cotuber.userVideoRelation;
+package com.swmaestro.cotuber.userVideoRelation.domain;
 
 import lombok.Builder;
 import lombok.Getter;

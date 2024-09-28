@@ -1,4 +1,4 @@
-package com.swmaestro.cotuber.video;
+package com.swmaestro.cotuber.video.domain;
 
 import lombok.Getter;
 

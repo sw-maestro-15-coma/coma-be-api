@@ -1,11 +1,11 @@
-package com.swmaestro.cotuber.shorts;
+package com.swmaestro.cotuber.shorts.domain;
 
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-import static com.swmaestro.cotuber.shorts.ShortsStatus.*;
+import static com.swmaestro.cotuber.shorts.domain.ShortsStatus.*;
 
 @Builder
 @Getter

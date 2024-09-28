@@ -1,4 +1,4 @@
-package com.swmaestro.cotuber.userVideoRelation;
+package com.swmaestro.cotuber.userVideoRelation.domain;
 
 public enum UserVideoRelationCompleteStatus {
     TITLE_COMPLETE("title_complete"),

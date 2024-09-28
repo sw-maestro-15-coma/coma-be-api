@@ -1,14 +1,13 @@
-package com.swmaestro.cotuber.userVideoRelation;
+package com.swmaestro.cotuber.video.domain;
 
-public enum UserVideoRelationStatus {
+public enum VideoStatus {
     VIDEO_DOWNLOADING("video_downloading"),
-    AI_PROCESSING("ai_processing"),
     COMPLETE("complete"),
     ERROR("error");
 
     private final String state;
 
-    UserVideoRelationStatus(String state) {
+    VideoStatus(String state) {
         this.state = state;
     }
 
