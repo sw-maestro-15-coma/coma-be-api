@@ -1,4 +1,4 @@
-package com.swmaestro.cotuber.batch.dto;
+package com.swmaestro.cotuber.health.dto;
 
 public record HealthCheckResponseDto(String message) {
     public static HealthCheckResponseDto ok() {
