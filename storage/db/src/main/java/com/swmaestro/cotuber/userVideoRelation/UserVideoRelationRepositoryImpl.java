@@ -1,8 +1,6 @@
 package com.swmaestro.cotuber.userVideoRelation;
 
-import com.swmaestro.cotuber.shorts.Shorts;
-import com.swmaestro.cotuber.shorts.ShortsEntity;
-import com.swmaestro.cotuber.shorts.ShortsRepository;
+import com.swmaestro.cotuber.userVideoRelation.domain.UserVideoRelation;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

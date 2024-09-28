@@ -1,8 +1,8 @@
 package com.swmaestro.cotuber.userVideoRelation.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.swmaestro.cotuber.userVideoRelation.UserVideoRelation;
-import com.swmaestro.cotuber.userVideoRelation.UserVideoRelationStatus;
+import com.swmaestro.cotuber.userVideoRelation.domain.UserVideoRelation;
+import com.swmaestro.cotuber.userVideoRelation.domain.UserVideoRelationStatus;
 import lombok.Builder;
 
 import java.time.LocalDateTime;

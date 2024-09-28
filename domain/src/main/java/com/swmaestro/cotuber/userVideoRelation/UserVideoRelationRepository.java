@@ -1,5 +1,7 @@
 package com.swmaestro.cotuber.userVideoRelation;
 
+import com.swmaestro.cotuber.userVideoRelation.domain.UserVideoRelation;
+
 import java.util.List;
 import java.util.Optional;
 

@@ -1,11 +1,10 @@
 package com.swmaestro.cotuber.shorts;
 
+import com.swmaestro.cotuber.shorts.domain.Shorts;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Transactional

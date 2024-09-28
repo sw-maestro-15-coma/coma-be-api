@@ -1,6 +1,8 @@
 package com.swmaestro.cotuber.shorts;
 
 import com.swmaestro.cotuber.common.BaseEntity;
+import com.swmaestro.cotuber.shorts.domain.Shorts;
+import com.swmaestro.cotuber.shorts.domain.ShortsStatus;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

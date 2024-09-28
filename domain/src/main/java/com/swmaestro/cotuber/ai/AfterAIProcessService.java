@@ -3,7 +3,7 @@ package com.swmaestro.cotuber.ai;
 import com.swmaestro.cotuber.ai.dto.AIProcessMessageEditResponse;
 import com.swmaestro.cotuber.ai.dto.AIProcessMessageSubtitleResponse;
 import com.swmaestro.cotuber.ai.dto.AIProcessMessageTitleResponse;
-import com.swmaestro.cotuber.userVideoRelation.UserVideoRelation;
+import com.swmaestro.cotuber.userVideoRelation.domain.UserVideoRelation;
 import com.swmaestro.cotuber.userVideoRelation.UserVideoRelationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

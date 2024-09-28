@@ -1,8 +1,8 @@
 package com.swmaestro.cotuber.userVideoRelation;
 
 import com.swmaestro.cotuber.common.BaseEntity;
-import com.swmaestro.cotuber.shorts.Shorts;
-import com.swmaestro.cotuber.shorts.ShortsStatus;
+import com.swmaestro.cotuber.userVideoRelation.domain.UserVideoRelation;
+import com.swmaestro.cotuber.userVideoRelation.domain.UserVideoRelationStatus;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
