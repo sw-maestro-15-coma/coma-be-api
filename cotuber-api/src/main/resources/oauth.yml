@@ -6,7 +6,30 @@ spring:
           google:
             client-id: 558068282449-n4hr4qc0j5t9oe2r73a8kasc4oltkl4m.apps.googleusercontent.com
             client-secret: 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
-            redirect-uri: https://api.cotuber.com/login/oauth2/code/google
             scope: # google API의 범위 값
               - profile
               - email
+
+---
+spring.config.activate.on-profile: real
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            redirect-uri: https://api.cotuber.com/login/oauth2/code/google
+
+---
+spring.config.activate.on-profile:
+  - local
+  - local-real
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            redirect-uri: http://localhost:8080/login/oauth2/code/google
