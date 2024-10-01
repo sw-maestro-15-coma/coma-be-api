@@ -3,23 +3,31 @@ package com.swmaestro.cotuber.edit;
 import com.swmaestro.cotuber.common.BaseEntity;
 import com.swmaestro.cotuber.edit.domain.Edit;
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+@Setter
+@Getter
+@NoArgsConstructor
+@Entity
+@Table(name = "edit")
 public class EditEntity extends BaseEntity {
     @Column(name = "title")
     private String title;
-
     @Column(name = "start")
     private int start;
-
     @Column(name = "end")
     private int end;
 
     @Builder
     public EditEntity(long id, LocalDateTime createdAt, LocalDateTime updatedAt,
-                      String title, int start, int end) {
+                      long draftId, String title, int start, int end) {
         super(id, createdAt, updatedAt);
         this.title = title;
         this.start = start;

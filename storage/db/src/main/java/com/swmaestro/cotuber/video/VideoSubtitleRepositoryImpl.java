@@ -1,6 +1,7 @@
 package com.swmaestro.cotuber.video;
 
-import com.swmaestro.cotuber.video.domain.EditSubtitle;
+import com.swmaestro.cotuber.edit.EditSubtitleEntity;
+import com.swmaestro.cotuber.video.domain.VideoSubtitle;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,13 +17,14 @@ public class VideoSubtitleRepositoryImpl implements VideoSubtitleRepository {
     }
 
     @Override
-    public List<EditSubtitle> saveAll(List<EditSubtitle> subtitleList) {
-        return repository.saveAll(subtitleList);
+    public List<VideoSubtitle> saveAll(List<VideoSubtitle> subtitleList) {
+        List<VideoSubtitleEntity> subtitleListEntity = subtitleList.stream().map(VideoSubtitleEntity::from).toList();
+        return repository.saveAll(subtitleListEntity).stream().map(VideoSubtitleEntity::toDomain).toList();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<EditSubtitle> findByVideoId(long videoId) {
-        return repository.findAllByVideoId(videoId);
+    public List<VideoSubtitle> findAllByVideoId(long videoId) {
+        return repository.findAllByVideoId(videoId).stream().map(VideoSubtitleEntity::toDomain).toList();
     }
 }

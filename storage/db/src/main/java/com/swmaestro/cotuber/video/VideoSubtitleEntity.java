@@ -1,7 +1,7 @@
 package com.swmaestro.cotuber.video;
 
 import com.swmaestro.cotuber.common.BaseEntity;
-import com.swmaestro.cotuber.video.domain.EditSubtitle;
+import com.swmaestro.cotuber.video.domain.VideoSubtitle;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -37,8 +37,8 @@ public class VideoSubtitleEntity extends BaseEntity {
         this.end = end;
     }
 
-    public EditSubtitle toDomain() {
-        return EditSubtitle.builder()
+    public VideoSubtitle toDomain() {
+        return VideoSubtitle.builder()
                 .id(getId())
                 .videoId(getVideoId())
                 .subtitle(getSubtitle())
@@ -49,7 +49,7 @@ public class VideoSubtitleEntity extends BaseEntity {
                 .build();
     }
 
-    public static VideoSubtitleEntity from(EditSubtitle editSubtitle) {
+    public static VideoSubtitleEntity from(VideoSubtitle editSubtitle) {
         return VideoSubtitleEntity.builder()
                 .id(editSubtitle.getId())
                 .videoId(editSubtitle.getVideoId())
