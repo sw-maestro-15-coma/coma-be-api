@@ -1,21 +1,23 @@
 package com.swmaestro.cotuber.api;
 
 import com.swmaestro.cotuber.auth.NeedLogin;
-import com.swmaestro.cotuber.batch.dto.HealthCheckResponseDto;
+import com.swmaestro.cotuber.edit.EditFacade;
+import com.swmaestro.cotuber.edit.dto.EditRequestDto;
+import com.swmaestro.cotuber.edit.dto.EditSubtitleUpdateRequestDto;
+import com.swmaestro.cotuber.health.dto.HealthCheckResponseDto;
 import com.swmaestro.cotuber.config.AuthUtil;
-import com.swmaestro.cotuber.shorts.ShortsService;
+import com.swmaestro.cotuber.shorts.ShortsFacade;
 import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
 import com.swmaestro.cotuber.shorts.dto.ShortsResponseDto;
 import com.swmaestro.cotuber.user.User;
 import com.swmaestro.cotuber.user.UserReader;
-import com.swmaestro.cotuber.userVideoRelation.UserVideoRelationService;
-import com.swmaestro.cotuber.userVideoRelation.dto.UserVideoRelationListResponseDto;
-import com.swmaestro.cotuber.userVideoRelation.dto.UserVideoRelationResponseDto;
+import com.swmaestro.cotuber.draft.DraftFacade;
+import com.swmaestro.cotuber.draft.dto.DraftListResponseDto;
+import com.swmaestro.cotuber.draft.dto.DraftResponseDto;
 import com.swmaestro.cotuber.validate.Validator;
-import com.swmaestro.cotuber.userVideoRelation.dto.UserVideoRelationCreateRequestDto;
+import com.swmaestro.cotuber.draft.dto.DraftCreateRequestDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,61 +29,70 @@ import java.util.List;
 @RequestMapping("/api/v1")
 @RestController
 public class EndpointController {
-    private final UserVideoRelationService userVideoRelationService;
-    private final ShortsService shortsService;
     private final UserReader userReader;
     private final Validator validator;
+    private final DraftFacade draftFacade;
+    private final ShortsFacade shortsFacade;
+    private final EditFacade editFacade;
 
     @NeedLogin
-    @Operation(summary = "등록된 비디오 데이터 목록 조회")
-    @GetMapping(value = "/video-list")
-    public List<UserVideoRelationListResponseDto> getVideoList() {
+    @Operation(summary = "등록된 Draft 데이터 목록 조회")
+    @GetMapping(value = "/draft-list")
+    public List<DraftListResponseDto> getDraftList() {
         final long userId = AuthUtil.getCurrentUserId();
 
-        return userVideoRelationService.getVideoList(userId);
+        return draftFacade.getDraftList(userId);
     }
 
     @NeedLogin
-    @Operation(summary = "등록된 비디오 데이터 단건 조회")
-    @GetMapping(value = "/video/{videoId}")
-    public UserVideoRelationResponseDto getVideo(@PathParam("videoId") final Long videoId) {
-        final long userId = AuthUtil.getCurrentUserId();
-
-        return userVideoRelationService.getVideo(userId, videoId);
+    @Operation(summary = "등록된 Draft 데이터 단건 조회")
+    @GetMapping(value = "/draft/{draftId}")
+    public DraftResponseDto getDraft(@PathVariable("draftId") final Long draftId) {
+        return draftFacade.getDraft(draftId);
     }
 
     @NeedLogin
-    @Operation(summary = "비디오 등록")
-    @PostMapping(value = "/video")
-    public UserVideoRelationResponseDto createVideo(@RequestBody UserVideoRelationCreateRequestDto createRequestDto) {
+    @Operation(summary = "Draft 등록")
+    @PostMapping(value = "/draft")
+    public DraftResponseDto createRelation(@RequestBody DraftCreateRequestDto draftCreateRequestDto) {
         final long userId = AuthUtil.getCurrentUserId();
 
-        validator.checkYoutubeUrl(createRequestDto.youtubeUrl());
+        validator.checkYoutubeUrl(draftCreateRequestDto.youtubeUrl());
 
-        return userVideoRelationService.createRelation(userId, createRequestDto);
+        return draftFacade.createDraft(userId, draftCreateRequestDto);
     }
 
     @NeedLogin
-    @Operation(summary = "등록된 비디오 편집 정보 수정")
-    @PutMapping(value = "/video/{videoId}/edit")
-    public UserVideoRelationResponseDto updateVideoEdit(
-            @PathVariable("videoId") final Long videoId,
-            @RequestBody UserVideoRelationCreateRequestDto createRequestDto
+    @Operation(summary = "등록된 Draft 편집 정보 수정")
+    @PutMapping(value = "/draft/{draftId}/edit")
+    public DraftResponseDto updateEdit(
+            @PathVariable("draftId") final Long draftId,
+            @RequestBody EditRequestDto editRequestDto
     ) {
-        final long userId = AuthUtil.getCurrentUserId();
+        editFacade.updateEdit(draftId, editRequestDto);
 
-        // editService.updateVideoEdit(userId, createRequestDto);
+        return draftFacade.getDraft(draftId);
+    }
 
-        return userVideoRelationService.getVideo(userId, videoId);
+    @NeedLogin
+    @Operation(summary = "등록된 Draft 편집 자막 정보 수정")
+    @PutMapping(value = "/draft/{draftId}/edit/subtitle")
+    public DraftResponseDto updateEditSubtitle(
+            @PathVariable("draftId") final Long draftId,
+            @RequestBody EditSubtitleUpdateRequestDto editSubtitleUpdateRequestDto
+    ) {
+        editFacade.updateEditSubtitle(draftId, editSubtitleUpdateRequestDto);
+
+        return draftFacade.getDraft(draftId);
     }
 
     @NeedLogin
     @Operation(summary = "등록된 비디오로 숏폼 생성")
-    @PostMapping(value = "/video/{videoId}/shorts")
-    public void createVideoToShorts(@PathVariable("videoId") final Long videoId) {
+    @PostMapping(value = "/video/{draftId}/shorts")
+    public ShortsResponseDto createVideoToShorts(@PathVariable("draftId") final Long draftId) {
         final long userId = AuthUtil.getCurrentUserId();
 
-        userVideoRelationService.generateShorts(userId, videoId);
+        return shortsFacade.createShorts(userId, draftId);
     }
 
     @NeedLogin
@@ -90,14 +101,14 @@ public class EndpointController {
     public List<ShortsListResponseDto> getShortsList() {
         final long userId = AuthUtil.getCurrentUserId();
 
-        return shortsService.getShortsList(userId);
+        return shortsFacade.getShortsList(userId);
     }
 
     @NeedLogin
     @Operation(summary = "생성된 숏폼 데이터 단건 조회")
     @GetMapping(value = "/shorts/{shortsId}")
     public ShortsResponseDto getShorts(@PathVariable("shortsId") final long shortsId) {
-        return shortsService.getShorts(shortsId);
+        return shortsFacade.getShorts(shortsId);
     }
 
     @Operation(summary = "유저 정보 조회")

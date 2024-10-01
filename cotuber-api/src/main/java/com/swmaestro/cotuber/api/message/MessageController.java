@@ -1,15 +1,14 @@
 package com.swmaestro.cotuber.api.message;
 
-import com.swmaestro.cotuber.ai.AfterAIProcessService;
-import com.swmaestro.cotuber.ai.dto.AIProcessMessageEditResponse;
-import com.swmaestro.cotuber.ai.dto.AIProcessMessageSubtitleResponse;
-import com.swmaestro.cotuber.ai.dto.AIProcessMessageTitleResponse;
+import com.swmaestro.cotuber.draft.DraftFacade;
+import com.swmaestro.cotuber.draft.dto.DraftAIProcessMessageResponse;
 import com.swmaestro.cotuber.log.LogService;
 import com.swmaestro.cotuber.log.dto.FailLogMessage;
-import com.swmaestro.cotuber.shorts.AfterShortsProcessService;
-import com.swmaestro.cotuber.shorts.dto.ShortsProcessMessageResponse;
+import com.swmaestro.cotuber.shorts.ShortsFacade;
+import com.swmaestro.cotuber.shorts.dto.ShortsGenerateMessageResponse;
+import com.swmaestro.cotuber.video.VideoFacade;
 import com.swmaestro.cotuber.video.dto.VideoDownloadMessageResponse;
-import com.swmaestro.cotuber.video.AfterVideoDownloadService;
+import com.swmaestro.cotuber.video.dto.VideoSubtitleGenerateMessageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -23,39 +22,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/message")
 public class MessageController {
-    private final AfterVideoDownloadService afterVideoDownloadService;
-    private final AfterAIProcessService afterAIProcessService;
-    private final AfterShortsProcessService afterShortsProcessService;
     private final LogService logService;
+    private final ShortsFacade shortsFacade;
+    private final DraftFacade draftFacade;
+    private final VideoFacade videoFacade;
 
     @Operation(summary = "원본 비디오 다운로드 성공")
     @PostMapping("/video")
     public void receiveVideoDownload(@RequestBody VideoDownloadMessageResponse response) {
-        afterVideoDownloadService.postProcess(response);
+        videoFacade.afterVideoDownload(response);
     }
 
-    @Operation(summary = "AI 처리 - 제목 생성 성공")
-    @PostMapping("/ai/title")
-    public void receiveAITitleProcessing(@RequestBody AIProcessMessageTitleResponse response) {
-        afterAIProcessService.postTitleProcess(response);
+    @Operation(summary = "자막 생성")
+    @PostMapping("/subtitle")
+    public void receiveAISubtitleProcessing(@RequestBody VideoSubtitleGenerateMessageResponse response) {
+        videoFacade.afterVideoSubtitleGenerate(response);
     }
 
-    @Operation(summary = "AI 처리 - 자막 생성 성공")
-    @PostMapping("/ai/subtitle")
-    public void receiveAISubtitleProcessing(@RequestBody AIProcessMessageSubtitleResponse response) {
-        afterAIProcessService.postSubtitleProcess(response);
-    }
-
-    @Operation(summary = "AI 처리 - 편집점 생성 성공")
-    @PostMapping("/ai/edit")
-    public void receiveAIEditProcessing(@RequestBody AIProcessMessageEditResponse response) {
-        afterAIProcessService.postEditProcess(response);
+    @Operation(summary = "AI 처리")
+    @PostMapping("/ai")
+    public void receiveAITitleProcessing(@RequestBody DraftAIProcessMessageResponse response) {
+        draftFacade.afterAIProcess(response);
     }
 
     @Operation(summary = "shorts 생성 성공")
     @PostMapping("/shorts")
-    public void receiveShortsProcessing(@RequestBody ShortsProcessMessageResponse response) {
-        afterShortsProcessService.postProcessing(response);
+    public void receiveShortsProcessing(@RequestBody ShortsGenerateMessageResponse response) {
+        shortsFacade.afterShortsGenerate(response);
     }
 
     @Operation(summary = "처리 중 오류 발생")
