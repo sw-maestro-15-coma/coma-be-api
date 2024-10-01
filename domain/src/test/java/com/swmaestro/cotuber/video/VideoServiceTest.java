@@ -1,8 +1,5 @@
 package com.swmaestro.cotuber.video;
 
-import com.swmaestro.cotuber.shorts.Shorts;
-import com.swmaestro.cotuber.shorts.ShortsMockRepository;
-import com.swmaestro.cotuber.userVideoRelation.dto.UserVideoRelationCreateRequestDto;
 import com.swmaestro.cotuber.video.dto.VideoDownloadMessageRequest;
 import com.swmaestro.cotuber.video.dto.VideoDownloadMessageResponse;
 import org.junit.jupiter.api.BeforeEach;
