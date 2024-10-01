@@ -3,7 +3,7 @@ package com.swmaestro.cotuber.shorts.dto;
 import lombok.Builder;
 
 @Builder
-public record ShortsProcessMessageRequest(
+public record ShortsGenerateMessageRequest(
         long videoId,
         long shortsId,
         String topTitle,
