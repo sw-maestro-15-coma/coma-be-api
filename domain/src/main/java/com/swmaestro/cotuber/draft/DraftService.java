@@ -6,6 +6,7 @@ import com.swmaestro.cotuber.draft.domain.DraftStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -19,7 +20,8 @@ public class DraftService {
     }
 
     public Draft getDraft(final long draftId) {
-        return draftRepository.findById(draftId).orElseThrow();
+        return draftRepository.findById(draftId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 draft가 없습니다"));
     }
 
     public Draft saveDraft(final Draft draft) {
@@ -37,13 +39,15 @@ public class DraftService {
         }
     }
 
-    public void startAIProcessByVideoId(final long videoId) {
+    public List<Draft> startAIProcessByVideoId(final long videoId) {
+        List<Draft> startedDraftList = new ArrayList<>();
         List<Draft> draftList = draftRepository.findAllByVideoId(videoId);
 
         for (Draft draft : draftList) {
             if (draft.getDraftStatus() == DraftStatus.VIDEO_SUBTITLE_GENERATING) {
                 draft.updateDraftStatus(DraftStatus.AI_PROCESSING);
                 draftRepository.save(draft);
+                startedDraftList.add(draft);
                 draftAIProcessProducer.send(
                         DraftAIProcessMessageRequest.builder()
                                 .draftId(draft.getId())
@@ -52,6 +56,7 @@ public class DraftService {
                 );
             }
         }
+        return startedDraftList;
     }
 
     public void startAIProcessByDraftId(final long draftId) {

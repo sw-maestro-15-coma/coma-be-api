@@ -19,7 +19,8 @@ public class ShortsService {
     }
 
     public Shorts getShorts(final long shortId) {
-        return shortsRepository.findById(shortId).orElseThrow();
+        return shortsRepository.findById(shortId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 shorts가 없습니다"));
     }
 
     public Shorts startShortsGenerate(final long userId, final long videoId) {
@@ -28,7 +29,6 @@ public class ShortsService {
         );
         shortsProcessProducer.send(
                 ShortsGenerateMessageRequest.builder()
-                        .videoId(videoId)
                         .shortsId(newShorts.getId())
                         // need impl
                         .build()

@@ -4,7 +4,6 @@ import lombok.Builder;
 
 @Builder
 public record ShortsGenerateMessageRequest(
-        long videoId,
         long shortsId,
         String topTitle,
         String videoS3Url,

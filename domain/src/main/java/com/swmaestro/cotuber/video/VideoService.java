@@ -2,6 +2,7 @@ package com.swmaestro.cotuber.video;
 
 import com.swmaestro.cotuber.video.domain.Video;
 import com.swmaestro.cotuber.video.domain.VideoStatus;
+import com.swmaestro.cotuber.video.domain.VideoSubtitle;
 import com.swmaestro.cotuber.video.dto.VideoDownloadMessageRequest;
 import com.swmaestro.cotuber.video.dto.VideoDownloadMessageResponse;
 import com.swmaestro.cotuber.video.dto.VideoSubtitleGenerateMessageRequest;
@@ -9,6 +10,7 @@ import com.swmaestro.cotuber.video.dto.VideoSubtitleGenerateMessageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -22,6 +24,10 @@ public class VideoService {
     public Video getVideo(Long videoId) {
         return videoRepository.findById(videoId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 video가 없습니다"));
+    }
+
+    public List<VideoSubtitle> getVideoSubtitleList(Long videoId) {
+        return videoSubtitleRepository.findAllByVideoId(videoId);
     }
 
     // 에러 발생 가능성 (youtubeUrl 동일한 데이터가 2개 이상 있을 경우?)
@@ -66,7 +72,7 @@ public class VideoService {
         );
     }
 
-    public void completeVideoSubtitleGenerate(VideoSubtitleGenerateMessageResponse response) {
-        videoSubtitleRepository.saveAll(response.subtitleList());
+    public void completeVideoSubtitleGenerate(List<VideoSubtitle> videoSubtitleList) {
+        videoSubtitleRepository.saveAll(videoSubtitleList);
     }
 }
