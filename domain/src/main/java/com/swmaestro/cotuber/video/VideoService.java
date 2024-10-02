@@ -6,7 +6,6 @@ import com.swmaestro.cotuber.video.domain.VideoSubtitle;
 import com.swmaestro.cotuber.video.dto.VideoDownloadMessageRequest;
 import com.swmaestro.cotuber.video.dto.VideoDownloadMessageResponse;
 import com.swmaestro.cotuber.video.dto.VideoSubtitleGenerateMessageRequest;
-import com.swmaestro.cotuber.video.dto.VideoSubtitleGenerateMessageResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
