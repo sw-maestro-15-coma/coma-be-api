@@ -19,6 +19,11 @@ public class VideoService {
     private final VideoSubtitleRepository videoSubtitleRepository;
     private final VideoSubtitleGenerateProducer videoSubtitleGenerateProducer;
 
+    public Video getVideo(Long videoId) {
+        return videoRepository.findById(videoId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 video가 없습니다"));
+    }
+
     // 에러 발생 가능성 (youtubeUrl 동일한 데이터가 2개 이상 있을 경우?)
     public Optional<Video> findVideoByYoutubeUrl(final String youtubeUrl) {
         return videoRepository.findByYoutubeUrl(youtubeUrl);

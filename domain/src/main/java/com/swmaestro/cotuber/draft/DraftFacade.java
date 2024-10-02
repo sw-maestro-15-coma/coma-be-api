@@ -8,11 +8,13 @@ import com.swmaestro.cotuber.draft.dto.DraftListResponseDto;
 import com.swmaestro.cotuber.draft.dto.DraftResponseDto;
 import com.swmaestro.cotuber.edit.EditService;
 import com.swmaestro.cotuber.edit.domain.Edit;
+import com.swmaestro.cotuber.edit.domain.EditSubtitle;
 import com.swmaestro.cotuber.video.domain.Video;
 import com.swmaestro.cotuber.video.VideoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,15 +38,20 @@ public class DraftFacade {
     }
 
     public List<DraftListResponseDto> getDraftList(final long userId) {
-        List<Draft> Drafts = draftService.getDraftList(userId);
-        return Drafts.stream()
-                .map(DraftListResponseDto::new)
-                .toList();
+        List<Draft> draftList = draftService.getDraftList(userId);
+        return draftList.stream().map(
+                draft -> {
+                    Video video = videoService.getVideo(draft.getVideoId());
+                    return new DraftListResponseDto(draft, video);
+                }).toList();
     }
 
     public DraftResponseDto getDraft(final long draftId) {
-        Draft Draft = draftService.getDraft(draftId);
-        return new DraftResponseDto(Draft);
+        Draft draft = draftService.getDraft(draftId);
+        Video video = videoService.getVideo(draft.getVideoId());
+        Edit edit = editService.getEdit(draft.getEditId());
+        List<EditSubtitle> editSubtitleList = editService.getEditSubtitleList(draft.getEditId());
+        return new DraftResponseDto(draft, video, edit, editSubtitleList);
     }
 
     // need to improve
@@ -59,10 +66,10 @@ public class DraftFacade {
         Video presentVideo = video.get();
         switch (presentVideo.getVideoStatus()) {
             case COMPLETE -> {
-                return startDraftAIProcess(userId, presentVideo.getId());
+                return startDraftAIProcess(userId, presentVideo);
             }
             case VIDEO_DOWNLOADING -> {
-                return createDraftVideoDownloading(userId, presentVideo.getId());
+                return createDraftVideoDownloading(userId, presentVideo);
             }
             case ERROR -> {
                 return startVideoDownload(userId, createRequestDto.youtubeUrl());
@@ -71,36 +78,37 @@ public class DraftFacade {
         }
     }
 
-    private DraftResponseDto createDraftVideoDownloading(final long userId, final long videoId) {
+    private DraftResponseDto createDraftVideoDownloading(final long userId, final Video video) {
         Edit newEdit = editService.saveEdit(Edit.builder().build());
         Draft newDraft = draftService.saveDraft(
                 Draft.builder()
                         .userId(userId)
-                        .videoId(videoId)
+                        .videoId(video.getId())
                         .editId(newEdit.getId())
                         .draftStatus(DraftStatus.VIDEO_DOWNLOADING)
                         .build()
         );
-        return new DraftResponseDto(newDraft);
+        return new DraftResponseDto(newDraft, video, newEdit, new ArrayList<>());
     }
 
-    private DraftResponseDto startDraftAIProcess(final long userId, final long videoId) {
+    private DraftResponseDto startDraftAIProcess(final long userId, final Video video) {
         Edit newEdit = editService.saveEdit(Edit.builder().build());
         Draft newDraft = draftService.saveDraft(
                 Draft.builder()
                         .userId(userId)
-                        .videoId(videoId)
+                        .videoId(video.getId())
                         .editId(newEdit.getId())
                         .draftStatus(DraftStatus.AI_PROCESSING)
                         .build()
         );
+        // 자막 이미 있는거 사용하는 로직 추가
         draftService.startAIProcessByDraftId(newDraft.getId());
-        return new DraftResponseDto(newDraft);
+        return new DraftResponseDto(newDraft, video, newEdit, new ArrayList<>());
     }
 
 
     private DraftResponseDto startVideoDownload(final long userId, final String youtubeUrl) {
         Video newVideo = videoService.startVideoDownload(youtubeUrl);
-        return createDraftVideoDownloading(userId, newVideo.getId());
+        return createDraftVideoDownloading(userId, newVideo);
     }
 }

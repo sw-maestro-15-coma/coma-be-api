@@ -88,7 +88,7 @@ public class EndpointController {
 
     @NeedLogin
     @Operation(summary = "등록된 비디오로 숏폼 생성")
-    @PostMapping(value = "/video/{draftId}/shorts")
+    @PostMapping(value = "/draft/{draftId}/shorts")
     public ShortsResponseDto createVideoToShorts(@PathVariable("draftId") final Long draftId) {
         final long userId = AuthUtil.getCurrentUserId();
 
