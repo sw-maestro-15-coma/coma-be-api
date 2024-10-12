@@ -14,8 +14,8 @@ public record DraftListResponseDto(
         long id,
         @JsonProperty("status") DraftStatus status,
         @JsonProperty("video") VideoResponseDto video,
-        @JsonProperty("created_at") LocalDateTime createdAt,
-        @JsonProperty("updated_at") LocalDateTime updatedAt
+        @JsonProperty("createdAt") LocalDateTime createdAt,
+        @JsonProperty("updatedAt") LocalDateTime updatedAt
 ) {
     public DraftListResponseDto(Draft draft, Video video) {
         this(

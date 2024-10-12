@@ -13,8 +13,8 @@ public record ShortsResponseDto(
         @JsonProperty("s3_url") String s3Url,
         @JsonProperty("thumbnail_url") String thumbnailUrl,
         @JsonProperty("status") ShortsStatus shortsStatus,
-        @JsonProperty("created_at") LocalDateTime createdAt,
-        @JsonProperty("updated_at") LocalDateTime updatedAt
+        @JsonProperty("createdAt") LocalDateTime createdAt,
+        @JsonProperty("updatedAt") LocalDateTime updatedAt
 ) {
     public ShortsResponseDto(Shorts shorts) {
         this(
