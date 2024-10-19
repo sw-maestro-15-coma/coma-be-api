@@ -33,7 +33,7 @@ public class ShortsFacade {
 
     public ShortsResponseDto createShorts(final long userId, final long draftId) {
         Draft relation = draftService.getDraft(draftId);
-        Shorts newShorts = shortsService.startShortsGenerate(userId, relation.getVideoId());
+        Shorts newShorts = shortsService.startShortsGenerate(userId, relation.getVideoId(), draftId);
         return new ShortsResponseDto(newShorts);
     }
 
