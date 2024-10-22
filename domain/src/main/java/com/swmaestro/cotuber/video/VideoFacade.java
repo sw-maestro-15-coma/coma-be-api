@@ -17,9 +17,9 @@ import java.util.List;
 @RequiredArgsConstructor
 @Component
 public class VideoFacade {
-    final private VideoService videoService;
-    final private DraftService draftService;
-    final private EditService editService;
+    private final VideoService videoService;
+    private final DraftService draftService;
+    private final EditService editService;
 
     public void afterVideoDownload(final VideoDownloadMessageResponse response) {
         videoService.completeVideoDownload(response);
