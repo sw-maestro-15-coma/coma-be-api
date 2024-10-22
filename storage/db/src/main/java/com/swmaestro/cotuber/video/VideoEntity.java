@@ -1,6 +1,7 @@
 package com.swmaestro.cotuber.video;
 
 import com.swmaestro.cotuber.common.BaseEntity;
+import com.swmaestro.cotuber.video.domain.Video;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
