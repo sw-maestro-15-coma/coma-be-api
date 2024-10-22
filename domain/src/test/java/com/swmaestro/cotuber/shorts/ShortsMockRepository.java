@@ -3,7 +3,7 @@ package com.swmaestro.cotuber.shorts;
 import com.swmaestro.cotuber.util.HashMapRepository;
 
 import java.util.List;
-
+/*
 public class ShortsMockRepository extends HashMapRepository<Shorts> implements ShortsRepository {
     @Override
     public Shorts save(Shorts shorts) {
@@ -18,3 +18,4 @@ public class ShortsMockRepository extends HashMapRepository<Shorts> implements S
                 .toList();
     }
 }
+*/

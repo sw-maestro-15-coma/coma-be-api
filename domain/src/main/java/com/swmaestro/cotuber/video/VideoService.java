@@ -1,65 +1,77 @@
 package com.swmaestro.cotuber.video;
 
-import com.swmaestro.cotuber.shorts.Shorts;
-import com.swmaestro.cotuber.shorts.ShortsRepository;
-import com.swmaestro.cotuber.video.dto.VideoCreateRequestDto;
-import com.swmaestro.cotuber.video.dto.VideoCreateResponseDto;
+import com.swmaestro.cotuber.video.domain.Video;
+import com.swmaestro.cotuber.video.domain.VideoStatus;
+import com.swmaestro.cotuber.video.domain.VideoSubtitle;
 import com.swmaestro.cotuber.video.dto.VideoDownloadMessageRequest;
 import com.swmaestro.cotuber.video.dto.VideoDownloadMessageResponse;
+import com.swmaestro.cotuber.video.dto.VideoSubtitleGenerateMessageRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class VideoService {
-    private final AfterVideoDownloadService afterVideoDownloadService;
     private final VideoRepository videoRepository;
-    private final ShortsRepository shortsRepository;
     private final VideoDownloadProducer videoDownloadProducer;
+    private final VideoSubtitleRepository videoSubtitleRepository;
+    private final VideoSubtitleGenerateProducer videoSubtitleGenerateProducer;
 
-    public VideoCreateResponseDto requestVideoDownload(final long userId, final VideoCreateRequestDto request) {
-        Optional<Video> video = videoRepository.findByYoutubeUrl(request.youtubeUrl());
-
-        if (video.isPresent()) {
-            return skipDownloadVideo(video.get(), userId);
-        }
-        return downloadVideo(userId, request);
+    public Video getVideo(Long videoId) {
+        return videoRepository.findById(videoId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 video가 없습니다"));
     }
 
-    private VideoCreateResponseDto skipDownloadVideo(Video video, long userId) {
-        final Shorts shorts = shortsRepository.save(Shorts.initialShorts(userId, video.getId()));
+    public List<VideoSubtitle> getVideoSubtitleList(Long videoId) {
+        return videoSubtitleRepository.findAllByVideoId(videoId);
+    }
 
-        afterVideoDownloadService.postProcess(
-                VideoDownloadMessageResponse.builder()
-                        .videoId(video.getId())
-                        .shortsId(shorts.getId())
-                        .originalTitle(video.getTitle())
+    // 에러 발생 가능성 (youtubeUrl 동일한 데이터가 2개 이상 있을 경우?)
+    public Optional<Video> findVideoByYoutubeUrl(final String youtubeUrl) {
+        return videoRepository.findByYoutubeUrl(youtubeUrl);
+    }
+
+    public Video startVideoDownload(final String youtubeUrl) {
+        Video newVideo = videoRepository.save(
+                Video.builder()
+                        .youtubeUrl(youtubeUrl)
+                        .s3Url(null)
+                        .title(null)
+                        .videoTotalSecond(0)
+                        .videoStatus(VideoStatus.VIDEO_DOWNLOADING)
                         .build()
         );
-
-        return VideoCreateResponseDto.builder()
-                .id(shorts.getId())
-                .build();
-    }
-
-    private VideoCreateResponseDto downloadVideo(long userId, VideoCreateRequestDto request) {
-        Video newVideo = videoRepository.save(Video.initialVideo(request));
-        Shorts shorts = shortsRepository.save(Shorts.initialShorts(userId, newVideo.getId()));
 
         videoDownloadProducer.send(
                 VideoDownloadMessageRequest.builder()
                         .videoId(newVideo.getId())
-                        .shortsId(shorts.getId())
-                        .youtubeUrl(request.youtubeUrl())
+                        .youtubeUrl(youtubeUrl)
                         .build()
         );
 
-        return VideoCreateResponseDto.builder()
-                .id(shorts.getId())
-                .build();
+        return newVideo;
+    }
+
+    public void completeVideoDownload(VideoDownloadMessageResponse response) {
+        Video video = videoRepository.findById(response.videoId())
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 video가 없습니다"));
+
+        video.completeVideoDownloading(response);
+        videoRepository.save(video);
+    }
+
+    public void startVideoSubtitleGenerate(final long videoId) {
+        videoSubtitleGenerateProducer.send(
+                VideoSubtitleGenerateMessageRequest.builder()
+                        .videoId(videoId)
+                        .build()
+        );
+    }
+
+    public void completeVideoSubtitleGenerate(List<VideoSubtitle> videoSubtitleList) {
+        videoSubtitleRepository.saveAll(videoSubtitleList);
     }
 }

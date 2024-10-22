@@ -1,5 +1,7 @@
 package com.swmaestro.cotuber.shorts;
 
+import com.swmaestro.cotuber.shorts.domain.Shorts;
+
 import java.util.List;
 import java.util.Optional;
 

@@ -1,6 +1,8 @@
 package com.swmaestro.cotuber.shorts;
 
 import com.swmaestro.cotuber.common.BaseEntity;
+import com.swmaestro.cotuber.shorts.domain.Shorts;
+import com.swmaestro.cotuber.shorts.domain.ShortsStatus;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,30 +21,26 @@ public class ShortsEntity extends BaseEntity {
     @Column(name = "video_id")
     private long videoId;
 
-    @Column(name = "progress_state")
-    @Enumerated(EnumType.STRING)
-    private ProgressState progressState;
-
-    @Column(name = "link")
-    private String link;
-
-    @Column(name = "top_title")
-    private String topTitle;
-
     @Column(name = "thumbnail_url")
     private String thumbnailUrl;
 
+    @Column(name = "s3_url")
+    private String s3Url;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private ShortsStatus shortsStatus;
+
     @Builder
     public ShortsEntity(long id, LocalDateTime createdAt, LocalDateTime updatedAt,
-                        long userId, long videoId, ProgressState progressState,
-                        String link, String topTitle, String thumbnailUrl) {
+                        long userId, long videoId, String thumbnailUrl,
+                        String s3Url, ShortsStatus shortsStatus) {
         super(id, createdAt, updatedAt);
         this.userId = userId;
         this.videoId = videoId;
-        this.progressState = progressState;
-        this.link = link;
-        this.topTitle = topTitle;
         this.thumbnailUrl = thumbnailUrl;
+        this.s3Url = s3Url;
+        this.shortsStatus = shortsStatus;
     }
 
     public Shorts toDomain() {
@@ -50,10 +48,9 @@ public class ShortsEntity extends BaseEntity {
                 .id(getId())
                 .userId(userId)
                 .videoId(videoId)
-                .progressState(progressState)
-                .link(link)
-                .topTitle(topTitle)
                 .thumbnailUrl(thumbnailUrl)
+                .s3Url(s3Url)
+                .shortsStatus(shortsStatus)
                 .createdAt(getCreatedAt())
                 .updatedAt(getUpdatedAt())
                 .build();
@@ -64,10 +61,9 @@ public class ShortsEntity extends BaseEntity {
                 .id(shorts.getId())
                 .userId(shorts.getUserId())
                 .videoId(shorts.getVideoId())
-                .progressState(shorts.getProgressState())
-                .link(shorts.getLink())
-                .topTitle(shorts.getTopTitle())
                 .thumbnailUrl(shorts.getThumbnailUrl())
+                .s3Url(shorts.getS3Url())
+                .shortsStatus(shorts.getShortsStatus())
                 .createdAt(shorts.getCreatedAt())
                 .updatedAt(shorts.getUpdatedAt())
                 .build();

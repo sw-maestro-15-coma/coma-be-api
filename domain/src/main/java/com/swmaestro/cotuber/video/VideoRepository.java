@@ -1,5 +1,7 @@
 package com.swmaestro.cotuber.video;
 
+import com.swmaestro.cotuber.video.domain.Video;
+
 import java.util.Optional;
 
 public interface VideoRepository {

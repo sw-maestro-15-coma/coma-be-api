@@ -3,7 +3,7 @@ package com.swmaestro.cotuber.video;
 import com.swmaestro.cotuber.util.HashMapRepository;
 
 import java.util.Optional;
-
+/*
 class VideoMockRepository extends HashMapRepository<Video> implements VideoRepository {
     @Override
     public Video save(Video video) {
@@ -18,3 +18,4 @@ class VideoMockRepository extends HashMapRepository<Video> implements VideoRepos
                 .findFirst();
     }
 }
+*/

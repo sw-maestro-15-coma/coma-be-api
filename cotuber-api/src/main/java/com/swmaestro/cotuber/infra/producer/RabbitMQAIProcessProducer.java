@@ -3,21 +3,21 @@ package com.swmaestro.cotuber.infra.producer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import com.swmaestro.cotuber.ai.AIProcessProducer;
-import com.swmaestro.cotuber.ai.dto.AIProcessMessageRequest;
+import com.swmaestro.cotuber.draft.DraftAIProcessProducer;
+import com.swmaestro.cotuber.draft.dto.DraftAIProcessMessageRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
-public class RabbitMQAIProcessProducer implements AIProcessProducer {
+public class RabbitMQAIProcessProducer implements DraftAIProcessProducer {
     private static final String QUEUE_NAME = "ai-process";
 
     private final Connection connection;
     private final ObjectMapper objectMapper;
 
     @Override
-    public void send(AIProcessMessageRequest request) {
+    public void send(DraftAIProcessMessageRequest request) {
         try (Channel channel = connection.createChannel()) {
             channel.queueDeclare(QUEUE_NAME, false, false, false, null);
 

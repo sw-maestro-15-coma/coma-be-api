@@ -1,5 +1,6 @@
 package com.swmaestro.cotuber.video;
 
+import com.swmaestro.cotuber.video.domain.Video;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
