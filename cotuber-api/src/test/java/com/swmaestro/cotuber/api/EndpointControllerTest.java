@@ -1,11 +1,19 @@
 package com.swmaestro.cotuber.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.swmaestro.cotuber.draft.DraftFacade;
+import com.swmaestro.cotuber.draft.domain.Draft;
+import com.swmaestro.cotuber.draft.domain.DraftStatus;
+import com.swmaestro.cotuber.draft.dto.DraftListResponseDto;
+import com.swmaestro.cotuber.edit.EditFacade;
+import com.swmaestro.cotuber.shorts.ShortsFacade;
 import com.swmaestro.cotuber.shorts.ShortsService;
 import com.swmaestro.cotuber.user.UserReader;
 import com.swmaestro.cotuber.validate.Validator;
 import com.swmaestro.cotuber.validate.YoutubeUrlPattern;
 import com.swmaestro.cotuber.video.VideoService;
+import com.swmaestro.cotuber.video.dto.VideoResponseDto;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,50 +24,81 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WithMockUser(username = "0")
 @WebMvcTest(EndpointController.class)
 @Import({Validator.class, YoutubeUrlPattern.class})
 class EndpointControllerTest {
+
     @Autowired
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
 
     @MockBean
-    VideoService videoService;
+    DraftFacade draftFacade;
     @MockBean
-    ShortsService shortsService;
+    ShortsFacade shortsFacade;
+    @MockBean
+    EditFacade editFacade;
+
     @MockBean
     UserReader userReader;
 
     final String invalidYoutubeUrl = "https://abc.com";
     final String validYoutubeUrl = "https://www.youtube.com/watch?v=abc12345678";
 
+    private VideoResponseDto videoResponseDto;
+    private DraftListResponseDto draftListDto;
+
+    @BeforeEach
+    void setUp() {
+        videoResponseDto = VideoResponseDto.builder()
+                .id(0)
+                .title("test-title")
+                .s3Url("test-s3url")
+                .youtubeUrl(validYoutubeUrl)
+                .build();
+        draftListDto = DraftListResponseDto.builder()
+                .id(0)
+                .status(DraftStatus.VIDEO_DOWNLOADING)
+                .video(videoResponseDto)
+                .build();
+    }
+
     @DisplayName("get video-list")
     @Test
     void testGetVideoList() throws Exception {
+        given(draftFacade.getDraftList(anyLong())).willReturn(List.of(draftListDto));
         mockMvc.perform(
-                get("/api/v1/video-list")
+                get("/api/v1/draft-list")
         )
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].status").value("VIDEO_DOWNLOADING"))
+                .andExpect(jsonPath("$[0].video.title").value("test-title"));
     }
 
+    /*
     @DisplayName("get video-list with data")
     @Test
     void testGetVideoListWithData() throws Exception {
         // given
         // 이렇게 하는게 아닌듯? 서비스 메소드 호출한다고 리턴 데이터가 바뀌지 않는것 같다..
-        /*
         videoService.requestVideoDownload(validYoutubeUrl);
         UserVideoRelationResponseDto responseDto = UserVideoRelationResponseDto.builder()
                 .id(0L)
@@ -74,8 +113,8 @@ class EndpointControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(jsonMappedResponse));
 
-         */
     }
+     */
     /*
 
     @DisplayName("post video with invalid youtube url")
