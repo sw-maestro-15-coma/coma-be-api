@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @Builder
 public record ShortsListResponseDto(
         long id,
-        @JsonProperty("s3_url") String s3Url,
-        @JsonProperty("thumbnail_url") String thumbnailUrl,
+        @JsonProperty("s3Url") String s3Url,
+        @JsonProperty("thumbnailUrl") String thumbnailUrl,
         @JsonProperty("status") ShortsStatus status,
         @JsonProperty("createdAt") LocalDateTime createdAt,
         @JsonProperty("updatedAt") LocalDateTime updatedAt
