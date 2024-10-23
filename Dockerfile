@@ -14,4 +14,4 @@ COPY support/util/build/libs/*.jar .
 ENV LANG=ko_KR.UTF-8
 ENV LC_ALL=ko_KR.UTF-8
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "-spring.active.profile=real", "/app.jar"]
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=real", "/app.jar"]
