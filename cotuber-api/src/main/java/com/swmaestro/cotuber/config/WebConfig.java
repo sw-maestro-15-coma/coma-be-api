@@ -14,6 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
                         "http://localhost:8080",
                         "https://localhost:3000",
                         "https://localhost:8080",
+                        "https://www.cotuber.com",
                         "https://cotuber.com",
                         "https://develop.cotuber.com",
                         "https://api.cotuber.com"
