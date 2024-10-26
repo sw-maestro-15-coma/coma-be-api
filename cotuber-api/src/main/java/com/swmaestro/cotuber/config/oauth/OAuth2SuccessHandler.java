@@ -40,7 +40,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite(Cookie.SameSite.NONE.attributeValue())
-                .domain("www.cotuber.com")  // TODO: 토큰 주입으로 변경
+                .domain("cotuber.com")  // TODO: 토큰 주입으로 변경
                 .path("/")
                 .maxAge(tokenInfo.accessTokenExpiresIn())
                 .build();
@@ -51,7 +51,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .httpOnly(true)
                 .secure(true)
                 .sameSite(Cookie.SameSite.NONE.attributeValue())
-                .domain("www.cotuber.com") // TODO: 토큰 주입으로 변경
+                .domain("cotuber.com") // TODO: 토큰 주입으로 변경
                 .path("/")
                 .maxAge(token.refreshTokenExpiresIn())
                 .build();
