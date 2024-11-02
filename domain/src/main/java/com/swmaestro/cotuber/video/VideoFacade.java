@@ -23,7 +23,7 @@ public class VideoFacade {
 
     public void afterVideoDownload(final VideoDownloadMessageResponse response) {
         videoService.completeVideoDownload(response);
-        videoService.startVideoSubtitleGenerate(response.videoId());
+        videoService.startVideoSubtitleGenerate(response.videoId(), response.s3Url());
         draftService.updateDraftStatusToVideoSubtitleGenerateByVideoId(response.videoId());
     }
 
@@ -31,12 +31,12 @@ public class VideoFacade {
         Video video = videoService.getVideo(response.videoId());
 
         List<VideoSubtitle> videoSubtitleList = response.subtitleList().stream().map(
-            subtitle -> VideoSubtitle.builder()
-                .videoId(video.getId())
-                .subtitle(subtitle.subtitle())
-                .start(subtitle.start())
-                .end(subtitle.end())
-                .build()
+                subtitle -> VideoSubtitle.builder()
+                        .videoId(video.getId())
+                        .subtitle(subtitle.subtitle())
+                        .start(subtitle.start())
+                        .end(subtitle.end())
+                        .build()
         ).toList();
 
         videoService.completeVideoSubtitleGenerate(videoSubtitleList);
@@ -44,12 +44,12 @@ public class VideoFacade {
 
         startedDraftList.forEach(draft -> {
             List<EditSubtitle> editSubtitleList = videoSubtitleList.stream().map(
-                videoSubtitle -> EditSubtitle.builder()
-                    .editId(draft.getEditId())
-                    .subtitle(videoSubtitle.getSubtitle())
-                    .start(videoSubtitle.getStart())
-                    .end(videoSubtitle.getEnd())
-                    .build()
+                    videoSubtitle -> EditSubtitle.builder()
+                            .editId(draft.getEditId())
+                            .subtitle(videoSubtitle.getSubtitle())
+                            .start(videoSubtitle.getStart())
+                            .end(videoSubtitle.getEnd())
+                            .build()
             ).toList();
             editService.saveEditSubtitle(editSubtitleList);
         });

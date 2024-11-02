@@ -63,10 +63,11 @@ public class VideoService {
         videoRepository.save(video);
     }
 
-    public void startVideoSubtitleGenerate(final long videoId) {
+    public void startVideoSubtitleGenerate(final long videoId, String s3Url) {
         videoSubtitleGenerateProducer.send(
                 VideoSubtitleGenerateMessageRequest.builder()
                         .videoId(videoId)
+                        .s3Url(s3Url)
                         .build()
         );
     }
