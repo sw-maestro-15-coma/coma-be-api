@@ -11,6 +11,7 @@ import com.swmaestro.cotuber.edit.domain.Edit;
 import com.swmaestro.cotuber.edit.domain.EditSubtitle;
 import com.swmaestro.cotuber.video.domain.Video;
 import com.swmaestro.cotuber.video.VideoService;
+import com.swmaestro.cotuber.video.domain.VideoStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -54,13 +55,14 @@ public class DraftFacade {
         return new DraftResponseDto(draft, video, edit, editSubtitleList);
     }
 
-    // need to improve
     public DraftResponseDto createDraft(final long userId, final DraftCreateRequestDto createRequestDto) {
         Optional<Video> video = videoService.findVideoByYoutubeUrl(createRequestDto.youtubeUrl());
 
-        // 비디오 다운되어있지 않은 경우 새 비디오 다운로드 요청
+        // 신규 요청 생성의 경우 새 비디오 다운로드 요청
         if (video.isEmpty()) {
-            return startVideoDownload(userId, createRequestDto.youtubeUrl());
+            Video newVideo = videoService.createVideo(createRequestDto.youtubeUrl());
+            videoService.startVideoDownload(newVideo.getId(), newVideo.getYoutubeUrl());
+            return createDraftVideoDownloading(userId, newVideo);
         }
 
         Video presentVideo = video.get();
@@ -72,7 +74,9 @@ public class DraftFacade {
                 return createDraftVideoDownloading(userId, presentVideo);
             }
             case ERROR -> {
-                return startVideoDownload(userId, createRequestDto.youtubeUrl());
+                Video updatedVideo = videoService.updateVideoStatus(presentVideo.getId(), VideoStatus.VIDEO_DOWNLOADING);
+                videoService.startVideoDownload(updatedVideo.getId(), updatedVideo.getYoutubeUrl());
+                return createDraftVideoDownloading(userId, updatedVideo);
             }
             default -> throw new IllegalStateException("Unexpected value: " + presentVideo.getVideoStatus());
         }
@@ -104,11 +108,5 @@ public class DraftFacade {
         // 자막 이미 있는거 사용하는 로직 추가
         draftService.startAIProcessByDraftId(newDraft.getId());
         return new DraftResponseDto(newDraft, video, newEdit, new ArrayList<>());
-    }
-
-
-    private DraftResponseDto startVideoDownload(final long userId, final String youtubeUrl) {
-        Video newVideo = videoService.startVideoDownload(youtubeUrl);
-        return createDraftVideoDownloading(userId, newVideo);
     }
 }

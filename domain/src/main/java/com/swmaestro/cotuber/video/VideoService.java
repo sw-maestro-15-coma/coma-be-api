@@ -34,8 +34,8 @@ public class VideoService {
         return videoRepository.findByYoutubeUrl(youtubeUrl);
     }
 
-    public Video startVideoDownload(final String youtubeUrl) {
-        Video newVideo = videoRepository.save(
+    public Video createVideo(final String youtubeUrl) {
+        return videoRepository.save(
                 Video.builder()
                         .youtubeUrl(youtubeUrl)
                         .s3Url(null)
@@ -44,15 +44,21 @@ public class VideoService {
                         .videoStatus(VideoStatus.VIDEO_DOWNLOADING)
                         .build()
         );
+    }
 
+    public Video updateVideoStatus(final Long videoId, final VideoStatus videoStatus) {
+        Video video = getVideo(videoId);
+        video.changeVideoStatus(videoStatus);
+        return videoRepository.save(video);
+    }
+
+    public void startVideoDownload(final Long videoId, final String youtubeUrl) {
         videoDownloadProducer.send(
                 VideoDownloadMessageRequest.builder()
-                        .videoId(newVideo.getId())
+                        .videoId(videoId)
                         .youtubeUrl(youtubeUrl)
                         .build()
         );
-
-        return newVideo;
     }
 
     public void completeVideoDownload(VideoDownloadMessageResponse response) {

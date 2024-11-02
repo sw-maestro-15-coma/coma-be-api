@@ -41,6 +41,10 @@ public class Video {
         this.updatedAt = updatedAt;
     }
 
+    public void changeVideoStatus(VideoStatus newStatus) {
+        this.videoStatus = newStatus;
+    }
+
     public void completeVideoDownloading(final VideoDownloadMessageResponse response) {
         this.s3Url = response.s3Url();
         this.videoTotalSecond = response.videoFullSecond();
@@ -51,4 +55,6 @@ public class Video {
     public String getYoutubeUrl() {
         return this.youtubeKey.getUrl();
     }
+
+
 }
