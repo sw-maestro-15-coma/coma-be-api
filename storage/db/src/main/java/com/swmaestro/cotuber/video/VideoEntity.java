@@ -1,10 +1,10 @@
 package com.swmaestro.cotuber.video;
 
 import com.swmaestro.cotuber.common.BaseEntity;
+import com.swmaestro.cotuber.draft.domain.DraftStatus;
 import com.swmaestro.cotuber.video.domain.Video;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.swmaestro.cotuber.video.domain.VideoStatus;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,13 +27,18 @@ public class VideoEntity extends BaseEntity {
     @Column(name = "length")
     private int length;
 
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private VideoStatus videoStatus;
+
     @Builder
-    public VideoEntity(long id, LocalDateTime createdAt, LocalDateTime updatedAt, String title, String s3Url, String youtubeUrl, int length) {
+    public VideoEntity(long id, LocalDateTime createdAt, LocalDateTime updatedAt, String title, String s3Url, String youtubeUrl, int length, VideoStatus videoStatus) {
         super(id, createdAt, updatedAt);
         this.title = title;
         this.s3Url = s3Url;
         this.youtubeUrl = youtubeUrl;
         this.length = length;
+        this.videoStatus = videoStatus;
     }
 
     public Video toDomain() {
@@ -45,6 +50,7 @@ public class VideoEntity extends BaseEntity {
                 .videoTotalSecond(length)
                 .createdAt(getCreatedAt())
                 .updatedAt(getUpdatedAt())
+                .videoStatus(getVideoStatus())
                 .build();
     }
 
@@ -57,6 +63,7 @@ public class VideoEntity extends BaseEntity {
                 .length(video.getVideoTotalSecond())
                 .createdAt(video.getCreatedAt())
                 .updatedAt(video.getUpdatedAt())
+                .videoStatus(video.getVideoStatus())
                 .build();
     }
 }
