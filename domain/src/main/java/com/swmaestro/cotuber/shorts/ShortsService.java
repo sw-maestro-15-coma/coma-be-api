@@ -1,7 +1,5 @@
 package com.swmaestro.cotuber.shorts;
 
-import com.swmaestro.cotuber.draft.DraftService;
-import com.swmaestro.cotuber.draft.domain.Draft;
 import com.swmaestro.cotuber.draft.dto.SubtitleDto;
 import com.swmaestro.cotuber.edit.EditService;
 import com.swmaestro.cotuber.edit.domain.Edit;
@@ -22,7 +20,6 @@ public class ShortsService {
     private final ShortsRepository shortsRepository;
     private final ShortsGenerateProducer shortsProcessProducer;
     private final EditService editService;
-    private final DraftService draftService;
     private final VideoService videoService;
 
     public List<Shorts> getShortsList(final long userId) {
@@ -39,20 +36,12 @@ public class ShortsService {
                 Shorts.initialShorts(userId, videoId)
         );
 
-        Draft draft = draftService.getDraft(draftId);
-
-        long editId = draft.getEditId();
-        List<EditSubtitle> subtitles = editService.getEditSubtitleList(editId);
-        List<SubtitleDto> subtitleList = subtitles.stream()
-                        .map(s -> SubtitleDto.builder()
-                                .start(s.getStart())
-                                .end(s.getEnd())
-                                .subtitle(s.getSubtitle())
-                                .build())
-                                .toList();
-
-        Edit edit = editService.getEdit(editId);
         Video video = videoService.getVideo(videoId);
+        Edit edit = editService.findByDraftId(draftId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 edit가 없습니다"));
+
+        List<EditSubtitle> subtitles = editService.getEditSubtitleList(edit.getId());
+
 
         shortsProcessProducer.send(
                 ShortsGenerateMessageRequest.builder()
@@ -61,9 +50,14 @@ public class ShortsService {
                         .videoS3Url(video.getS3Url())
                         .startTime(edit.getStart())
                         .endTime(edit.getEnd())
-                        .subtitleList(subtitleList)
+                        .subtitleList(
+                                subtitles.stream()
+                                        .map(SubtitleDto::from)
+                                        .toList()
+                        )
                         .build()
         );
+
         return newShorts;
     }
 

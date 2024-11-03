@@ -15,7 +15,6 @@ import com.swmaestro.cotuber.video.domain.VideoStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,10 +26,9 @@ public class DraftFacade {
     private final EditService editService;
 
     public void afterAIProcess(final DraftAIProcessMessageResponse response) {
-        Draft draft = draftService.getDraft(response.draftId());
         editService.saveEdit(
                 Edit.builder()
-                        .id(draft.getEditId())
+                        .draftId(response.draftId())
                         .title(response.title())
                         .start(response.start())
                         .end(response.end())
@@ -39,28 +37,35 @@ public class DraftFacade {
     }
 
     public List<DraftListResponseDto> getDraftList(final long userId) {
-        List<Draft> draftList = draftService.getDraftList(userId);
-        return draftList.stream().map(
-                draft -> {
+        return draftService.getDraftList(userId)
+                .stream()
+                .map(draft -> {
                     Video video = videoService.getVideo(draft.getVideoId());
                     return new DraftListResponseDto(draft, video);
-                }).toList();
+                })
+                .toList();
     }
 
     public DraftResponseDto getDraft(final long draftId) {
         Draft draft = draftService.getDraft(draftId);
         Video video = videoService.getVideo(draft.getVideoId());
-        Edit edit = editService.getEdit(draft.getEditId());
-        List<EditSubtitle> editSubtitleList = editService.getEditSubtitleList(draft.getEditId());
+        Optional<Edit> foundEdit = editService.findEdit(draftId);
+
+        if (foundEdit.isEmpty()) {
+            return new DraftResponseDto(draft, video);
+        }
+
+        Edit edit = foundEdit.get();
+        List<EditSubtitle> editSubtitleList = editService.getEditSubtitleList(edit.getId());
         return new DraftResponseDto(draft, video, edit, editSubtitleList);
     }
 
-    public DraftResponseDto createDraft(final long userId, final DraftCreateRequestDto createRequestDto) {
-        Optional<Video> video = videoService.findVideoByYoutubeUrl(createRequestDto.youtubeUrl());
+    public DraftResponseDto createDraft(final long userId, final DraftCreateRequestDto request) {
+        Optional<Video> video = videoService.findVideoByYoutubeUrl(request.youtubeUrl());
 
         // 신규 요청 생성의 경우 새 비디오 다운로드 요청
         if (video.isEmpty()) {
-            Video newVideo = videoService.createVideo(createRequestDto.youtubeUrl());
+            Video newVideo = videoService.createVideo(request.youtubeUrl());
             videoService.startVideoDownload(newVideo);
             return createDraftVideoDownloading(userId, newVideo);
         }
@@ -83,30 +88,27 @@ public class DraftFacade {
     }
 
     private DraftResponseDto createDraftVideoDownloading(final long userId, final Video video) {
-        Edit newEdit = editService.saveEdit(Edit.builder().build());
         Draft newDraft = draftService.saveDraft(
                 Draft.builder()
                         .userId(userId)
                         .videoId(video.getId())
-                        .editId(newEdit.getId())
                         .draftStatus(DraftStatus.VIDEO_DOWNLOADING)
                         .build()
         );
-        return new DraftResponseDto(newDraft, video, newEdit, Collections.emptyList());
+
+        return new DraftResponseDto(newDraft, video);
     }
 
     private DraftResponseDto startDraftAIProcess(final long userId, final Video video) {
-        Edit newEdit = editService.saveEdit(Edit.builder().build());
         Draft newDraft = draftService.saveDraft(
                 Draft.builder()
                         .userId(userId)
                         .videoId(video.getId())
-                        .editId(newEdit.getId())
                         .draftStatus(DraftStatus.AI_PROCESSING)
                         .build()
         );
         // 자막 이미 있는거 사용하는 로직 추가
         draftService.startAIProcessByDraftId(newDraft.getId());
-        return new DraftResponseDto(newDraft, video, newEdit, Collections.emptyList());
+        return new DraftResponseDto(newDraft, video);
     }
 }

@@ -31,4 +31,15 @@ public record DraftResponseDto(
                 draft.getUpdatedAt()
         );
     }
+
+    public DraftResponseDto(Draft draft, Video video) {
+        this(
+                draft.getId(),
+                draft.getDraftStatus(),
+                new VideoResponseDto(video),
+                new EditResponseDto(),
+                draft.getCreatedAt(),
+                draft.getUpdatedAt()
+        );
+    }
 }

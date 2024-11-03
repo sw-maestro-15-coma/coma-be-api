@@ -5,6 +5,7 @@ import com.swmaestro.cotuber.draft.domain.DraftStatus;
 import com.swmaestro.cotuber.draft.dto.DraftAIProcessMessageRequest;
 import com.swmaestro.cotuber.draft.dto.SubtitleDto;
 import com.swmaestro.cotuber.edit.EditService;
+import com.swmaestro.cotuber.edit.domain.Edit;
 import com.swmaestro.cotuber.edit.domain.EditSubtitle;
 import com.swmaestro.cotuber.video.VideoService;
 import com.swmaestro.cotuber.video.domain.VideoSubtitle;
@@ -61,25 +62,19 @@ public class DraftService {
     }
 
     public void startAIProcessByDraftId(final long draftId) {
-        Draft draft = draftRepository.findById(draftId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 draft가 없습니다"));
+        Edit edit = editService.findByDraftId(draftId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 edit이 없습니다"));
 
-        long editId = draft.getEditId();
-
-        List<EditSubtitle> editSubtitleList = editService.getEditSubtitleList(editId);
-
-        List<SubtitleDto> subtitleDtos = editSubtitleList.stream()
-                .map(vsl -> SubtitleDto.builder()
-                        .start(vsl.getStart())
-                        .end(vsl.getEnd())
-                        .subtitle(vsl.getSubtitle())
-                        .build())
-                .toList();
+        List<EditSubtitle> subtitles = editService.getEditSubtitleList(edit.getId());
 
         draftAIProcessProducer.send(
                 DraftAIProcessMessageRequest.builder()
                         .draftId(draftId)
-                        .subtitleList(subtitleDtos)
+                        .subtitleList(
+                                subtitles.stream()
+                                        .map(SubtitleDto::from)
+                                        .toList()
+                        )
                         .build()
         );
     }

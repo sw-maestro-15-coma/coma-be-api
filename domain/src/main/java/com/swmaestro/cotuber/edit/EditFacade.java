@@ -18,15 +18,11 @@ public class EditFacade {
     private final EditService editService;
 
     public void updateEdit(final long draftId, final EditRequestDto editRequestDto) {
-        Draft draft = draftService.getDraft(draftId);
-        editService.saveEdit(
-                Edit.builder()
-                        .id(draft.getEditId())
-                        .title(editRequestDto.title())
-                        .start(editRequestDto.start())
-                        .end(editRequestDto.end())
-                        .build()
-        );
+        Edit edit = editService.findByDraftId(draftId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 draft에 대한 edit이 없습니다"));
+
+        edit.update(editRequestDto);
+        editService.saveEdit(edit);
     }
 
     public void updateEditSubtitle(final long draftId, final EditSubtitleUpdateRequestDto updateRequest) {

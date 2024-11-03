@@ -4,6 +4,7 @@ import com.swmaestro.cotuber.edit.domain.Edit;
 import com.swmaestro.cotuber.edit.domain.EditSubtitle;
 import lombok.Builder;
 
+import java.util.Collections;
 import java.util.List;
 
 @Builder
@@ -20,5 +21,9 @@ public record EditResponseDto(
                 edit.getEnd(),
                 editSubtitleList.stream().map(EditSubtitleBaseDto::new).toList()
         );
+    }
+
+    public EditResponseDto() {
+        this(null, 0, 0, Collections.emptyList());
     }
 }

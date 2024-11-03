@@ -1,5 +1,6 @@
 package com.swmaestro.cotuber.edit.domain;
 
+import com.swmaestro.cotuber.edit.dto.EditRequestDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -15,4 +16,11 @@ public class Edit {
     private int end;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public void update(EditRequestDto editRequest) {
+        this.title = editRequest.title();
+        this.start = editRequest.start();
+        this.end = editRequest.end();
+        this.updatedAt = LocalDateTime.now();
+    }
 }

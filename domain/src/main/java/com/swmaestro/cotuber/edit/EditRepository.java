@@ -8,4 +8,6 @@ public interface EditRepository {
     Edit save(Edit edit);
 
     Optional<Edit> findById(long editId);
+
+    Optional<Edit> findByDraftId(long draftId);
 }
