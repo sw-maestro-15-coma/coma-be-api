@@ -15,7 +15,7 @@ import com.swmaestro.cotuber.video.domain.VideoStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -92,7 +92,7 @@ public class DraftFacade {
                         .draftStatus(DraftStatus.VIDEO_DOWNLOADING)
                         .build()
         );
-        return new DraftResponseDto(newDraft, video, newEdit, new ArrayList<>());
+        return new DraftResponseDto(newDraft, video, newEdit, Collections.emptyList());
     }
 
     private DraftResponseDto startDraftAIProcess(final long userId, final Video video) {
@@ -107,6 +107,6 @@ public class DraftFacade {
         );
         // 자막 이미 있는거 사용하는 로직 추가
         draftService.startAIProcessByDraftId(newDraft.getId());
-        return new DraftResponseDto(newDraft, video, newEdit, new ArrayList<>());
+        return new DraftResponseDto(newDraft, video, newEdit, Collections.emptyList());
     }
 }
