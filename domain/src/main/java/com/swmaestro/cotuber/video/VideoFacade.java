@@ -24,7 +24,7 @@ public class VideoFacade {
     }
 
     public void afterVideoSubtitleGenerate(final VideoSubtitleGenerateMessageResponse response) {
-        Video video = videoService.getVideo(response.videoId());
+        Video video = videoService.completeSubtitleGenerate(response.videoId());
         List<VideoSubtitle> videoSubtitles = saveVideoSubtitles(video, response);
 
         draftService.startAIProcessByVideoId(response.videoId(), videoSubtitles);

@@ -91,18 +91,29 @@ public class DraftFacade {
         return switch (video.getVideoStatus()) {
             case COMPLETE -> {
                 Draft draft = createDraft(userId, video, DraftStatus.AI_PROCESSING);
-                draftService.startAIProcessByDraftId(draft.getId()); // 자막 이미 있는거 사용하는 로직 추가
+                List<VideoSubtitle> videoSubtitles = videoService.getVideoSubtitlesByVideoId(video.getId());
+                draftService.startAIProcess(draft.getId(), videoSubtitles);
                 yield new DraftResponseDto(draft, video);
             }
             case VIDEO_DOWNLOADING -> {
                 Draft draft = createDraft(userId, video, DraftStatus.VIDEO_DOWNLOADING);
                 yield new DraftResponseDto(draft, video);
             }
-            case ERROR -> {
+            case SUBTITLE_GENERATING -> {
+                Draft draft = createDraft(userId, video, DraftStatus.VIDEO_SUBTITLE_GENERATING);
+                yield new DraftResponseDto(draft, video);
+            }
+            case DOWNLOAD_ERROR -> {
                 Video downloadStartVideo = videoService.startVideoDownload(video);
 
                 Draft newDraft = createDraft(userId, downloadStartVideo, DraftStatus.VIDEO_DOWNLOADING);
                 yield new DraftResponseDto(newDraft, downloadStartVideo);
+            }
+            case SUBTITLE_GENERATE_ERROR -> {
+                videoService.startVideoSubtitleGenerate(video.getId(), video.getS3Url());
+
+                Draft draft = createDraft(userId, video, DraftStatus.VIDEO_SUBTITLE_GENERATING);
+                yield new DraftResponseDto(draft, video);
             }
         };
     }

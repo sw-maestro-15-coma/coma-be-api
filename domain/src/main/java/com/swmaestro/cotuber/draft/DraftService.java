@@ -4,9 +4,6 @@ import com.swmaestro.cotuber.draft.domain.Draft;
 import com.swmaestro.cotuber.draft.domain.DraftStatus;
 import com.swmaestro.cotuber.draft.dto.DraftAIProcessMessageRequest;
 import com.swmaestro.cotuber.draft.dto.SubtitleDto;
-import com.swmaestro.cotuber.edit.EditService;
-import com.swmaestro.cotuber.edit.domain.Edit;
-import com.swmaestro.cotuber.edit.domain.EditSubtitle;
 import com.swmaestro.cotuber.video.domain.VideoSubtitle;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +15,6 @@ import java.util.List;
 public class DraftService {
     private final DraftRepository draftRepository;
     private final DraftAIProcessProducer draftAIProcessProducer;
-    private final EditService editService;
 
     public List<Draft> getDraftList(final long userId) {
         return draftRepository.findAllByUserId(userId);
@@ -59,12 +55,7 @@ public class DraftService {
         return drafts;
     }
 
-    public void startAIProcessByDraftId(final long draftId) {
-        Edit edit = editService.findByDraftId(draftId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 edit이 없습니다"));
-
-        List<EditSubtitle> subtitles = editService.getEditSubtitleList(edit.getId());
-
+    public void startAIProcess(long draftId, List<VideoSubtitle> subtitles) {
         draftAIProcessProducer.send(
                 DraftAIProcessMessageRequest.builder()
                         .draftId(draftId)

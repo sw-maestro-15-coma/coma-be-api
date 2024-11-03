@@ -79,4 +79,12 @@ public class VideoService {
     public List<VideoSubtitle> getVideoSubtitlesByVideoId(long videoId) {
         return videoSubtitleRepository.findAllByVideoId(videoId);
     }
+
+    public Video completeSubtitleGenerate(long videoId) {
+        Video video = videoRepository.findById(videoId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 video가 없습니다"));
+
+        video.completeSubtitleGenerate();
+        return videoRepository.save(video);
+    }
 }
