@@ -42,19 +42,17 @@ public class VideoService {
         );
     }
 
-    public Video updateVideoStatus(final long videoId, final VideoStatus videoStatus) {
-        Video video = getVideo(videoId);
-        video.changeVideoStatus(videoStatus);
-        return videoRepository.save(video);
-    }
+    public Video startVideoDownload(Video video) {
+        video.changeVideoStatus(VideoStatus.VIDEO_DOWNLOADING);
 
-    public void startVideoDownload(Video video) {
         videoDownloadProducer.send(
                 VideoDownloadMessageRequest.builder()
                         .videoId(video.getId())
                         .youtubeUrl(video.getYoutubeUrl())
                         .build()
         );
+
+        return videoRepository.save(video);
     }
 
     public void completeVideoDownload(VideoDownloadMessageResponse response) {
@@ -76,5 +74,9 @@ public class VideoService {
 
     public void saveVideoSubtitles(List<VideoSubtitle> videoSubtitles) {
         videoSubtitleRepository.saveAll(videoSubtitles);
+    }
+
+    public List<VideoSubtitle> getVideoSubtitlesByVideoId(long videoId) {
+        return videoSubtitleRepository.findAllByVideoId(videoId);
     }
 }

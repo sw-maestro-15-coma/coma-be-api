@@ -11,7 +11,7 @@ import com.swmaestro.cotuber.edit.domain.Edit;
 import com.swmaestro.cotuber.edit.domain.EditSubtitle;
 import com.swmaestro.cotuber.video.VideoService;
 import com.swmaestro.cotuber.video.domain.Video;
-import com.swmaestro.cotuber.video.domain.VideoStatus;
+import com.swmaestro.cotuber.video.domain.VideoSubtitle;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +26,7 @@ public class DraftFacade {
     private final EditService editService;
 
     public void afterAIProcess(final DraftAIProcessMessageResponse response) {
-        editService.saveEdit(
+        Edit edit = editService.saveEdit(
                 Edit.builder()
                         .draftId(response.draftId())
                         .title(response.title())
@@ -34,6 +34,20 @@ public class DraftFacade {
                         .end(response.end())
                         .build()
         );
+
+        Draft draft = draftService.getDraft(response.draftId());
+        List<VideoSubtitle> videoSubtitles = videoService.getVideoSubtitlesByVideoId(draft.getVideoId());
+
+        saveEditSubtitles(edit, videoSubtitles);
+    }
+
+
+    private void saveEditSubtitles(Edit edit, List<VideoSubtitle> videoSubtitles) {
+        List<EditSubtitle> editSubtitles = videoSubtitles.stream()
+                .map(videoSubtitle -> EditSubtitle.from(edit.getId(), videoSubtitle))
+                .toList();
+
+        editService.saveEditSubtitle(editSubtitles);
     }
 
     public List<DraftListResponseDto> getDraftList(final long userId) {
@@ -61,54 +75,45 @@ public class DraftFacade {
     }
 
     public DraftResponseDto createDraft(final long userId, final DraftCreateRequestDto request) {
-        Optional<Video> video = videoService.findVideoByYoutubeUrl(request.youtubeUrl());
+        Optional<Video> foundVideo = videoService.findVideoByYoutubeUrl(request.youtubeUrl());
 
         // 신규 요청 생성의 경우 새 비디오 다운로드 요청
-        if (video.isEmpty()) {
+        if (foundVideo.isEmpty()) {
             Video newVideo = videoService.createVideo(request.youtubeUrl());
             videoService.startVideoDownload(newVideo);
-            return createDraftVideoDownloading(userId, newVideo);
+
+            Draft newDraft = createDraft(userId, newVideo, DraftStatus.VIDEO_DOWNLOADING);
+            return new DraftResponseDto(newDraft, newVideo);
         }
 
-        Video presentVideo = video.get();
-        switch (presentVideo.getVideoStatus()) {
+        Video video = foundVideo.get();
+
+        return switch (video.getVideoStatus()) {
             case COMPLETE -> {
-                return startDraftAIProcess(userId, presentVideo);
+                Draft draft = createDraft(userId, video, DraftStatus.AI_PROCESSING);
+                draftService.startAIProcessByDraftId(draft.getId()); // 자막 이미 있는거 사용하는 로직 추가
+                yield new DraftResponseDto(draft, video);
             }
             case VIDEO_DOWNLOADING -> {
-                return createDraftVideoDownloading(userId, presentVideo);
+                Draft draft = createDraft(userId, video, DraftStatus.VIDEO_DOWNLOADING);
+                yield new DraftResponseDto(draft, video);
             }
             case ERROR -> {
-                Video updatedVideo = videoService.updateVideoStatus(presentVideo.getId(), VideoStatus.VIDEO_DOWNLOADING);
-                videoService.startVideoDownload(updatedVideo);
-                return createDraftVideoDownloading(userId, updatedVideo);
+                Video downloadStartVideo = videoService.startVideoDownload(video);
+
+                Draft newDraft = createDraft(userId, downloadStartVideo, DraftStatus.VIDEO_DOWNLOADING);
+                yield new DraftResponseDto(newDraft, downloadStartVideo);
             }
-            default -> throw new IllegalStateException("Unexpected value: " + presentVideo.getVideoStatus());
-        }
+        };
     }
 
-    private DraftResponseDto createDraftVideoDownloading(final long userId, final Video video) {
-        Draft newDraft = draftService.saveDraft(
+    private Draft createDraft(final long userId, final Video video, DraftStatus draftStatus) {
+        return draftService.saveDraft(
                 Draft.builder()
                         .userId(userId)
                         .videoId(video.getId())
-                        .draftStatus(DraftStatus.VIDEO_DOWNLOADING)
+                        .draftStatus(draftStatus)
                         .build()
         );
-
-        return new DraftResponseDto(newDraft, video);
-    }
-
-    private DraftResponseDto startDraftAIProcess(final long userId, final Video video) {
-        Draft newDraft = draftService.saveDraft(
-                Draft.builder()
-                        .userId(userId)
-                        .videoId(video.getId())
-                        .draftStatus(DraftStatus.AI_PROCESSING)
-                        .build()
-        );
-        // 자막 이미 있는거 사용하는 로직 추가
-        draftService.startAIProcessByDraftId(newDraft.getId());
-        return new DraftResponseDto(newDraft, video);
     }
 }

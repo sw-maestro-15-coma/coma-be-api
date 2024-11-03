@@ -14,11 +14,6 @@ public class EditService {
     private final EditRepository editRepository;
     private final EditSubtitleRepository editSubtitleRepository;
 
-    public Edit getEdit(final Long id) {
-        return editRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 edit이 없습니다"));
-    }
-
     public Optional<Edit> findEdit(final long editId) {
         return editRepository.findById(editId);
     }
