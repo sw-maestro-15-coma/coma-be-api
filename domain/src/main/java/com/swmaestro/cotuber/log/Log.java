@@ -4,7 +4,7 @@ import lombok.Builder;
 
 @Builder
 public record Log(
-    Long shortsId,
-    String message
+        long shortsId,
+        String message
 ) {
 }

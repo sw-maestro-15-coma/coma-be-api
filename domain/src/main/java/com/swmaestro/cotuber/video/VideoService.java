@@ -25,7 +25,7 @@ public class VideoService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 video가 없습니다"));
     }
 
-    public List<VideoSubtitle> getVideoSubtitleList(Long videoId) {
+    public List<VideoSubtitle> getVideoSubtitleList(long videoId) {
         return videoSubtitleRepository.findAllByVideoId(videoId);
     }
 
@@ -46,7 +46,7 @@ public class VideoService {
         );
     }
 
-    public Video updateVideoStatus(final Long videoId, final VideoStatus videoStatus) {
+    public Video updateVideoStatus(final long videoId, final VideoStatus videoStatus) {
         Video video = getVideo(videoId);
         video.changeVideoStatus(videoStatus);
         return videoRepository.save(video);
