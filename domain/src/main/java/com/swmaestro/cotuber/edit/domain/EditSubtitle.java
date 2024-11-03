@@ -2,6 +2,7 @@ package com.swmaestro.cotuber.edit.domain;
 
 import com.swmaestro.cotuber.draft.domain.Draft;
 import com.swmaestro.cotuber.edit.dto.EditSubtitleBaseDto;
+import com.swmaestro.cotuber.video.domain.VideoSubtitle;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -25,6 +26,15 @@ public class EditSubtitle {
                 .subtitle(subtitle.subtitle())
                 .start(subtitle.start())
                 .end(subtitle.end())
+                .build();
+    }
+
+    public static EditSubtitle from(long editId, VideoSubtitle videoSubtitle) {
+        return EditSubtitle.builder()
+                .editId(editId)
+                .subtitle(videoSubtitle.getSubtitle())
+                .start(videoSubtitle.getStart())
+                .end(videoSubtitle.getEnd())
                 .build();
     }
 }

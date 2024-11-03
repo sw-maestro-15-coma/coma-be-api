@@ -29,29 +29,29 @@ public class VideoFacade {
 
     public void afterVideoSubtitleGenerate(final VideoSubtitleGenerateMessageResponse response) {
         Video video = videoService.getVideo(response.videoId());
+        List<VideoSubtitle> videoSubtitles = saveVideoSubtitles(video, response);
 
-        List<VideoSubtitle> videoSubtitleList = response.subtitleList().stream().map(
-                subtitle -> VideoSubtitle.builder()
-                        .videoId(video.getId())
-                        .subtitle(subtitle.subtitle())
-                        .start(subtitle.start())
-                        .end(subtitle.end())
-                        .build()
-        ).toList();
+        List<Draft> affectedDrafts = draftService.startAIProcessByVideoId(response.videoId(), videoSubtitles);
+        saveEditSubtitles(affectedDrafts, videoSubtitles);
+    }
 
-        videoService.completeVideoSubtitleGenerate(videoSubtitleList);
-        List<Draft> startedDraftList = draftService.startAIProcessByVideoId(response.videoId());
+    private List<VideoSubtitle> saveVideoSubtitles(Video video, VideoSubtitleGenerateMessageResponse response) {
+        List<VideoSubtitle> videoSubtitles = response.subtitleList()
+                .stream()
+                .map(subtitle -> VideoSubtitle.from(video, subtitle))
+                .toList();
 
-        startedDraftList.forEach(draft -> {
-            List<EditSubtitle> editSubtitleList = videoSubtitleList.stream().map(
-                    videoSubtitle -> EditSubtitle.builder()
-                            .editId(draft.getEditId())
-                            .subtitle(videoSubtitle.getSubtitle())
-                            .start(videoSubtitle.getStart())
-                            .end(videoSubtitle.getEnd())
-                            .build()
-            ).toList();
-            editService.saveEditSubtitle(editSubtitleList);
-        });
+        videoService.saveVideoSubtitles(videoSubtitles);
+        return videoSubtitles;
+    }
+
+    private void saveEditSubtitles(List<Draft> drafts, List<VideoSubtitle> videoSubtitles) {
+        for (Draft draft : drafts) {
+            List<EditSubtitle> editSubtitles = videoSubtitles.stream()
+                    .map(videoSubtitle -> EditSubtitle.from(draft.getEditId(), videoSubtitle))
+                    .toList();
+
+            editService.saveEditSubtitle(editSubtitles);
+        }
     }
 }

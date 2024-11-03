@@ -19,4 +19,8 @@ public class Draft {
     public void updateDraftStatus(DraftStatus newStatus) {
         this.draftStatus = newStatus;
     }
+
+    public boolean isSubtitleGenerating() {
+        return this.draftStatus == DraftStatus.VIDEO_SUBTITLE_GENERATING;
+    }
 }

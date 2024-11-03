@@ -78,7 +78,7 @@ public class VideoService {
         );
     }
 
-    public void completeVideoSubtitleGenerate(List<VideoSubtitle> videoSubtitleList) {
-        videoSubtitleRepository.saveAll(videoSubtitleList);
+    public void saveVideoSubtitles(List<VideoSubtitle> videoSubtitles) {
+        videoSubtitleRepository.saveAll(videoSubtitles);
     }
 }
