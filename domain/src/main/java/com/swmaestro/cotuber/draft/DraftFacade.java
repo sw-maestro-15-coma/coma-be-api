@@ -9,8 +9,8 @@ import com.swmaestro.cotuber.draft.dto.DraftResponseDto;
 import com.swmaestro.cotuber.edit.EditService;
 import com.swmaestro.cotuber.edit.domain.Edit;
 import com.swmaestro.cotuber.edit.domain.EditSubtitle;
-import com.swmaestro.cotuber.video.domain.Video;
 import com.swmaestro.cotuber.video.VideoService;
+import com.swmaestro.cotuber.video.domain.Video;
 import com.swmaestro.cotuber.video.domain.VideoStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -61,7 +61,7 @@ public class DraftFacade {
         // 신규 요청 생성의 경우 새 비디오 다운로드 요청
         if (video.isEmpty()) {
             Video newVideo = videoService.createVideo(createRequestDto.youtubeUrl());
-            videoService.startVideoDownload(newVideo.getId(), newVideo.getYoutubeUrl());
+            videoService.startVideoDownload(newVideo);
             return createDraftVideoDownloading(userId, newVideo);
         }
 
@@ -75,7 +75,7 @@ public class DraftFacade {
             }
             case ERROR -> {
                 Video updatedVideo = videoService.updateVideoStatus(presentVideo.getId(), VideoStatus.VIDEO_DOWNLOADING);
-                videoService.startVideoDownload(updatedVideo.getId(), updatedVideo.getYoutubeUrl());
+                videoService.startVideoDownload(updatedVideo);
                 return createDraftVideoDownloading(userId, updatedVideo);
             }
             default -> throw new IllegalStateException("Unexpected value: " + presentVideo.getVideoStatus());

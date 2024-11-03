@@ -52,11 +52,11 @@ public class VideoService {
         return videoRepository.save(video);
     }
 
-    public void startVideoDownload(final Long videoId, final String youtubeUrl) {
+    public void startVideoDownload(Video video) {
         videoDownloadProducer.send(
                 VideoDownloadMessageRequest.builder()
-                        .videoId(videoId)
-                        .youtubeUrl(youtubeUrl)
+                        .videoId(video.getId())
+                        .youtubeUrl(video.getYoutubeUrl())
                         .build()
         );
     }
