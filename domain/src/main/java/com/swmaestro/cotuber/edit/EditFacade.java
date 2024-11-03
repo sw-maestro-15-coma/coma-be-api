@@ -9,11 +9,14 @@ import com.swmaestro.cotuber.edit.dto.EditSubtitleUpdateRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Component
 public class EditFacade {
     private final DraftService draftService;
     private final EditService editService;
+
     public void updateEdit(final long draftId, final EditRequestDto editRequestDto) {
         Draft draft = draftService.getDraft(draftId);
         editService.saveEdit(
@@ -25,20 +28,15 @@ public class EditFacade {
                         .build()
         );
     }
-    public void updateEditSubtitle(final long draftId, final EditSubtitleUpdateRequestDto editSubtitleUpdateRequestDto) {
+
+    public void updateEditSubtitle(final long draftId, final EditSubtitleUpdateRequestDto updateRequest) {
         Draft draft = draftService.getDraft(draftId);
-        editService.saveEditSubtitle(
-                editSubtitleUpdateRequestDto.subtitleList().stream()
-                        .map(
-                            subtitle -> EditSubtitle.builder()
-                                    .id(subtitle.id())
-                                    .editId(draft.getEditId())
-                                    .subtitle(subtitle.subtitle())
-                                    .start(subtitle.start())
-                                    .end(subtitle.end())
-                                    .build()
-                        )
-                        .toList()
-        );
+
+        List<EditSubtitle> editSubtitles = updateRequest.subtitleList()
+                .stream()
+                .map(subtitle -> EditSubtitle.from(draft, subtitle))
+                .toList();
+
+        editService.saveEditSubtitle(editSubtitles);
     }
 }
