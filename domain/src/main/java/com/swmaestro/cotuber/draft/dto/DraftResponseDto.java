@@ -1,6 +1,5 @@
 package com.swmaestro.cotuber.draft.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.swmaestro.cotuber.draft.domain.Draft;
 import com.swmaestro.cotuber.draft.domain.DraftStatus;
 import com.swmaestro.cotuber.edit.domain.Edit;
@@ -16,11 +15,11 @@ import java.util.List;
 @Builder
 public record DraftResponseDto(
         long id,
-        @JsonProperty("status") DraftStatus status,
-        @JsonProperty("video") VideoResponseDto video,
-        @JsonProperty("edit") EditResponseDto edit,
-        @JsonProperty("createdAt") LocalDateTime createdAt,
-        @JsonProperty("updatedAt") LocalDateTime updatedAt
+        DraftStatus status,
+        VideoResponseDto video,
+        EditResponseDto edit,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
     public DraftResponseDto(Draft draft, Video video, Edit edit, List<EditSubtitle> editSubtitleList) {
         this(
