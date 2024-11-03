@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 public class Edit {
     private final long id;
+    private final long draftId;
     private String title;
     private int start;
     private int end;
