@@ -53,7 +53,7 @@ public class EndpointController {
     @NeedLogin
     @Operation(summary = "등록된 Draft 데이터 단건 조회")
     @GetMapping(value = "/draft/{draftId}")
-    public DraftResponseDto getDraft(@PathVariable("draftId") final long draftId) {
+    public DraftResponseDto getDraft(@PathVariable("draftId") long draftId) {
         return draftFacade.getDraft(draftId);
     }
 
@@ -95,7 +95,7 @@ public class EndpointController {
     @NeedLogin
     @Operation(summary = "등록된 비디오로 숏폼 생성")
     @PostMapping(value = "/draft/{draftId}/shorts")
-    public ShortsResponseDto createVideoToShorts(@PathVariable("draftId") final Long draftId) {
+    public ShortsResponseDto createVideoToShorts(@PathVariable("draftId") Long draftId) {
         final long userId = AuthUtil.getCurrentUserId();
 
         return shortsFacade.createShorts(userId, draftId);
@@ -113,7 +113,7 @@ public class EndpointController {
     @NeedLogin
     @Operation(summary = "생성된 숏폼 데이터 단건 조회")
     @GetMapping(value = "/shorts/{shortsId}")
-    public ShortsResponseDto getShorts(@PathVariable("shortsId") final long shortsId) {
+    public ShortsResponseDto getShorts(@PathVariable("shortsId") long shortsId) {
         return shortsFacade.getShorts(shortsId);
     }
 
