@@ -54,6 +54,7 @@ public class MessageController {
     @Operation(summary = "처리 중 오류 발생")
     @PostMapping("/fail")
     public void afterFail(@RequestBody FailLogMessage logMessage) {
+        // TODO: 비디오, draft에 실패 상태 저장
         logService.sendFailLog(logMessage.shortsId(), logMessage.message());
     }
 }

@@ -24,4 +24,9 @@ public class EditRepositoryImpl implements EditRepository {
     public Optional<Edit> findById(final long editId) {
         return repository.findById(editId).map(EditEntity::toDomain);
     }
+
+    @Override
+    public Optional<Edit> findByDraftId(long draftId) {
+        return repository.findByDraftId(draftId).map(EditEntity::toDomain);
+    }
 }

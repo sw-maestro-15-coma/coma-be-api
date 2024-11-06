@@ -11,7 +11,6 @@ public class Draft {
     private final long id;
     private final long userId;
     private final long videoId;
-    private final long editId;
     private DraftStatus draftStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
