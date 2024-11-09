@@ -21,6 +21,9 @@ public class ShortsEntity extends BaseEntity {
     @Column(name = "video_id")
     private long videoId;
 
+    @Column(name = "title")
+    private String title;
+
     @Column(name = "thumbnail_url")
     private String thumbnailUrl;
 
@@ -33,11 +36,12 @@ public class ShortsEntity extends BaseEntity {
 
     @Builder
     public ShortsEntity(long id, LocalDateTime createdAt, LocalDateTime updatedAt,
-                        long userId, long videoId, String thumbnailUrl,
+                        long userId, long videoId, String title, String thumbnailUrl,
                         String s3Url, ShortsStatus shortsStatus) {
         super(id, createdAt, updatedAt);
         this.userId = userId;
         this.videoId = videoId;
+        this.title = title;
         this.thumbnailUrl = thumbnailUrl;
         this.s3Url = s3Url;
         this.shortsStatus = shortsStatus;
@@ -48,6 +52,7 @@ public class ShortsEntity extends BaseEntity {
                 .id(getId())
                 .userId(userId)
                 .videoId(videoId)
+                .title(title)
                 .thumbnailUrl(thumbnailUrl)
                 .s3Url(s3Url)
                 .shortsStatus(shortsStatus)
@@ -61,6 +66,7 @@ public class ShortsEntity extends BaseEntity {
                 .id(shorts.getId())
                 .userId(shorts.getUserId())
                 .videoId(shorts.getVideoId())
+                .title(shorts.getTitle())
                 .thumbnailUrl(shorts.getThumbnailUrl())
                 .s3Url(shorts.getS3Url())
                 .shortsStatus(shorts.getShortsStatus())
