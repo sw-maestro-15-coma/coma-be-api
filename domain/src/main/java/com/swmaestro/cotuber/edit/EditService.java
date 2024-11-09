@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -13,9 +14,12 @@ public class EditService {
     private final EditRepository editRepository;
     private final EditSubtitleRepository editSubtitleRepository;
 
-    public Edit getEdit(final Long id) {
-        return editRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 edit이 없습니다"));
+    public Optional<Edit> findEdit(final long editId) {
+        return editRepository.findById(editId);
+    }
+
+    public Optional<Edit> findByDraftId(final long draftId) {
+        return editRepository.findByDraftId(draftId);
     }
 
     public List<EditSubtitle> getEditSubtitleList(final long editId) {

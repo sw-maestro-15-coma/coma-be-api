@@ -25,10 +25,6 @@ public class VideoService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 video가 없습니다"));
     }
 
-    public List<VideoSubtitle> getVideoSubtitleList(Long videoId) {
-        return videoSubtitleRepository.findAllByVideoId(videoId);
-    }
-
     // 에러 발생 가능성 (youtubeUrl 동일한 데이터가 2개 이상 있을 경우?)
     public Optional<Video> findVideoByYoutubeUrl(final String youtubeUrl) {
         return videoRepository.findByYoutubeUrl(youtubeUrl);
@@ -46,19 +42,17 @@ public class VideoService {
         );
     }
 
-    public Video updateVideoStatus(final Long videoId, final VideoStatus videoStatus) {
-        Video video = getVideo(videoId);
-        video.changeVideoStatus(videoStatus);
-        return videoRepository.save(video);
-    }
+    public Video startVideoDownload(Video video) {
+        video.changeVideoStatus(VideoStatus.VIDEO_DOWNLOADING);
 
-    public void startVideoDownload(final Long videoId, final String youtubeUrl) {
         videoDownloadProducer.send(
                 VideoDownloadMessageRequest.builder()
-                        .videoId(videoId)
-                        .youtubeUrl(youtubeUrl)
+                        .videoId(video.getId())
+                        .youtubeUrl(video.getYoutubeUrl())
                         .build()
         );
+
+        return videoRepository.save(video);
     }
 
     public void completeVideoDownload(VideoDownloadMessageResponse response) {
@@ -78,7 +72,19 @@ public class VideoService {
         );
     }
 
-    public void completeVideoSubtitleGenerate(List<VideoSubtitle> videoSubtitleList) {
-        videoSubtitleRepository.saveAll(videoSubtitleList);
+    public void saveVideoSubtitles(List<VideoSubtitle> videoSubtitles) {
+        videoSubtitleRepository.saveAll(videoSubtitles);
+    }
+
+    public List<VideoSubtitle> getVideoSubtitlesByVideoId(long videoId) {
+        return videoSubtitleRepository.findAllByVideoId(videoId);
+    }
+
+    public Video completeSubtitleGenerate(long videoId) {
+        Video video = videoRepository.findById(videoId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 video가 없습니다"));
+
+        video.completeSubtitleGenerate();
+        return videoRepository.save(video);
     }
 }

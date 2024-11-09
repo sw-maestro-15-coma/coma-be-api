@@ -1,27 +1,20 @@
 package com.swmaestro.cotuber.draft;
 
-import com.swmaestro.cotuber.draft.dto.DraftAIProcessMessageRequest;
 import com.swmaestro.cotuber.draft.domain.Draft;
 import com.swmaestro.cotuber.draft.domain.DraftStatus;
+import com.swmaestro.cotuber.draft.dto.DraftAIProcessMessageRequest;
 import com.swmaestro.cotuber.draft.dto.SubtitleDto;
-import com.swmaestro.cotuber.edit.EditService;
-import com.swmaestro.cotuber.edit.domain.EditSubtitle;
-import com.swmaestro.cotuber.video.VideoService;
 import com.swmaestro.cotuber.video.domain.VideoSubtitle;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class DraftService {
     private final DraftRepository draftRepository;
     private final DraftAIProcessProducer draftAIProcessProducer;
-    private final EditService editService;
-    private final VideoService videoService;
 
     public List<Draft> getDraftList(final long userId) {
         return draftRepository.findAllByUserId(userId);
@@ -47,56 +40,30 @@ public class DraftService {
         }
     }
 
-    public List<Draft> startAIProcessByVideoId(final long videoId) {
-        List<Draft> startedDraftList = new ArrayList<>();
-        List<Draft> draftList = draftRepository.findAllByVideoId(videoId);
-
-        List<VideoSubtitle> videoSubtitleList = videoService.getVideoSubtitleList(videoId);
-
-        List<SubtitleDto> subtitleDtos = videoSubtitleList.stream()
-                .map(vsl -> SubtitleDto.builder()
-                        .start(vsl.getStart())
-                        .end(vsl.getEnd())
-                        .subtitle(vsl.getSubtitle())
-                        .build())
+    public List<Draft> startAIProcessByVideoId(final long videoId, final List<VideoSubtitle> videoSubtitles) {
+        List<Draft> drafts = draftRepository.findAllByVideoId(videoId)
+                .stream()
+                .filter(Draft::isSubtitleGenerating)
                 .toList();
 
-        for (Draft draft : draftList) {
-            if (draft.getDraftStatus() == DraftStatus.VIDEO_SUBTITLE_GENERATING) {
-                draft.updateDraftStatus(DraftStatus.AI_PROCESSING);
-                draftRepository.save(draft);
-                startedDraftList.add(draft);
-                draftAIProcessProducer.send(
-                        DraftAIProcessMessageRequest.builder()
-                                .draftId(draft.getId())
-                                .subtitleList(subtitleDtos)
-                                .build()
-                );
-            }
+        for (Draft draft : drafts) {
+            draft.updateDraftStatus(DraftStatus.AI_PROCESSING);
+            draftRepository.save(draft);
+            draftAIProcessProducer.send(DraftAIProcessMessageRequest.from(draft.getId(), videoSubtitles));
         }
-        return startedDraftList;
+
+        return drafts;
     }
 
-    public void startAIProcessByDraftId(final long draftId) {
-        Draft draft = draftRepository.findById(draftId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 id의 draft가 없습니다"));
-
-        long editId = draft.getEditId();
-
-        List<EditSubtitle> editSubtitleList = editService.getEditSubtitleList(editId);
-
-        List<SubtitleDto> subtitleDtos = editSubtitleList.stream()
-                .map(vsl -> SubtitleDto.builder()
-                        .start(vsl.getStart())
-                        .end(vsl.getEnd())
-                        .subtitle(vsl.getSubtitle())
-                        .build())
-                .toList();
-
+    public void startAIProcess(long draftId, List<VideoSubtitle> subtitles) {
         draftAIProcessProducer.send(
                 DraftAIProcessMessageRequest.builder()
                         .draftId(draftId)
-                        .subtitleList(subtitleDtos)
+                        .subtitleList(
+                                subtitles.stream()
+                                        .map(SubtitleDto::from)
+                                        .toList()
+                        )
                         .build()
         );
     }

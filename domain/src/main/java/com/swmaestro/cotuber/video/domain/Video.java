@@ -49,12 +49,14 @@ public class Video {
         this.s3Url = response.s3Url();
         this.videoTotalSecond = response.videoFullSecond();
         this.title = convertToUTF8(response.originalTitle());
+        this.videoStatus = VideoStatus.SUBTITLE_GENERATING;
+    }
+
+    public void completeSubtitleGenerate() {
         this.videoStatus = VideoStatus.COMPLETE;
     }
 
     public String getYoutubeUrl() {
         return this.youtubeKey.getUrl();
     }
-
-
 }

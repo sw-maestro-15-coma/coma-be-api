@@ -8,10 +8,7 @@ import org.springframework.stereotype.Component;
 public class LogService {
     private final LogRepository logRepository;
 
-    public void sendFailLog(
-            Long shortsId,
-            String message
-    ) {
+    public void sendFailLog(long shortsId, String message) {
         logRepository.save(Log.builder()
                 .shortsId(shortsId)
                 .message(message)

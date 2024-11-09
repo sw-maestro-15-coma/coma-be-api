@@ -2,8 +2,11 @@ package com.swmaestro.cotuber.video.domain;
 
 public enum VideoStatus {
     VIDEO_DOWNLOADING("video_downloading"),
+    SUBTITLE_GENERATING("subtitle_generating"),
     COMPLETE("complete"),
-    ERROR("error");
+    DOWNLOAD_ERROR("download_error"),
+    SUBTITLE_GENERATE_ERROR("subtitle_generate_error"),
+    ;
 
     private final String state;
 
