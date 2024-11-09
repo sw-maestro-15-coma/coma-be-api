@@ -68,4 +68,11 @@ public class ShortsService {
 
         shortsRepository.save(shorts);
     }
+
+    public void errorShortsGenerate(final long shortsId) {
+        Shorts shorts = shortsRepository.findById(shortsId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 shorts가 없습니다"));
+        shorts.errorShorts();
+        shortsRepository.save(shorts);
+    }
 }

@@ -63,6 +63,14 @@ public class VideoService {
         videoRepository.save(video);
     }
 
+    public void errorVideoDownload(final long videoId) {
+        Video video = videoRepository.findById(videoId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 video가 없습니다"));
+
+        video.errorVideoDownloading();
+        videoRepository.save(video);
+    }
+
     public void startVideoSubtitleGenerate(final long videoId, String s3Url) {
         videoSubtitleGenerateProducer.send(
                 VideoSubtitleGenerateMessageRequest.builder()
@@ -86,5 +94,13 @@ public class VideoService {
 
         video.completeSubtitleGenerate();
         return videoRepository.save(video);
+    }
+
+    public void errorSubtitleGenerate(final long videoId) {
+        Video video = videoRepository.findById(videoId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 video가 없습니다"));
+
+        video.errorSubtitleGenerate();
+        videoRepository.save(video);
     }
 }

@@ -40,6 +40,21 @@ public class DraftService {
         }
     }
 
+    public void updateDraftStatusToErrorByVideoId(final long videoId) {
+        List<Draft> draftList = draftRepository.findAllByVideoId(videoId);
+        for (Draft draft : draftList) {
+            draft.updateDraftStatus(DraftStatus.ERROR);
+            draftRepository.save(draft);
+        }
+    }
+
+    public void updateDraftStatusToError(final long draftId) {
+        Draft draft = getDraft(draftId);
+        draft.updateDraftStatus(DraftStatus.ERROR);
+        draftRepository.save(draft);
+    }
+
+
     public List<Draft> startAIProcessByVideoId(final long videoId, final List<VideoSubtitle> videoSubtitles) {
         List<Draft> drafts = draftRepository.findAllByVideoId(videoId)
                 .stream()
@@ -67,4 +82,5 @@ public class DraftService {
                         .build()
         );
     }
+
 }

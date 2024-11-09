@@ -52,8 +52,16 @@ public class Video {
         this.videoStatus = VideoStatus.SUBTITLE_GENERATING;
     }
 
+    public void errorVideoDownloading() {
+        this.videoStatus = VideoStatus.DOWNLOAD_ERROR;
+    }
+
     public void completeSubtitleGenerate() {
         this.videoStatus = VideoStatus.COMPLETE;
+    }
+
+    public void errorSubtitleGenerate() {
+        this.videoStatus = VideoStatus.SUBTITLE_GENERATE_ERROR;
     }
 
     public String getYoutubeUrl() {
