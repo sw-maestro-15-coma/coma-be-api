@@ -63,7 +63,7 @@ public class DraftFacade {
     public DraftResponseDto getDraft(final long draftId) {
         Draft draft = draftService.getDraft(draftId);
         Video video = videoService.getVideo(draft.getVideoId());
-        Optional<Edit> foundEdit = editService.findEdit(draftId);
+        Optional<Edit> foundEdit = editService.findByDraftId(draftId);
 
         if (foundEdit.isEmpty()) {
             return new DraftResponseDto(draft, video);
