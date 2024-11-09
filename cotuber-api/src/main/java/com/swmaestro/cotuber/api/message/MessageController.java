@@ -2,8 +2,12 @@ package com.swmaestro.cotuber.api.message;
 
 import com.swmaestro.cotuber.draft.DraftFacade;
 import com.swmaestro.cotuber.draft.dto.DraftAIProcessMessageResponse;
+import com.swmaestro.cotuber.log.LogFacade;
 import com.swmaestro.cotuber.log.LogService;
-import com.swmaestro.cotuber.log.dto.FailLogMessage;
+import com.swmaestro.cotuber.log.dto.DraftAIProcessFailResponse;
+import com.swmaestro.cotuber.log.dto.ShortsGenerateFailResponse;
+import com.swmaestro.cotuber.log.dto.VideoDownloadFailResponse;
+import com.swmaestro.cotuber.log.dto.VideoSubtitleGenerateFailResponse;
 import com.swmaestro.cotuber.shorts.ShortsFacade;
 import com.swmaestro.cotuber.shorts.dto.ShortsGenerateMessageResponse;
 import com.swmaestro.cotuber.video.VideoFacade;
@@ -22,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/message")
 public class MessageController {
-    private final LogService logService;
+    private final LogFacade logFacade;
     private final ShortsFacade shortsFacade;
     private final DraftFacade draftFacade;
     private final VideoFacade videoFacade;
@@ -51,10 +55,27 @@ public class MessageController {
         shortsFacade.afterShortsGenerate(response);
     }
 
-    @Operation(summary = "처리 중 오류 발생")
-    @PostMapping("/fail")
-    public void afterFail(@RequestBody FailLogMessage logMessage) {
-        // TODO: 비디오, draft에 실패 상태 저장
-        logService.sendFailLog(logMessage.shortsId(), logMessage.message());
+    @Operation(summary = "비디오 다운로드 중 오류 발생")
+    @PostMapping("/video/fail")
+    public void afterFail(@RequestBody VideoDownloadFailResponse response) {
+        logFacade.videoFail(response);
+    }
+
+    @Operation(summary = "자막 생성 중 오류 발생")
+    @PostMapping("/subtitle/fail")
+    public void afterFail(@RequestBody VideoSubtitleGenerateFailResponse response) {
+        logFacade.subtitleFail(response);
+    }
+
+    @Operation(summary = "AI 처리 중 오류 발생")
+    @PostMapping("/ai/fail")
+    public void afterFail(@RequestBody DraftAIProcessFailResponse response) {
+        logFacade.aiFail(response);
+    }
+
+    @Operation(summary = "shorts 생성 중 오류 발생")
+    @PostMapping("/shorts/fail")
+    public void afterFail(@RequestBody ShortsGenerateFailResponse response) {
+        logFacade.shortsFail(response);
     }
 }

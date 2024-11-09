@@ -32,4 +32,8 @@ public class Shorts {
         this.thumbnailUrl = thumbnailUrl;
         this.shortsStatus = ShortsStatus.COMPLETE;
     }
+
+    public void errorShorts() {
+        this.shortsStatus = ShortsStatus.ERROR;
+    }
 }
