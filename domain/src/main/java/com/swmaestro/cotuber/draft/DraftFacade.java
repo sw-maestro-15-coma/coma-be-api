@@ -39,6 +39,8 @@ public class DraftFacade {
         List<VideoSubtitle> videoSubtitles = videoService.getVideoSubtitlesByVideoId(draft.getVideoId());
 
         saveEditSubtitles(edit, videoSubtitles);
+        draft.updateDraftStatus(DraftStatus.COMPLETE);
+        draftService.saveDraft(draft);
     }
 
 
