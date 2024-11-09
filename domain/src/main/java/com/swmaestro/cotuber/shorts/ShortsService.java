@@ -32,16 +32,15 @@ public class ShortsService {
     }
 
     public Shorts startShortsGenerate(final long userId, final long videoId, final long draftId) {
-        Shorts newShorts = shortsRepository.save(
-                Shorts.initialShorts(userId, videoId)
-        );
-
         Video video = videoService.getVideo(videoId);
         Edit edit = editService.findByDraftId(draftId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 edit가 없습니다"));
 
         List<EditSubtitle> subtitles = editService.getEditSubtitleList(edit.getId());
 
+        Shorts newShorts = shortsRepository.save(
+                Shorts.initialShorts(userId, videoId, edit.getTitle())
+        );
 
         shortsProcessProducer.send(
                 ShortsGenerateMessageRequest.builder()
@@ -57,6 +56,7 @@ public class ShortsService {
                         )
                         .build()
         );
+
 
         return newShorts;
     }
