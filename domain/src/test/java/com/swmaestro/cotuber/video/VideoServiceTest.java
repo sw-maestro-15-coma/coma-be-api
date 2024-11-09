@@ -26,7 +26,7 @@ class VideoServiceTest {
                 .s3Url(null)
                 .title(null)
                 .videoTotalSecond(0)
-                .videoStatus(VideoStatus.ERROR)
+                .videoStatus(VideoStatus.DOWNLOAD_ERROR)
                 .build();
 
         // when
