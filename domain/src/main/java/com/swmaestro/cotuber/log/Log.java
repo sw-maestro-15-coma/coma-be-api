@@ -4,9 +4,9 @@ import lombok.Builder;
 
 @Builder
 public record Log(
-        long videoId,
-        long draftId,
-        long shortsId,
+        Long videoId,
+        Long draftId,
+        Long shortsId,
         String message
 ) {
 }
