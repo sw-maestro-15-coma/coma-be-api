@@ -6,6 +6,7 @@ import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
 import com.swmaestro.cotuber.shorts.dto.ShortsResponseDto;
 import com.swmaestro.cotuber.draft.domain.Draft;
 import com.swmaestro.cotuber.draft.DraftService;
+import com.swmaestro.cotuber.shorts.upload.dto.ShortsUploadRequestDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -39,5 +40,9 @@ public class ShortsFacade {
 
     public void afterShortsGenerate(ShortsGenerateMessageResponse response) {
         shortsService.completeShortsGenerate(response);
+    }
+
+    public void uploadShorts(final long shortsId, final ShortsUploadRequestDto requestDto) {
+        shortsService.startShortsUpload(shortsId, requestDto);
     }
 }

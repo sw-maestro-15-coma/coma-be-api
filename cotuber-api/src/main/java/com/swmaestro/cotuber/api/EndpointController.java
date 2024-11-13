@@ -13,6 +13,7 @@ import com.swmaestro.cotuber.health.dto.HealthCheckResponseDto;
 import com.swmaestro.cotuber.shorts.ShortsFacade;
 import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
 import com.swmaestro.cotuber.shorts.dto.ShortsResponseDto;
+import com.swmaestro.cotuber.shorts.upload.dto.ShortsUploadRequestDto;
 import com.swmaestro.cotuber.user.User;
 import com.swmaestro.cotuber.user.UserReader;
 import com.swmaestro.cotuber.validate.Validator;
@@ -115,6 +116,16 @@ public class EndpointController {
     @GetMapping(value = "/shorts/{shortsId}")
     public ShortsResponseDto getShorts(@PathVariable("shortsId") long shortsId) {
         return shortsFacade.getShorts(shortsId);
+    }
+
+    @NeedLogin
+    @Operation(summary = "생성된 숏폼 업로드")
+    @PostMapping(value = "/shorts/{shortsId}/upload")
+    public void uploadShorts(
+            @PathVariable("shortsId") long shortsId,
+            @RequestBody ShortsUploadRequestDto shortsUploadRequestDto
+    ) {
+        shortsFacade.uploadShorts(shortsId, shortsUploadRequestDto);
     }
 
     @Operation(summary = "유저 정보 조회")
