@@ -3,6 +3,9 @@ package com.swmaestro.cotuber.config.oauth;
 import com.swmaestro.cotuber.TokenCreator;
 import com.swmaestro.cotuber.TokenInfo;
 import com.swmaestro.cotuber.config.constants.TokenConstants;
+import com.swmaestro.cotuber.token.RefreshTokenService;
+import com.swmaestro.cotuber.user.User;
+import com.swmaestro.cotuber.user.UserReader;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +24,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private static final String DEFAULT_REDIRECT_URL = "https://cotuber.com";
     private final TokenCreator tokenCreator;
     private final TokenConstants tokenConstants;
+    private final RefreshTokenService refreshTokenService;
+    private final UserReader userReader;
 
     @Override
     public void onAuthenticationSuccess(
@@ -29,6 +34,11 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
             Authentication authentication
     ) throws IOException {
         TokenInfo token = tokenCreator.generateToken(authentication);
+        
+        long userId = tokenCreator.getSubject(token.accessToken());
+        User user = userReader.findById(userId);
+
+        refreshTokenService.save(user, token.refreshToken(), token.refreshTokenExpiresIn());
 
         // 토큰 전달을 위한 redirect
         response.addHeader(HttpHeaders.SET_COOKIE, createAccessTokenCookie(token).toString());
