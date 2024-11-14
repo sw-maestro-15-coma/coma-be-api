@@ -43,14 +43,12 @@ public class AuthService {
 
         long userId = tokenCreator.getSubject(refreshToken.get());
 
-        // refreshToken이 DB의 값과 같다면 재발급 대상
+        // refreshToken가 DB에 존재하면 재발급 대상
         return refreshTokenService.isRefreshTokenExists(userId, refreshToken.get(), LocalDateTime.now());
     }
 
     public TokenInfo reissueToken(String refreshToken) {
         long userId = tokenCreator.getSubject(refreshToken);
-//        check(!refreshTokenService.isExist(userId, refreshoken)) { "로그아웃 된 사용자입니다." }
-
         User user = userReader.findById(userId);
 
         var authentication = getAuthentication(user);
