@@ -2,6 +2,7 @@ package com.swmaestro.cotuber.config.oauth;
 
 import com.swmaestro.cotuber.TokenCreator;
 import com.swmaestro.cotuber.TokenInfo;
+import com.swmaestro.cotuber.config.constants.TokenConstants;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.io.IOException;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private static final String DEFAULT_REDIRECT_URL = "https://cotuber.com";
     private final TokenCreator tokenCreator;
+    private final TokenConstants tokenConstants;
 
     @Override
     public void onAuthenticationSuccess(
@@ -36,23 +38,23 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     }
 
     private ResponseCookie createAccessTokenCookie(TokenInfo tokenInfo) {
-        return ResponseCookie.from("accessToken", tokenInfo.accessToken())
+        return ResponseCookie.from(tokenConstants.getAccessTokenCookieName(), tokenInfo.accessToken())
                 .httpOnly(true)
                 .secure(true)
                 .sameSite(Cookie.SameSite.NONE.attributeValue())
-                .domain("cotuber.com")  // TODO: 토큰 주입으로 변경
-                .path("/")
+                .domain(tokenConstants.getDomain())
+                .path(tokenConstants.getCookiePath())
                 .maxAge(tokenInfo.accessTokenExpiresIn())
                 .build();
     }
 
     private ResponseCookie createRefreshTokenCookie(TokenInfo token) {
-        return ResponseCookie.from("refreshToken", token.refreshToken())
+        return ResponseCookie.from(tokenConstants.getRefreshTokenCookieName(), token.refreshToken())
                 .httpOnly(true)
                 .secure(true)
                 .sameSite(Cookie.SameSite.NONE.attributeValue())
-                .domain("cotuber.com") // TODO: 토큰 주입으로 변경
-                .path("/")
+                .domain(tokenConstants.getDomain())
+                .path(tokenConstants.getCookiePath())
                 .maxAge(token.refreshTokenExpiresIn())
                 .build();
     }
