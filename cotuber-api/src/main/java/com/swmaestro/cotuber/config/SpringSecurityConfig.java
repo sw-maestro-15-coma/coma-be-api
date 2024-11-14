@@ -2,7 +2,9 @@ package com.swmaestro.cotuber.config;
 
 import com.swmaestro.cotuber.TokenCreator;
 import com.swmaestro.cotuber.auth.AuthService;
+import com.swmaestro.cotuber.config.constants.TokenConstants;
 import com.swmaestro.cotuber.config.filter.JwtFilter;
+import com.swmaestro.cotuber.config.filter.ReissueTokenFilter;
 import com.swmaestro.cotuber.config.oauth.CustomAuthorizationRequestResolver;
 import com.swmaestro.cotuber.config.oauth.CustomOAuth2UserService;
 import com.swmaestro.cotuber.config.oauth.OAuth2FailureHandler;
@@ -27,7 +29,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -38,6 +39,7 @@ public class SpringSecurityConfig {
     private final UserReader userReader;
     private final AuthService authService;
     private final TokenCreator tokenCreator;
+    private final TokenConstants tokenConstants;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
@@ -82,6 +84,7 @@ public class SpringSecurityConfig {
                         .failureHandler(oAuth2FailureHandler)
                 )
                 .addFilterBefore(new JwtFilter(userReader, authService, tokenCreator), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new ReissueTokenFilter(authService, tokenConstants), JwtFilter.class)
                 .build();
     }
 
