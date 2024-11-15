@@ -4,6 +4,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletRequestWrapper;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MutableCookieRequestWrapper extends HttpServletRequestWrapper {
@@ -11,7 +13,9 @@ public class MutableCookieRequestWrapper extends HttpServletRequestWrapper {
 
     public MutableCookieRequestWrapper(HttpServletRequest request) {
         super(request);
-        this.cookies = List.of(request.getCookies());
+        this.cookies = new ArrayList<>();
+
+        Collections.addAll(this.cookies, request.getCookies());
     }
 
     @Override
