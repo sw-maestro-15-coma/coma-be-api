@@ -13,16 +13,18 @@ public class Shorts {
     private final long id;
     private final long userId;
     private final long videoId;
+    private String title;
     private String s3Url;
     private String thumbnailUrl;
     private ShortsStatus shortsStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static Shorts initialShorts(final long userId, final long videoId) {
+    public static Shorts initialShorts(final long userId, final long videoId, final String title) {
         return Shorts.builder()
                 .userId(userId)
                 .videoId(videoId)
+                .title(title)
                 .shortsStatus(GENERATING)
                 .build();
     }

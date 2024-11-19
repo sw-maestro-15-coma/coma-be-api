@@ -4,13 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+
 @RequiredArgsConstructor
 @Repository
 public class RefreshTokenRepositoryImpl implements RefreshTokenRepository {
     private final RefreshTokenJpaRepository refreshTokenRepository;
 
     @Override
-    public boolean isRefreshTokenExists(long userId, String token, long now) {
+    public boolean isRefreshTokenExists(long userId, String token, LocalDateTime now) {
         return refreshTokenRepository.isRefreshTokenExists(userId, token, now);
     }
 

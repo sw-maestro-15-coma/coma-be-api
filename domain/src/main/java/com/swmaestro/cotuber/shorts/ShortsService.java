@@ -7,6 +7,11 @@ import com.swmaestro.cotuber.edit.domain.EditSubtitle;
 import com.swmaestro.cotuber.shorts.domain.Shorts;
 import com.swmaestro.cotuber.shorts.dto.ShortsGenerateMessageRequest;
 import com.swmaestro.cotuber.shorts.dto.ShortsGenerateMessageResponse;
+import com.swmaestro.cotuber.shorts.upload.dto.InstagramUploadMessageRequest;
+import com.swmaestro.cotuber.shorts.upload.dto.ShortsUploadRequestDto;
+import com.swmaestro.cotuber.shorts.upload.InstagramUploadProducer;
+import com.swmaestro.cotuber.shorts.upload.YoutubeUploadProducer;
+import com.swmaestro.cotuber.shorts.upload.dto.YoutubeUploadMessageRequest;
 import com.swmaestro.cotuber.video.VideoService;
 import com.swmaestro.cotuber.video.domain.Video;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +24,8 @@ import java.util.List;
 public class ShortsService {
     private final ShortsRepository shortsRepository;
     private final ShortsGenerateProducer shortsProcessProducer;
+    private final YoutubeUploadProducer youtubeUploadProducer;
+    private final InstagramUploadProducer instagramUploadProducer;
     private final EditService editService;
     private final VideoService videoService;
 
@@ -32,16 +39,15 @@ public class ShortsService {
     }
 
     public Shorts startShortsGenerate(final long userId, final long videoId, final long draftId) {
-        Shorts newShorts = shortsRepository.save(
-                Shorts.initialShorts(userId, videoId)
-        );
-
         Video video = videoService.getVideo(videoId);
         Edit edit = editService.findByDraftId(draftId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 edit가 없습니다"));
 
         List<EditSubtitle> subtitles = editService.getEditSubtitleList(edit.getId());
 
+        Shorts newShorts = shortsRepository.save(
+                Shorts.initialShorts(userId, videoId, edit.getTitle())
+        );
 
         shortsProcessProducer.send(
                 ShortsGenerateMessageRequest.builder()
@@ -57,6 +63,7 @@ public class ShortsService {
                         )
                         .build()
         );
+
 
         return newShorts;
     }
@@ -74,5 +81,32 @@ public class ShortsService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 id의 shorts가 없습니다"));
         shorts.errorShorts();
         shortsRepository.save(shorts);
+    }
+
+    public void startShortsUpload(final long shortsId, final ShortsUploadRequestDto requestDto) {
+        Shorts shorts = shortsRepository.findById(shortsId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 id의 shorts가 없습니다"));
+        switch (requestDto.type()) {
+            case YOUTUBE ->
+                youtubeUploadProducer.send(
+                        YoutubeUploadMessageRequest.builder()
+                                .email(requestDto.email())
+                                .password(requestDto.password())
+                                .description(requestDto.description())
+                                .title(shorts.getTitle())
+                                .shortsS3Url(shorts.getS3Url())
+                                .build()
+                );
+            case INSTAGRAM ->
+                instagramUploadProducer.send(
+                        InstagramUploadMessageRequest.builder()
+                                .email(requestDto.email())
+                                .password(requestDto.password())
+                                .caption(requestDto.description())
+                                .shortsS3Url(shorts.getS3Url())
+                                .thumbnailUrl(shorts.getThumbnailUrl())
+                                .build());
+            default -> throw new IllegalArgumentException("해당 type의 플랫폼은 지원하지 않습니다");
+        }
     }
 }

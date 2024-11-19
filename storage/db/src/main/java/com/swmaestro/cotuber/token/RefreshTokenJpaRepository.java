@@ -4,6 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
+
 @Repository
 public interface RefreshTokenJpaRepository extends JpaRepository<RefreshTokenEntity, Long> {
     @Query("""
@@ -14,5 +16,5 @@ public interface RefreshTokenJpaRepository extends JpaRepository<RefreshTokenEnt
             and rt.expiresAt > :now
             """
     )
-    boolean isRefreshTokenExists(long userId, String token, long now);
+    boolean isRefreshTokenExists(long userId, String token, LocalDateTime now);
 }

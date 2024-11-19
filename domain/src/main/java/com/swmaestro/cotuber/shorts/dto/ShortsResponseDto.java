@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 public record ShortsResponseDto(
         long id,
+        String title,
         String s3Url,
         String thumbnailUrl,
         ShortsStatus shortsStatus,
@@ -18,6 +19,7 @@ public record ShortsResponseDto(
     public ShortsResponseDto(Shorts shorts) {
         this(
                 shorts.getId(),
+                shorts.getTitle(),
                 shorts.getS3Url(),
                 shorts.getThumbnailUrl(),
                 shorts.getShortsStatus(),
