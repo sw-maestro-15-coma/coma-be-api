@@ -16,6 +16,7 @@ class YoutubeKeyTest {
     @ValueSource(strings = {
             "https://www.youtube.com/watch?v=fWNaR-rxAic",
             "https://m.youtube.com/watch?v=fWNaR-rxAic",
+            "https://www.youtube.com/watch?v=fWNaR-rxAic&feature=youtu.be",
     })
     void create_with_valid_youtube_url(String url) {
         // when

@@ -15,7 +15,6 @@ import com.swmaestro.cotuber.shorts.dto.ShortsListResponseDto;
 import com.swmaestro.cotuber.shorts.dto.ShortsResponseDto;
 import com.swmaestro.cotuber.user.User;
 import com.swmaestro.cotuber.user.UserReader;
-import com.swmaestro.cotuber.validate.Validator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,6 @@ import java.util.List;
 @RestController
 public class EndpointController {
     private final UserReader userReader;
-    private final Validator validator;
     private final DraftFacade draftFacade;
     private final ShortsFacade shortsFacade;
     private final EditFacade editFacade;
@@ -62,8 +60,6 @@ public class EndpointController {
     @PostMapping(value = "/draft")
     public DraftResponseDto createRelation(@RequestBody DraftCreateRequestDto draftCreateRequestDto) {
         final long userId = AuthUtil.getCurrentUserId();
-
-        validator.checkYoutubeUrl(draftCreateRequestDto.youtubeUrl());
 
         return draftFacade.createDraft(userId, draftCreateRequestDto);
     }
