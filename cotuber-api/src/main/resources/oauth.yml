@@ -4,8 +4,8 @@ spring:
       client:
         registration:
           google:
-            client-id: 558068282449-n4hr4qc0j5t9oe2r73a8kasc4oltkl4m.apps.googleusercontent.com
-            client-secret: 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
+            client-id: 123
+            client-secret: 123
             scope: # google API의 범위 값
               - profile
               - email
